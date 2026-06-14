@@ -5,6 +5,11 @@
 [![License: CC0-1.0](https://img.shields.io/badge/License-CC0%201.0-lightgrey.svg)](LICENSE)
 [![Made with HTML](https://img.shields.io/badge/Made%20with-HTML%2FCSS%2FJS-orange?logo=html5)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/gmadevs/neurotools/pulls)
+[![GitHub last commit](https://img.shields.io/github/last-commit/gmadevs/neurotools?label=ultimo%20commit&logo=git)](https://github.com/gmadevs/neurotools/commits/main)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/gmadevs/neurotools?label=commit%2Fmese&logo=github)](https://github.com/gmadevs/neurotools/commits/main)
+[![GitHub repo size](https://img.shields.io/github/repo-size/gmadevs/neurotools?label=dimensione&logo=github)](https://github.com/gmadevs/neurotools)
+[![GitHub stars](https://img.shields.io/github/stars/gmadevs/neurotools?style=social)](https://github.com/gmadevs/neurotools/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/gmadevs/neurotools?style=social)](https://github.com/gmadevs/neurotools/forks)
 
 > Raccolta di strumenti clinici basati su evidenza per la neuroradiologia generale, pediatrica e neonatale, pubblicati come sito statico tramite GitHub Pages.
 
