@@ -62,7 +62,7 @@
 
   .section-label {
     font-family: var(--mono);
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     font-weight: 600;
     letter-spacing: .12em;
     text-transform: uppercase;
@@ -93,6 +93,36 @@
   .card strong {
     color: var(--ink);
     font-weight: 600;
+  }
+
+  /* ── PROFILO ── */
+  .profile-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.8rem;
+  }
+
+  .profile-photo {
+    flex-shrink: 0;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top center;
+    border: 3px solid var(--accent-light);
+    box-shadow: 0 4px 14px rgba(27,79,114,.15);
+  }
+
+  .profile-text {
+    flex: 1;
+  }
+
+  @media (max-width: 480px) {
+    .profile-card {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
   }
 
   /* ── BOTTONE SUGGERIMENTI ── */
@@ -157,7 +187,7 @@
 <body>
 
 <div class="hero">
-  <h1>Info</h1>
+  <h1>About</h1>
   <p>Chi sono, di cosa si tratta e come contribuire al progetto.</p>
 </div>
 
@@ -167,14 +197,14 @@
   <section>
     <div class="section-label">Chi sono</div>
     <div class="card">
-      <p>
-        <!-- ✏️ Inserisci qui la tua descrizione personale -->
-        Sono <strong>Giorgio Maria Agazzi</strong>, medico specializzando in radiologia. Questo progetto nasce dalla necessità di avere strumenti pratici, veloci e affidabili a portata di mano durante la pratica clinica quotidiana.
-      </p>
-      <p>
-        <!-- ✏️ Aggiungi ulteriori dettagli su di te, formazione, interessi clinici, ecc. -->
-        Ho sviluppato questi strumenti durante il percorso di specializzazione, con l'obiettivo di semplificare la produzione di referti e il calcolo di parametri clinici basati su evidenze scientifiche.
-      </p>
+      <div class="profile-card">
+        <img src="about.jpeg" alt="Giorgio Maria Agazzi" class="profile-photo">
+        <div class="profile-text">
+          <p>
+            Pagina curata da <strong>Giorgio Maria Agazzi</strong>, neuroradiologo. Questo progetto nasce dalla necessità di avere strumenti pratici, veloci e affidabili a portata di mano durante la pratica clinica quotidiana di refertazione.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -187,11 +217,18 @@
         <strong>Neuro-tools</strong> è una raccolta di strumenti web pensati per il clinico: generatori di referto strutturato, calcolatori basati su centili e valori di riferimento validati dalla letteratura.
       </p>
       <p>
-        Ogni strumento è costruito intorno a una o più pubblicazioni scientifiche di riferimento, riportate direttamente nell'interfaccia. Gli algoritmi sono trasparenti e modificabili: tutto il codice è open-source e disponibile su GitHub.
+        Gli strumenti disponibili sono sviluppati in HTML self-contained, con la possibilità di essere salvati in locale, aperti da browser web o da telefono cellulare. Ogni tool presenta la fonte dal quale è stato tratto.
+        Ogni strumento è costruito infatti intorno a una o più pubblicazioni scientifiche di riferimento, riportate direttamente nell'interfaccia. Gli algoritmi sono trasparenti e modificabili: tutto il codice è open-source e disponibile su GitHub.
       </p>
       <p>
         <!-- ✏️ Aggiungi obiettivi futuri o strumenti in sviluppo -->
         Il progetto è in continua espansione: nuovi strumenti vengono aggiunti man mano che emergono necessità pratiche nella routine clinica.
+      </p>
+      <p style="margin-top:.5rem">
+        <a href="https://github.com/gmadevs/neurotools" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;color:inherit;">
+          Trovi il codice completo qui
+          <img src="https://img.shields.io/badge/GitHub-gmadevs%2Fneurotools-1b4f72?logo=github&logoColor=white&style=flat-square" alt="GitHub repository" style="vertical-align:middle;">
+        </a>
       </p>
     </div>
   </section>
