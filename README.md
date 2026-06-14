@@ -6,7 +6,7 @@
 [![Made with HTML](https://img.shields.io/badge/Made%20with-HTML%2FCSS%2FJS-orange?logo=html5)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/gmadevs/neurotools/pulls)
 
-> Raccolta di strumenti clinici basati su evidenza per la radiologia pediatrica e neonatale, pubblicati come sito statico tramite GitHub Pages.
+> Raccolta di strumenti clinici basati su evidenza per la neuroradiologia generale, pediatrica e neonatale, pubblicati come sito statico tramite GitHub Pages.
 
 ---
 
@@ -41,7 +41,7 @@ Gli strumenti sono organizzati per categoria clinica e compaiono automaticamente
 
 ### Come funziona
 
-`assets/site-config.js` è la **fonte unica di verità**: contiene l'array `SITE_TOOLS` con titolo, descrizione, categoria, sottocategoria opzionale e URL di ogni strumento.
+`assets/site-config.js` è la **fonte delle tools**: contiene l'array `SITE_TOOLS` con titolo, descrizione, categoria, sottocategoria opzionale e URL di ogni strumento.
 
 - `nav.js` legge quell'array e **costruisce automaticamente la navbar** su ogni pagina.
 - `index.html` legge lo stesso array e **genera automaticamente le card** della home, raggruppate per categoria e sottocategoria.
