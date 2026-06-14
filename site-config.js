@@ -28,7 +28,7 @@ window.SITE_TOOLS = [
     id: "suture-craniche",
     title: "Suture Craniche",
     description: "Generatore di referto ecografico per le suture craniche, basato sui centili di Rozovsky et al. 2018.",
-    url: "tools/suture-craniche.html",
+    url: "tools/suture_craniche.html",
     category: "Pediatrica",
     subcategory: "Ecografia"
   }
