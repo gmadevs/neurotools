@@ -18,14 +18,6 @@ Gli strumenti sono organizzati per categoria clinica e compaiono automaticamente
 
 ---
 
-## Strumenti disponibili
-
-| Strumento | Categoria | Riferimento |
-|-----------|-----------|-------------|
-| [Suture Craniche](tools/suture-craniche.html) | Ecografia Pediatrica | Rozovsky et al., 2018 |
-
----
-
 ## Struttura del progetto
 
 ```
