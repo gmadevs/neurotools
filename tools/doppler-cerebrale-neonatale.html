@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="it" data-root="..">
+<head>
+<link rel="stylesheet" href="../assets/nav.css">
+<script src="../assets/site-config.js"></script>
+<script src="../assets/nav.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doppler Cerebrale Neonatale – Generatore Referto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1c22;
+    --paper: #f5f4f0;
+    --card: #ffffff;
+    --rule: #d0cfc8;
+    --accent: #1b4f72;
+    --accent-light: #d6e8f5;
+    --warn: #8b2500;
+    --warn-bg: #fdecea;
+    --ok: #1a4731;
+    --ok-bg: #e8f5ee;
+    --mid: #4a3800;
+    --mid-bg: #fdf8e1;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body { font-family: var(--sans); background: var(--paper); color: var(--ink); min-height: 100vh; padding: 0; }
+
+  header {
+    background: var(--accent); color: #fff;
+    padding: 1.5rem 2rem 1.25rem;
+    display: flex; align-items: baseline; gap: 1.2rem;
+  }
+  header h1 { font-family: var(--mono); font-size: 1rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  header span { font-size: 0.78rem; opacity: .7; font-style: italic; }
+
+  .workspace { display: grid; grid-template-columns: 400px 1fr; min-height: calc(100vh - 68px); }
+
+  .input-panel {
+    background: var(--card); border-right: 1px solid var(--rule);
+    padding: 1.8rem 1.5rem 2rem; overflow-y: auto;
+  }
+
+  .section-label {
+    font-family: var(--mono); font-size: 0.68rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: .6rem; padding-bottom: .35rem;
+    border-bottom: 1.5px solid var(--accent-light);
+  }
+
+  .form-group { margin-bottom: 1.1rem; }
+
+  label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: .3rem; color: #3a3c45; }
+
+  .date-row { display: flex; gap: .4rem; align-items: center; }
+
+  input[type="date"], input[type="number"], select {
+    font-family: var(--sans); font-size: 0.83rem;
+    border: 1px solid var(--rule); border-radius: 4px;
+    padding: .42rem .6rem; background: var(--paper); color: var(--ink);
+    transition: border-color .15s;
+  }
+  input[type="date"]:focus, input[type="number"]:focus, select:focus {
+    outline: none; border-color: var(--accent); background: #fff;
+  }
+  input[type="date"] { flex: 1; }
+  select { width: 100%; }
+
+  .btn-today {
+    font-family: var(--mono); font-size: 0.65rem; padding: .42rem .6rem;
+    border: 1px solid var(--accent); background: var(--accent-light); color: var(--accent);
+    border-radius: 4px; cursor: pointer; white-space: nowrap; font-weight: 600;
+    letter-spacing: .03em; transition: background .15s;
+  }
+  .btn-today:hover { background: #c0d9ee; }
+
+  .age-display {
+    font-family: var(--mono); font-size: 0.82rem; color: var(--accent);
+    margin-top: .35rem; min-height: 1.2em; font-weight: 600;
+  }
+
+  .artery-block { margin-bottom: 1.4rem; }
+  .artery-name {
+    font-size: 0.76rem; font-weight: 600; color: var(--accent);
+    margin-bottom: .55rem; display: flex; align-items: center; gap: .4rem;
+  }
+  .artery-name::after { content: ''; flex: 1; height: 1px; background: var(--accent-light); }
+
+  .param-grid { display: grid; gap: .4rem; }
+  .param-row {
+    display: grid; grid-template-columns: 1fr auto auto;
+    gap: .4rem; align-items: center;
+  }
+  .param-row label { margin: 0; font-size: 0.75rem; }
+  .param-row input { width: 80px; text-align: right; }
+  .unit { font-size: 0.7rem; color: #888; font-family: var(--mono); }
+
+  .btn-generate {
+    width: 100%; margin-top: 1.2rem; padding: .75rem 1rem;
+    background: var(--accent); color: #fff; border: none; border-radius: 6px;
+    font-family: var(--mono); font-size: 0.85rem; font-weight: 600;
+    letter-spacing: .06em; text-transform: uppercase; cursor: pointer; transition: background .15s;
+  }
+  .btn-generate:hover { background: #143d57; }
+
+  /* Report panel */
+  .report-panel { padding: 2rem 2.5rem; overflow-y: auto; background: var(--paper); }
+  .report-container { max-width: 720px; margin: 0 auto; }
+
+  .report-placeholder {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; height: 60vh; gap: 1rem; color: #aaa; text-align: center;
+  }
+  .report-placeholder svg { opacity: .3; }
+  .report-placeholder p { font-size: 0.85rem; font-style: italic; max-width: 280px; }
+
+  .report-card {
+    background: #fff; border: 1px solid var(--rule); border-radius: 6px;
+    padding: 2.2rem 2.4rem 1.8rem; font-size: 0.87rem; line-height: 1.65;
+  }
+
+  .report-header { border-bottom: 2px solid var(--ink); padding-bottom: 1rem; margin-bottom: 1.4rem; }
+  .report-header h2 {
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .08em; color: var(--accent);
+  }
+  .report-meta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: .2rem .8rem;
+    margin-top: .7rem; font-size: 0.8rem; color: #555;
+  }
+  .report-meta span { font-weight: 600; color: var(--ink); }
+
+  .report-section-title {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+    margin: 1.4rem 0 .7rem;
+  }
+
+  .centile-table { width: 100%; border-collapse: collapse; font-size: 0.79rem; margin-bottom: .6rem; }
+  .centile-table th {
+    font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
+    letter-spacing: .06em; text-align: left; padding: .35rem .5rem;
+    border-bottom: 1.5px solid var(--rule); color: #666; text-transform: uppercase;
+  }
+  .centile-table td { padding: .38rem .5rem; border-bottom: 1px solid #eee; }
+  .centile-table tr:last-child td { border-bottom: none; }
+  .centile-table .val { font-family: var(--mono); font-size: 0.8rem; }
+  .centile-table .artery-group td {
+    background: var(--accent-light); font-family: var(--mono);
+    font-size: 0.68rem; font-weight: 600; color: var(--accent);
+    letter-spacing: .05em; text-transform: uppercase; padding: .3rem .5rem;
+  }
+
+  .badge {
+    display: inline-block; font-family: var(--mono); font-size: 0.65rem;
+    font-weight: 600; padding: .1rem .45rem; border-radius: 3px;
+    letter-spacing: .05em; text-transform: uppercase;
+  }
+  .badge-ok { background: var(--ok-bg); color: var(--ok); }
+  .badge-low { background: var(--warn-bg); color: var(--warn); }
+  .badge-high { background: var(--mid-bg); color: var(--mid); }
+  .badge-nd { background: #f0f0f0; color: #888; }
+
+  .diagnosis-box {
+    margin-top: 1.4rem; padding: 1rem 1.2rem; border-radius: 5px; border-left: 4px solid;
+  }
+  .diagnosis-box.normal { background: var(--ok-bg); border-color: #2e7d52; }
+  .diagnosis-box.abnormal { background: var(--warn-bg); border-color: var(--warn); }
+  .diagnosis-box.attention { background: var(--mid-bg); border-color: #b08000; }
+  .diagnosis-box h3 {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .08em; margin-bottom: .4rem;
+  }
+  .diagnosis-box p { font-size: 0.84rem; line-height: 1.6; }
+
+  .report-citation {
+    margin-top: 1.8rem; padding-top: 1rem; border-top: 1px solid var(--rule);
+    font-size: 0.72rem; color: #888; font-style: italic; line-height: 1.5;
+  }
+
+  .btn-copy {
+    padding: .55rem 1.2rem; background: var(--ok); border: none; color: #fff;
+    border-radius: 5px; font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+    letter-spacing: .05em; text-transform: uppercase; cursor: pointer; transition: background .2s;
+  }
+  .btn-copy:hover { background: #145a38; }
+  .btn-copy.copied { background: #555; }
+
+  .btn-print {
+    padding: .55rem 1.1rem; background: transparent; border: 1px solid var(--accent);
+    color: var(--accent); border-radius: 5px; font-family: var(--mono); font-size: 0.75rem;
+    font-weight: 600; letter-spacing: .05em; text-transform: uppercase; cursor: pointer; transition: all .15s;
+  }
+  .btn-print:hover { background: var(--accent); color: #fff; }
+
+  .report-actions { display: flex; gap: .7rem; margin-top: 1.4rem; align-items: center; }
+
+  .info-note {
+    font-size: 0.72rem; color: #888; margin-top: .3rem; line-height: 1.4;
+    padding: .3rem .5rem; background: #f8f8f5; border-radius: 3px; border-left: 2px solid #ccc;
+  }
+
+  @media print {
+    header, .input-panel, .report-actions { display: none !important; }
+    .workspace { display: block; }
+    .report-panel { padding: 0; }
+    .report-card { border: none; box-shadow: none; }
+  }
+
+  @media (max-width: 860px) {
+    .workspace { grid-template-columns: 1fr; }
+    .input-panel { border-right: none; border-bottom: 1px solid var(--rule); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Doppler Cerebrale Neonatale</h1>
+  <span>Centili ACA e MCA nel prematuro – Romagnoli et al. 2006
+    <a href="https://pubmed.ncbi.nlm.nih.gov/16530090/" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin-left:.4rem">
+      <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
+    </a>
+  </span>
+</header>
+
+<div class="workspace">
+
+  <!-- INPUT PANEL -->
+  <aside class="input-panel">
+
+    <div class="section-label">Dati Paziente</div>
+
+    <div class="form-group">
+      <label>Età gestazionale (settimane)</label>
+      <select id="gaGroup">
+        <option value="">— seleziona —</option>
+        <option value="2528">25–28 settimane</option>
+        <option value="2930">29–30 settimane</option>
+        <option value="3132">31–32 settimane</option>
+        <option value="3335">33–35 settimane</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Data di nascita</label>
+      <div class="date-row">
+        <input type="date" id="dob" oninput="calcAge()">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Data dell'esame</label>
+      <div class="date-row">
+        <input type="date" id="examDate" oninput="calcAge()">
+        <button class="btn-today" onclick="setToday()">Oggi</button>
+      </div>
+      <div class="age-display" id="ageDisplay">—</div>
+      <div class="info-note" id="dayNote" style="display:none"></div>
+    </div>
+
+    <!-- ACA inputs -->
+    <div class="section-label" style="margin-top:.8rem">ACA – Arteria Cerebrale Anteriore</div>
+    <div class="artery-block">
+      <div class="param-grid">
+        <div class="param-row">
+          <label>PSV (velocità sistolica di picco)</label>
+          <input type="number" id="aca_psv" min="0" max="200" step="0.1" placeholder="—">
+          <span class="unit">cm/s</span>
+        </div>
+        <div class="param-row">
+          <label>EDV (velocità telediastolica)</label>
+          <input type="number" id="aca_edv" min="0" max="100" step="0.1" placeholder="—">
+          <span class="unit">cm/s</span>
+        </div>
+        <div class="param-row">
+          <label>RI (indice di resistenza)</label>
+          <input type="number" id="aca_ri" min="0" max="2" step="0.01" placeholder="—">
+          <span class="unit"></span>
+        </div>
+        <div class="param-row">
+          <label>MV (velocità media)</label>
+          <input type="number" id="aca_mv" min="0" max="200" step="0.1" placeholder="—">
+          <span class="unit">cm/s</span>
+        </div>
+        <div class="param-row">
+          <label>PI (indice di pulsatilità)</label>
+          <input type="number" id="aca_pi" min="0" max="5" step="0.01" placeholder="—">
+          <span class="unit"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MCA inputs -->
+    <div class="section-label" style="margin-top:.8rem">MCA – Arteria Cerebrale Media</div>
+    <div class="artery-block">
+      <div class="param-grid">
+        <div class="param-row">
+          <label>PSV (velocità sistolica di picco)</label>
+          <input type="number" id="mca_psv" min="0" max="200" step="0.1" placeholder="—">
+          <span class="unit">cm/s</span>
+        </div>
+        <div class="param-row">
+          <label>EDV (velocità telediastolica)</label>
+          <input type="number" id="mca_edv" min="0" max="100" step="0.1" placeholder="—">
+          <span class="unit">cm/s</span>
+        </div>
+        <div class="param-row">
+          <label>RI (indice di resistenza)</label>
+          <input type="number" id="mca_ri" min="0" max="2" step="0.01" placeholder="—">
+          <span class="unit"></span>
+        </div>
+        <div class="param-row">
+          <label>MV (velocità media)</label>
+          <input type="number" id="mca_mv" min="0" max="200" step="0.1" placeholder="—">
+          <span class="unit">cm/s</span>
+        </div>
+        <div class="param-row">
+          <label>PI (indice di pulsatilità)</label>
+          <input type="number" id="mca_pi" min="0" max="5" step="0.01" placeholder="—">
+          <span class="unit"></span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-generate" onclick="generateReport()">▶ Genera Referto</button>
+
+  </aside>
+
+  <!-- REPORT PANEL -->
+  <main class="report-panel">
+    <div class="report-container">
+      <div id="reportOutput">
+        <div class="report-placeholder">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="8" width="44" height="48" rx="4" stroke="#1b4f72" stroke-width="2"/>
+            <line x1="18" y1="22" x2="46" y2="22" stroke="#1b4f72" stroke-width="1.5"/>
+            <line x1="18" y1="30" x2="46" y2="30" stroke="#1b4f72" stroke-width="1.5"/>
+            <line x1="18" y1="38" x2="36" y2="38" stroke="#1b4f72" stroke-width="1.5"/>
+          </svg>
+          <p>Selezionare l'età gestazionale, inserire le date e i valori Doppler, poi premere <strong>Genera Referto</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATI DA ROMAGNOLI et al. 2006
+// Formato: [p10, p50, p90] per ciascun giorno postnatale
+// Giorni disponibili: 1, 3, 7, 14, 21, 28
+// ══════════════════════════════════════════════════════════════
+const DATA = {
+  ACA: {
+    '2528': {
+      PSV: { 1:[13.20,16.00,21.70], 3:[17.30,25.00,33.90], 7:[23.30,32.75,41.70], 14:[24.30,36.75,45.60], 21:[30.20,38.50,42.90], 28:[35.20,45.50,48.00] },
+      EDV: { 1:[3.10,4.50,5.00],   3:[4.00,8.00,9.90],    7:[4.10,6.00,8.80],    14:[5.10,8.00,13.60],   21:[6.10,8.00,10.00],   28:[6.10,8.75,11.90] },
+      RI:  { 1:[0.68,0.74,0.82],   3:[0.64,0.71,0.80],    7:[0.73,0.79,0.86],    14:[0.70,0.77,0.81],    21:[0.71,0.76,0.82],    28:[0.74,0.80,0.86] },
+      MV:  { 1:[7.10,10.00,12.80], 3:[9.10,15.25,20.00],  7:[12.20,18.00,21.00], 14:[10.50,19.75,25.60], 21:[10.00,20.00,25.70], 28:[18.10,23.50,28.00] },
+      PI:  { 1:[1.13,1.27,1.74],   3:[0.99,1.18,1.71],    7:[1.19,1.38,1.71],    14:[1.12,1.46,1.79],    21:[1.18,1.37,1.92],    28:[1.28,1.54,1.91] }
+    },
+    '2930': {
+      PSV: { 1:[17.40,18.83,26.00], 3:[24.20,27.83,37.60], 7:[28.00,37.17,47.20], 14:[27.40,41.25,47.60], 21:[37.20,44.25,51.60], 28:[36.40,47.67,61.60] },
+      EDV: { 1:[3.40,4.83,7.00],    3:[4.40,8.00,12.20],   7:[4.40,8.00,11.60],   14:[5.40,9.17,12.00],   21:[5.80,9.50,13.80],   28:[6.40,11.67,19.20] },
+      RI:  { 1:[0.68,0.71,0.85],    3:[0.67,0.75,0.82],    7:[0.64,0.74,0.85],    14:[0.71,0.75,0.85],    21:[0.70,0.78,0.85],    28:[0.67,0.74,0.86] },
+      MV:  { 1:[7.00,10.83,16.60],  3:[12.60,16.33,24.60], 7:[13.00,18.25,24.20], 14:[15.40,21.17,25.20], 21:[17.20,24.00,30.60], 28:[21.00,28.17,36.00] },
+      PI:  { 1:[0.95,1.31,1.64],    3:[1.03,1.28,1.62],    7:[1.04,1.36,1.75],    14:[1.24,1.34,1.86],    21:[1.18,1.49,1.77],    28:[1.03,1.51,1.98] }
+    },
+    '3132': {
+      PSV: { 1:[17.00,21.50,29.30], 3:[24.10,30.00,35.30], 7:[30.00,35.00,39.80], 14:[35.40,40.00,45.30], 21:[37.70,45.00,56.70], 28:[39.70,51.50,70.30] },
+      EDV: { 1:[3.00,5.00,7.00],    3:[4.70,7.50,10.00],   7:[4.00,8.00,10.30],   14:[4.70,9.50,13.50],   21:[5.70,9.75,14.30],   28:[8.00,11.50,15.00] },
+      RI:  { 1:[0.72,0.76,0.86],    3:[0.70,0.74,0.80],    7:[0.69,0.74,0.85],    14:[0.66,0.76,0.87],    21:[0.68,0.78,0.85],    28:[0.74,0.78,0.85] },
+      MV:  { 1:[9.70,12.00,16.00],  3:[11.70,16.00,20.00], 7:[14.40,19.00,22.30], 14:[14.40,21.00,26.50], 21:[15.80,23.50,32.60], 28:[20.10,28.50,36.30] },
+      PI:  { 1:[1.08,1.39,1.67],    3:[1.12,1.33,1.90],    7:[1.11,1.28,1.64],    14:[1.08,1.38,1.95],    21:[1.12,1.36,1.89],    28:[1.18,1.57,1.84] }
+    },
+    '3335': {
+      PSV: { 1:[16.00,22.33,28.80], 3:[27.00,32.00,37.80], 7:[30.40,37.17,41.60], 14:[35.20,40.00,45.00], 21:[38.00,45.00,54.00], 28:[44.40,55.83,65.80] },
+      EDV: { 1:[3.00,6.00,9.80],    3:[6.00,8.00,10.80],   7:[6.00,8.17,12.00],   14:[5.20,8.83,12.80],   21:[6.00,9.83,13.80],   28:[8.00,12.00,18.00] },
+      RI:  { 1:[0.70,0.75,0.85],    3:[0.67,0.75,0.81],    7:[0.70,0.75,0.83],    14:[0.69,0.74,0.81],    21:[0.69,0.76,0.83],    28:[0.69,0.78,0.84] },
+      MV:  { 1:[7.20,12.83,19.80],  3:[15.00,18.00,21.00], 7:[14.20,19.83,25.00], 14:[15.00,21.83,26.80], 21:[15.20,24.83,28.00], 28:[20.40,31.00,42.00] },
+      PI:  { 1:[1.04,1.39,1.80],    3:[1.06,1.30,1.56],    7:[1.11,1.29,1.73],    14:[1.10,1.31,1.65],    21:[1.17,1.35,1.83],    28:[1.09,1.39,1.73] }
+    }
+  },
+  MCA: {
+    '2528': {
+      PSV: { 1:[16.40,21.00,32.50], 3:[27.00,33.75,37.90], 7:[34.30,39.75,47.80], 14:[37.20,45.00,52.90], 21:[40.00,48.00,58.70], 28:[47.70,58.50,75.40] },
+      EDV: { 1:[5.00,6.00,7.00],    3:[7.00,8.75,12.00],   7:[7.00,8.75,18.60],   14:[8.00,10.00,17.70],  21:[7.20,11.00,14.00],  28:[11.00,13.50,18.60] },
+      RI:  { 1:[0.70,0.75,0.78],    3:[0.67,0.70,0.79],    7:[0.67,0.74,0.81],    14:[0.66,0.76,0.79],    21:[0.70,0.79,0.82],    28:[0.74,0.76,0.82] },
+      MV:  { 1:[8.20,12.00,18.90],  3:[12.10,19.00,23.80], 7:[18.00,23.00,37.80], 14:[18.10,25.50,31.80], 21:[12.30,26.00,31.90], 28:[22.60,31.00,37.50] },
+      PI:  { 1:[1.09,1.37,1.58],    3:[1.16,1.31,1.55],    7:[1.05,1.31,1.72],    14:[1.09,1.42,1.92],    21:[1.19,1.56,1.92],    28:[1.23,1.46,1.90] }
+    },
+    '2930': {
+      PSV: { 1:[22.80,27.17,32.60], 3:[30.80,35.33,43.40], 7:[33.00,43.50,54.60], 14:[37.00,49.17,60.40], 21:[48.00,55.83,60.80], 28:[44.40,57.50,67.80] },
+      EDV: { 1:[5.00,7.17,9.60],    3:[5.80,9.25,14.20],   7:[6.00,9.33,17.80],   14:[8.00,11.17,14.60],  21:[7.00,11.83,18.20],  28:[7.40,12.33,19.60] },
+      RI:  { 1:[0.64,0.73,0.81],    3:[0.66,0.74,0.81],    7:[0.65,0.77,0.84],    14:[0.71,0.77,0.83],    21:[0.70,0.78,0.84],    28:[0.70,0.79,0.84] },
+      MV:  { 1:[12.00,14.17,20.60], 3:[15.40,21.67,32.20], 7:[15.80,20.17,37.60], 14:[20.40,27.83,30.80], 21:[24.80,29.00,35.00], 28:[21.80,31.83,42.00] },
+      PI:  { 1:[1.18,1.27,1.68],    3:[1.04,1.30,1.64],    7:[1.03,1.51,1.80],    14:[1.11,1.47,1.75],    21:[1.22,1.47,1.81],    28:[1.16,1.44,1.76] }
+    },
+    '3132': {
+      PSV: { 1:[24.70,28.75,35.60], 3:[30.70,38.50,44.90], 7:[38.40,44.50,49.20], 14:[46.20,51.50,56.30], 21:[47.70,54.50,62.30], 28:[52.10,64.00,81.40] },
+      EDV: { 1:[4.70,8.00,11.00],   3:[7.00,10.00,12.30],  7:[6.00,10.00,15.60],  14:[6.00,11.50,14.60],  21:[6.00,12.50,17.00],  28:[8.00,13.00,22.00] },
+      RI:  { 1:[0.68,0.73,0.85],    3:[0.70,0.75,0.78],    7:[0.64,0.77,0.83],    14:[0.72,0.77,0.84],    21:[0.73,0.78,0.86],    28:[0.68,0.79,0.85] },
+      MV:  { 1:[12.70,15.50,21.60], 3:[16.40,20.00,27.00], 7:[19.50,23.50,32.50], 14:[17.80,27.00,31.30], 21:[19.90,30.00,36.00], 28:[26.40,33.50,48.30] },
+      PI:  { 1:[1.12,1.28,1.95],    3:[1.08,1.31,1.47],    7:[0.91,1.44,1.73],    14:[1.22,1.46,1.77],    21:[1.09,1.43,1.88],    28:[1.00,1.46,1.74] }
+    },
+    '3335': {
+      PSV: { 1:[23.40,31.83,39.60], 3:[33.20,38.00,47.80], 7:[40.00,46.00,55.60], 14:[47.20,55.00,59.00], 21:[54.20,62.17,66.00], 28:[61.40,71.17,86.00] },
+      EDV: { 1:[4.20,8.00,13.00],   3:[7.00,10.00,12.80],  7:[8.20,12.00,17.40],  14:[7.20,12.00,17.00],  21:[10.00,13.25,18.80], 28:[12.00,18.83,25.00] },
+      RI:  { 1:[0.67,0.74,0.84],    3:[0.70,0.75,0.79],    7:[0.68,0.73,0.81],    14:[0.70,0.77,0.83],    21:[0.70,0.75,0.82],    28:[0.69,0.74,0.85] },
+      MV:  { 1:[12.20,18.17,25.60], 3:[17.00,20.83,28.00], 7:[18.60,26.00,35.60], 14:[20.00,30.83,40.20], 21:[28.20,35.25,42.60], 28:[33.00,42.00,51.60] },
+      PI:  { 1:[1.03,1.35,1.68],    3:[1.20,1.39,1.60],    7:[1.10,1.35,1.55],    14:[1.15,1.35,1.94],    21:[1.10,1.32,1.75],    28:[1.03,1.29,1.71] }
+    }
+  }
+};
+
+const PARAM_LABELS = {
+  PSV: 'PSV – Vel. sistolica di picco',
+  EDV: 'EDV – Vel. telediastolica',
+  RI:  'RI – Indice di resistenza',
+  MV:  'MV – Velocità media',
+  PI:  'PI – Indice di pulsatilità'
+};
+const PARAM_UNITS = { PSV: 'cm/s', EDV: 'cm/s', RI: '', MV: 'cm/s', PI: '' };
+const DAYS = [1, 3, 7, 14, 21, 28];
+
+const GA_LABELS = {
+  '2528': '25–28 settimane',
+  '2930': '29–30 settimane',
+  '3132': '31–32 settimane',
+  '3335': '33–35 settimane'
+};
+
+// ── Helpers ──
+function setToday() {
+  document.getElementById('examDate').value = new Date().toISOString().split('T')[0];
+  calcAge();
+}
+
+function calcAge() {
+  const dob = document.getElementById('dob').value;
+  const exam = document.getElementById('examDate').value;
+  const el = document.getElementById('ageDisplay');
+  const noteEl = document.getElementById('dayNote');
+  if (!dob || !exam) { el.textContent = '—'; noteEl.style.display = 'none'; return; }
+  const d1 = new Date(dob), d2 = new Date(exam);
+  if (d2 < d1) { el.textContent = 'Data esame precedente alla nascita'; noteEl.style.display = 'none'; return; }
+  const days = Math.round((d2 - d1) / 86400000);
+  el.textContent = `Età postnatale: ${days} giorn${days === 1 ? 'o' : 'i'}`;
+  if (days > 28) {
+    noteEl.textContent = 'Attenzione: i valori di riferimento coprono solo il primo mese di vita (giorni 1–28).';
+    noteEl.style.display = 'block';
+  } else {
+    const ref = getRefDay(days);
+    noteEl.textContent = `I centili saranno interpolati usando i giorni di riferimento ${ref.lo} e ${ref.hi} dello studio.`;
+    noteEl.style.display = 'block';
+  }
+}
+
+function getPostnatalDays() {
+  const dob = document.getElementById('dob').value;
+  const exam = document.getElementById('examDate').value;
+  if (!dob || !exam) return null;
+  const days = Math.round((new Date(exam) - new Date(dob)) / 86400000);
+  return days >= 0 ? days : null;
+}
+
+function getRefDay(days) {
+  // Find the two surrounding reference days
+  const d = Math.max(1, Math.min(28, days));
+  for (let i = 0; i < DAYS.length - 1; i++) {
+    if (d >= DAYS[i] && d <= DAYS[i+1]) {
+      return { lo: DAYS[i], hi: DAYS[i+1], t: (d - DAYS[i]) / (DAYS[i+1] - DAYS[i]) };
+    }
+  }
+  if (d <= DAYS[0]) return { lo: DAYS[0], hi: DAYS[0], t: 0 };
+  return { lo: DAYS[DAYS.length-1], hi: DAYS[DAYS.length-1], t: 0 };
+}
+
+function interpolate(lo, hi, t) {
+  // Interpolate between two [p10, p50, p90] arrays
+  return [
+    lo[0] + (hi[0] - lo[0]) * t,
+    lo[1] + (hi[1] - lo[1]) * t,
+    lo[2] + (hi[2] - lo[2]) * t
+  ];
+}
+
+function getRef(artery, param, gaGroup, days) {
+  const d = Math.max(1, Math.min(28, days));
+  const ref = getRefDay(d);
+  const table = DATA[artery][gaGroup][param];
+  if (ref.lo === ref.hi) return table[ref.lo];
+  return interpolate(table[ref.lo], table[ref.hi], ref.t);
+}
+
+function getCentileStatus(value, ref) {
+  if (value === null) return { status: 'nd', label: 'N.R.' };
+  const [p10, p50, p90] = ref;
+  if (value < p10) return { status: 'low', label: '< 10° centile' };
+  if (value > p90) return { status: 'high', label: '> 90° centile' };
+  if (value < p50) return { status: 'ok', label: 'P10–P50' };
+  return { status: 'ok', label: 'P50–P90' };
+}
+
+function badgeHTML(status, label) {
+  const cls = { ok: 'badge-ok', low: 'badge-low', high: 'badge-high', nd: 'badge-nd' }[status] || 'badge-nd';
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function fmtVal(v, param) {
+  if (v === null) return '—';
+  const u = PARAM_UNITS[param];
+  const dec = (param === 'RI' || param === 'PI') ? 2 : 1;
+  return parseFloat(v).toFixed(dec) + (u ? ' ' + u : '');
+}
+
+function fmtRef(v, param) {
+  const dec = (param === 'RI' || param === 'PI') ? 2 : 1;
+  return v.toFixed(dec);
+}
+
+function buildTableRows(artery, gaGroup, days, vals) {
+  const params = ['PSV', 'EDV', 'RI', 'MV', 'PI'];
+  let rows = `<tr class="artery-group"><td colspan="6">${artery}</td></tr>`;
+  for (const p of params) {
+    const v = vals[artery][p];
+    if (v === null) continue;
+    const ref = getRef(artery, p, gaGroup, days);
+    const st = getCentileStatus(v, ref);
+    rows += `
+      <tr>
+        <td>${PARAM_LABELS[p]}</td>
+        <td class="val">${fmtVal(v, p)}</td>
+        <td class="val">${fmtRef(ref[0], p)}</td>
+        <td class="val">${fmtRef(ref[1], p)}</td>
+        <td class="val">${fmtRef(ref[2], p)}</td>
+        <td>${badgeHTML(st.status, st.label)}</td>
+      </tr>`;
+  }
+  return rows;
+}
+
+function generateReport() {
+  const gaGroup = document.getElementById('gaGroup').value;
+  const dob = document.getElementById('dob').value;
+  const examDate = document.getElementById('examDate').value;
+
+  if (!gaGroup) { alert('Selezionare il gruppo di età gestazionale.'); return; }
+  if (!dob || !examDate) { alert('Inserire la data di nascita e la data dell\'esame.'); return; }
+
+  const days = getPostnatalDays();
+  if (days === null || days < 0) { alert('Verificare le date inserite.'); return; }
+  if (days > 28) alert('Attenzione: i valori di riferimento coprono solo il primo mese di vita.');
+
+  const arteries = ['ACA', 'MCA'];
+  const params = ['PSV', 'EDV', 'RI', 'MV', 'PI'];
+  const ids = { ACA: { PSV:'aca_psv', EDV:'aca_edv', RI:'aca_ri', MV:'aca_mv', PI:'aca_pi' },
+                MCA: { PSV:'mca_psv', EDV:'mca_edv', RI:'mca_ri', MV:'mca_mv', PI:'mca_pi' } };
+
+  const vals = { ACA: {}, MCA: {} };
+  for (const a of arteries) {
+    for (const p of params) {
+      const raw = document.getElementById(ids[a][p]).value;
+      vals[a][p] = raw === '' ? null : parseFloat(raw);
+    }
+  }
+
+  const fmtDate = s => s ? new Date(s).toLocaleDateString('it-IT') : '—';
+
+  // Build table
+  let tableRows = '';
+  for (const a of arteries) tableRows += buildTableRows(a, gaGroup, days, vals);
+
+  // Determine overall status
+  let anyLow = false, anyHigh = false, anyMeasured = false;
+  const lowParams = [];
+  for (const a of arteries) {
+    for (const p of params) {
+      if (vals[a][p] === null) continue;
+      anyMeasured = true;
+      const ref = getRef(a, p, gaGroup, days);
+      const st = getCentileStatus(vals[a][p], ref);
+      if (st.status === 'low') { anyLow = true; lowParams.push(`${a}-${p}`); }
+      if (st.status === 'high') anyHigh = true;
+    }
+  }
+
+  let diagClass, diagText;
+  if (!anyMeasured) {
+    diagClass = 'attention';
+    diagText = 'Nessun parametro inserito.';
+  } else if (anyLow) {
+    diagClass = 'abnormal';
+    diagText = `Riscontro di valori inferiori al 10° centile per età gestazionale e postnatale in: ${lowParams.join(', ')}. Il reperto richiede correlazione con il quadro clinico.`;
+  } else if (anyHigh) {
+    diagClass = 'attention';
+    diagText = 'Riscontro di valori superiori al 90° centile per uno o più parametri. Correlare con il quadro clinico.';
+  } else {
+    diagClass = 'normal';
+    diagText = 'I parametri misurati rientrano nei limiti di norma (P10–P90) per l\'età gestazionale e postnatale del paziente.';
+  }
+
+  const dClamp = Math.max(1, Math.min(28, days));
+  const refD = getRefDay(dClamp);
+  const refDayStr = refD.lo === refD.hi
+    ? `giorno ${refD.lo}`
+    : `interpolazione tra giorno ${refD.lo} e ${refD.hi}`;
+
+  const html = `
+    <div class="report-card">
+      <div class="report-header">
+        <h2>Doppler Cerebrale Neonatale – ACA e MCA</h2>
+        <div class="report-meta">
+          <div>Data di nascita: <span>${fmtDate(dob)}</span></div>
+          <div>Data esame: <span>${fmtDate(examDate)}</span></div>
+          <div>Età postnatale: <span>${days} giorni</span></div>
+          <div>EG alla nascita: <span>${GA_LABELS[gaGroup]}</span></div>
+          <div>Riferimento centili: <span>${refDayStr}</span></div>
+        </div>
+      </div>
+
+      <div class="report-section-title">Tecnica</div>
+      <p>Esame Doppler color del flusso cerebrale eseguito con sonda ad alta frequenza attraverso la fontanella anteriore, con valutazione dell'arteria cerebrale anteriore (ACA) e dell'arteria cerebrale media (MCA). Misurate la velocità sistolica di picco (PSV), la velocità telediastolica (EDV), la velocità media (MV), l'indice di resistenza (RI) e l'indice di pulsatilità (PI).</p>
+
+      <div class="report-section-title">Valori di Riferimento per Centili</div>
+      <table class="centile-table">
+        <thead>
+          <tr>
+            <th>Parametro</th>
+            <th>Valore</th>
+            <th>P10</th>
+            <th>P50</th>
+            <th>P90</th>
+            <th>Centile</th>
+          </tr>
+        </thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+      <p style="font-size:.72rem;color:#999;margin-top:.4rem">
+        I valori di riferimento si riferiscono al gruppo GA ${GA_LABELS[gaGroup]}, ${refDayStr}.<br>
+        P10 = 10° percentile; P50 = 50° percentile (mediana); P90 = 90° percentile.
+      </p>
+
+      <div class="diagnosis-box ${diagClass}">
+        <h3>Conclusioni</h3>
+        <p>${diagText}</p>
+      </div>
+
+      <div class="report-citation">
+        <strong>Riferimento:</strong> Romagnoli C, Giannantonio C, De Carolis MP, Gallini F, Zecca E, Papacci P.
+        Neonatal color Doppler US study: Normal values of cerebral blood flow velocities in preterm infants in the first month of life.
+        <em>Ultrasound in Medicine and Biology</em>. 2006;32(3):321–331.
+        doi:10.1016/j.ultrasmedbio.2005.12.007
+      </div>
+
+      <div class="report-actions">
+        <button class="btn-copy" id="btnCopy" onclick="copyReport()">&#10003; Copia Testo per PACS</button>
+        <button class="btn-print" onclick="window.print()">Stampa / Salva PDF</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('reportOutput').innerHTML = html;
+  document.getElementById('reportOutput').scrollIntoView({ behavior: 'smooth' });
+}
+
+function copyReport() {
+  const gaGroup = document.getElementById('gaGroup').value;
+  const dob = document.getElementById('dob').value;
+  const examDate = document.getElementById('examDate').value;
+  const days = getPostnatalDays();
+  if (!days || !gaGroup) return;
+
+  const fmtDate = s => s ? new Date(s).toLocaleDateString('it-IT') : '—';
+  const arteries = ['ACA', 'MCA'];
+  const params = ['PSV', 'EDV', 'RI', 'MV', 'PI'];
+  const ids = { ACA: { PSV:'aca_psv', EDV:'aca_edv', RI:'aca_ri', MV:'aca_mv', PI:'aca_pi' },
+                MCA: { PSV:'mca_psv', EDV:'mca_edv', RI:'mca_ri', MV:'mca_mv', PI:'mca_pi' } };
+  const vals = { ACA: {}, MCA: {} };
+  for (const a of arteries) for (const p of params) {
+    const raw = document.getElementById(ids[a][p]).value;
+    vals[a][p] = raw === '' ? null : parseFloat(raw);
+  }
+
+  const dClamp = Math.max(1, Math.min(28, days));
+  const refD = getRefDay(dClamp);
+  const refDayStr = refD.lo === refD.hi ? `giorno ${refD.lo}` : `interpolazione giorni ${refD.lo}–${refD.hi}`;
+  const pad = (s, n) => String(s).padEnd(n);
+  const COL = [34, 10, 8, 8, 8, 18];
+  const hdr = pad('Parametro', COL[0]) + pad('Valore', COL[1]) + pad('P10', COL[2]) + pad('P50', COL[3]) + pad('P90', COL[4]) + 'Centile';
+  const sep = '-'.repeat(COL.reduce((a,b)=>a+b,0));
+  const tableLines = [hdr, sep];
+
+  let lowParams = [], anyLow = false, anyHigh = false;
+  for (const a of arteries) {
+    tableLines.push(`[${a}]`);
+    for (const p of params) {
+      if (vals[a][p] === null) continue;
+      const ref = getRef(a, p, gaGroup, days);
+      const st = getCentileStatus(vals[a][p], ref);
+      if (st.status === 'low') { anyLow = true; lowParams.push(`${a}-${p}`); }
+      if (st.status === 'high') anyHigh = true;
+      const dec = (p === 'RI' || p === 'PI') ? 2 : 1;
+      const u = PARAM_UNITS[p];
+      const vStr = vals[a][p].toFixed(dec) + (u?' '+u:'');
+      tableLines.push(
+        pad(PARAM_LABELS[p], COL[0]) +
+        pad(vStr, COL[1]) +
+        pad(ref[0].toFixed(dec), COL[2]) +
+        pad(ref[1].toFixed(dec), COL[3]) +
+        pad(ref[2].toFixed(dec), COL[4]) +
+        st.label
+      );
+    }
+  }
+
+  let diagText;
+  if (anyLow) diagText = `Valori < 10° centile in: ${lowParams.join(', ')}. Correlare con il quadro clinico.`;
+  else if (anyHigh) diagText = 'Valori > 90° centile per uno o più parametri. Correlare con il quadro clinico.';
+  else diagText = 'Parametri misurati nei limiti di norma (P10–P90) per l\'età gestazionale e postnatale.';
+
+  const text = [
+    'DOPPLER CEREBRALE NEONATALE – ACA e MCA',
+    '',
+    `Data di nascita: ${fmtDate(dob)}   Data esame: ${fmtDate(examDate)}   Età postnatale: ${days} giorni`,
+    `Età gestazionale: ${GA_LABELS[gaGroup]}   Riferimento centili: ${refDayStr}`,
+    '',
+    'TECNICA',
+    'Esame Doppler color cerebrale eseguito tramite fontanella anteriore, con misurazione di PSV, EDV, MV, RI e PI nelle arterie cerebrale anteriore (ACA) e media (MCA).',
+    '',
+    'VALORI DI RIFERIMENTO PER CENTILI',
+    ...tableLines,
+    `(Romagnoli et al. 2006 – GA ${GA_LABELS[gaGroup]}, ${refDayStr})`,
+    '',
+    'CONCLUSIONI',
+    diagText,
+    '',
+    'Rif.: Romagnoli C et al. Neonatal color Doppler US study: Normal values of cerebral blood flow velocities in preterm infants in the first month of life. Ultrasound Med Biol. 2006;32(3):321-331.'
+  ].join('\n');
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '✓ Copiato!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '✓ Copiato!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => { setToday(); });
+</script>
+</body>
+</html>

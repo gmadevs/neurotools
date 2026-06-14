@@ -34,6 +34,15 @@ window.SITE_TOOLS = [
   }
 
   ,{
+    id: "doppler-cerebrale-neonatale",
+    title: "Doppler Cerebrale Neonatale",
+    description: "Valutazione delle velocità di flusso cerebrale (ACA e MCA) nel prematuro, con centili per GA e età postnatale. Basato su Romagnoli et al. 2006.",
+    url: "tools/doppler-cerebrale-neonatale.html",
+    category: "Pediatrica",
+    subcategory: "Ecografia"
+  }
+
+  ,{
     id: "rano-2.0",
     title: "RANO 2.0",
     description: "Calcolatore della risposta radiologica secondo i criteri RANO 2.0, con supporto per misure 2D e volumetria 3D.",
