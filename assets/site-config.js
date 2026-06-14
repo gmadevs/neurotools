@@ -43,6 +43,15 @@ window.SITE_TOOLS = [
   }
 
   ,{
+    id: "ipofisi-rm-pediatrica",
+    title: "Ipofisi RM Pediatrica",
+    description: "Centili per le misure RM dell'ipofisi (altezza, larghezza, volume, rapporto PS/BA) dal neonato all'adolescente. Basato su Sari et al. 2014.",
+    url: "tools/ipofisi-rm-pediatrica.html",
+    category: "Pediatrica",
+    subcategory: "Risonanza Magnetica"
+  }
+
+  ,{
     id: "rano-2.0",
     title: "RANO 2.0",
     description: "Calcolatore della risposta radiologica secondo i criteri RANO 2.0, con supporto per misure 2D e volumetria 3D.",
