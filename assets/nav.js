@@ -103,6 +103,12 @@
       );
     }).join('');
 
+    var currentPath = window.location.pathname;
+    var isInfoActive = currentPath.endsWith('info.html');
+    var infoLinkHtml =
+      '<a href="' + root + '/info.html" class="site-nav-info-link' + (isInfoActive ? ' active' : '') + '"' +
+      (isInfoActive ? ' aria-current="page"' : '') + '>Info</a>';
+
     var nav = document.createElement('nav');
     nav.className = 'site-nav';
     nav.innerHTML =
@@ -110,6 +116,7 @@
         '<a class="site-nav-home" href="' + root + '/index.html">' + escapeHtml(siteTitle) + '</a>' +
         '<button class="site-nav-toggle" aria-label="Apri menu" aria-expanded="false">&#9776;</button>' +
         '<div class="site-nav-links">' + categoriesHtml + '</div>' +
+        infoLinkHtml +
       '</div>';
 
     document.body.insertBefore(nav, document.body.firstChild);
