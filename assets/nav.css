@@ -43,14 +43,8 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  overflow-x: auto;
-  scrollbar-width: none;
   flex: 1;
   height: 100%;
-}
-
-.site-nav-links::-webkit-scrollbar {
-  display: none;
 }
 
 /* link diretti (senza categoria) usano la stessa classe .nav-link */
