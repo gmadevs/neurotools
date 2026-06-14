@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecografia Suture Craniche – Generatore Referto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1c22;
+    --paper: #f5f4f0;
+    --card: #ffffff;
+    --rule: #d0cfc8;
+    --accent: #1b4f72;
+    --accent-light: #d6e8f5;
+    --warn: #8b2500;
+    --warn-bg: #fdecea;
+    --ok: #1a4731;
+    --ok-bg: #e8f5ee;
+    --mid: #4a3800;
+    --mid-bg: #fdf8e1;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 1.5rem 2rem 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1.2rem;
+  }
+  header h1 {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  header span {
+    font-size: 0.78rem;
+    opacity: .7;
+    font-style: italic;
+  }
+
+  /* ── LAYOUT ── */
+  .workspace {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: calc(100vh - 68px);
+  }
+
+  /* ── PANEL SINISTRA ── */
+  .input-panel {
+    background: var(--card);
+    border-right: 1px solid var(--rule);
+    padding: 1.8rem 1.5rem 2rem;
+    overflow-y: auto;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: .6rem;
+    padding-bottom: .35rem;
+    border-bottom: 1.5px solid var(--accent-light);
+  }
+
+  .form-group {
+    margin-bottom: 1.1rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: .3rem;
+    color: #3a3c45;
+  }
+
+  .date-row {
+    display: flex;
+    gap: .4rem;
+    align-items: center;
+  }
+
+  input[type="date"], input[type="number"], textarea, select {
+    font-family: var(--sans);
+    font-size: 0.83rem;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: .42rem .6rem;
+    background: var(--paper);
+    color: var(--ink);
+    transition: border-color .15s;
+  }
+  input[type="date"]:focus, input[type="number"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #fff;
+  }
+  input[type="date"] { flex: 1; }
+
+  .btn-today {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: .42rem .6rem;
+    border: 1px solid var(--accent);
+    background: var(--accent-light);
+    color: var(--accent);
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: 600;
+    letter-spacing: .03em;
+    transition: background .15s;
+  }
+  .btn-today:hover { background: #c0d9ee; }
+
+  .age-display {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--accent);
+    margin-top: .35rem;
+    min-height: 1.2em;
+    font-weight: 600;
+  }
+
+  /* suture grid */
+  .suture-block {
+    margin-bottom: 1.4rem;
+  }
+  .suture-name {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: .5rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .suture-name::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--accent-light);
+  }
+
+  .suture-inputs {
+    display: grid;
+    gap: .45rem;
+  }
+  .suture-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .5rem;
+    align-items: center;
+  }
+  .suture-row label { margin: 0; font-size: 0.75rem; }
+
+  .closed-check {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+    margin-top: .3rem;
+    padding: .25rem .5rem;
+    background: #fdecea;
+    border: 1px solid #f5c6c0;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    color: #8b2500;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s;
+  }
+  .closed-check:hover { background: #fbd5d0; }
+  .closed-check input[type="checkbox"] { accent-color: #8b2500; cursor: pointer; margin: 0; }
+  .closed-check.active { background: #fbd5d0; font-weight: 600; }
+  .suture-row input {
+    width: 80px;
+    text-align: right;
+  }
+
+  .unit {
+    font-size: 0.7rem;
+    color: #888;
+    font-family: var(--mono);
+  }
+
+  .suture-row-wrap {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+  }
+
+  /* note aggiuntive */
+  .extras { margin-top: .6rem; }
+  .extras textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 70px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .btn-generate {
+    width: 100%;
+    margin-top: 1.2rem;
+    padding: .75rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-generate:hover { background: #143d57; }
+
+  /* ── PANEL DESTRA ── */
+  .report-panel {
+    padding: 2rem 2.5rem;
+    overflow-y: auto;
+    background: var(--paper);
+  }
+
+  .report-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .report-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    gap: 1rem;
+    color: #aaa;
+    text-align: center;
+  }
+  .report-placeholder svg { opacity: .3; }
+  .report-placeholder p { font-size: 0.85rem; font-style: italic; max-width: 280px; }
+
+  /* REPORT CARD */
+  .report-card {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 2.2rem 2.4rem 1.8rem;
+    font-size: 0.87rem;
+    line-height: 1.65;
+    position: relative;
+  }
+
+  .report-header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 1rem;
+    margin-bottom: 1.4rem;
+  }
+  .report-header h2 {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--accent);
+  }
+  .report-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .2rem .8rem;
+    margin-top: .7rem;
+    font-size: 0.8rem;
+    color: #555;
+  }
+  .report-meta span { font-weight: 600; color: var(--ink); }
+
+  .report-section-title {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 1.4rem 0 .7rem;
+  }
+
+  /* centile table */
+  .centile-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.79rem;
+    margin-bottom: .6rem;
+  }
+  .centile-table th {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-align: left;
+    padding: .35rem .5rem;
+    border-bottom: 1.5px solid var(--rule);
+    color: #666;
+    text-transform: uppercase;
+  }
+  .centile-table td {
+    padding: .38rem .5rem;
+    border-bottom: 1px solid #eee;
+  }
+  .centile-table tr:last-child td { border-bottom: none; }
+  .centile-table .val { font-family: var(--mono); font-size: 0.8rem; }
+
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: .1rem .45rem;
+    border-radius: 3px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .badge-ok { background: var(--ok-bg); color: var(--ok); }
+  .badge-low { background: var(--warn-bg); color: var(--warn); }
+  .badge-high { background: var(--mid-bg); color: var(--mid); }
+  .badge-closed { background: #ede9f5; color: #4a1d8c; }
+  .badge-nd { background: #f0f0f0; color: #888; }
+
+  .diagnosis-box {
+    margin-top: 1.4rem;
+    padding: 1rem 1.2rem;
+    border-radius: 5px;
+    border-left: 4px solid;
+  }
+  .diagnosis-box.normal { background: var(--ok-bg); border-color: #2e7d52; }
+  .diagnosis-box.abnormal { background: var(--warn-bg); border-color: var(--warn); }
+  .diagnosis-box h3 {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .4rem;
+  }
+  .diagnosis-box p { font-size: 0.84rem; line-height: 1.6; }
+
+  .report-finding-text {
+    white-space: pre-wrap;
+    font-size: 0.84rem;
+    line-height: 1.7;
+  }
+
+  .report-citation {
+    margin-top: 1.8rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.72rem;
+    color: #888;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .btn-copy {
+    padding: .55rem 1.2rem;
+    background: var(--ok);
+    border: none;
+    color: #fff;
+    border-radius: 5px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn-copy:hover { background: #145a38; }
+  .btn-copy.copied { background: #555; }
+
+  .btn-print {
+    padding: .55rem 1.1rem;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 5px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-print:hover { background: var(--accent); color: #fff; }
+
+  .report-actions {
+    display: flex;
+    gap: .7rem;
+    margin-top: 1.4rem;
+    align-items: center;
+  }
+
+  @media print {
+    header, .input-panel, .report-actions { display: none !important; }
+    .workspace { display: block; }
+    .report-panel { padding: 0; }
+    .report-card { border: none; box-shadow: none; }
+  }
+
+  @media (max-width: 800px) {
+    .workspace { grid-template-columns: 1fr; }
+    .input-panel { border-right: none; border-bottom: 1px solid var(--rule); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ecografia Suture Craniche</h1>
+  <span>Generatore di Referto – Centili da Rozovsky et al. 2018</span>
+</header>
+
+<div class="workspace">
+
+  <!-- ── INPUT PANEL ── -->
+  <aside class="input-panel">
+
+    <!-- Date -->
+    <div class="section-label">Dati Paziente</div>
+
+    <div class="form-group">
+      <label>Data di nascita</label>
+      <div class="date-row">
+        <input type="date" id="dob" oninput="calcAge()">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Data dell'esame</label>
+      <div class="date-row">
+        <input type="date" id="examDate" oninput="calcAge()">
+        <button class="btn-today" onclick="setToday()">Oggi</button>
+      </div>
+      <div class="age-display" id="ageDisplay">—</div>
+    </div>
+
+    <!-- Suture -->
+    <div class="section-label" style="margin-top:.8rem">Misure Suture (mm)</div>
+    <p style="font-size:.72rem;color:#888;margin-bottom:.8rem">Inserire la larghezza massima del gap ipo-ecogeno. Lasciare vuoto se non misurato.</p>
+
+    <div id="sutureForm">
+
+      <div class="suture-block">
+        <div class="suture-name">Metopica</div>
+        <div class="suture-inputs">
+          <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+              <label>Sutura metopica</label>
+              <div class="suture-row-wrap">
+                <input type="number" id="metopic" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_metopic').checked=false">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+            <label class="closed-check" id="cl_metopic_lbl" onclick="toggleClosed('cl_metopic','metopic')">
+              <input type="checkbox" id="cl_metopic" onchange="toggleClosed('cl_metopic','metopic')"> Chiusa
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="suture-block">
+        <div class="suture-name">Sagittale</div>
+        <div class="suture-inputs">
+          <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+              <label>Anteriore</label>
+              <div class="suture-row-wrap">
+                <input type="number" id="sag_ant" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_sag_ant').checked=false">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+            <label class="closed-check" id="cl_sag_ant_lbl" onclick="toggleClosed('cl_sag_ant','sag_ant')">
+              <input type="checkbox" id="cl_sag_ant" onchange="toggleClosed('cl_sag_ant','sag_ant')"> Chiusa
+            </label>
+          </div>
+          <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+              <label>Media</label>
+              <div class="suture-row-wrap">
+                <input type="number" id="sag_mid" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_sag_mid').checked=false">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+            <label class="closed-check" id="cl_sag_mid_lbl" onclick="toggleClosed('cl_sag_mid','sag_mid')">
+              <input type="checkbox" id="cl_sag_mid" onchange="toggleClosed('cl_sag_mid','sag_mid')"> Chiusa
+            </label>
+          </div>
+          <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+              <label>Posteriore</label>
+              <div class="suture-row-wrap">
+                <input type="number" id="sag_post" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_sag_post').checked=false">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+            <label class="closed-check" id="cl_sag_post_lbl" onclick="toggleClosed('cl_sag_post','sag_post')">
+              <input type="checkbox" id="cl_sag_post" onchange="toggleClosed('cl_sag_post','sag_post')"> Chiusa
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="suture-block">
+        <div class="suture-name">Coronale</div>
+        <div class="suture-inputs">
+          <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+              <label>Destra</label>
+              <div class="suture-row-wrap">
+                <input type="number" id="cor_r" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_cor_r').checked=false">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+            <label class="closed-check" id="cl_cor_r_lbl" onclick="toggleClosed('cl_cor_r','cor_r')">
+              <input type="checkbox" id="cl_cor_r" onchange="toggleClosed('cl_cor_r','cor_r')"> Chiusa
+            </label>
+          </div>
+          <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+              <label>Sinistra</label>
+              <div class="suture-row-wrap">
+                <input type="number" id="cor_l" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_cor_l').checked=false">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+            <label class="closed-check" id="cl_cor_l_lbl" onclick="toggleClosed('cl_cor_l','cor_l')">
+              <input type="checkbox" id="cl_cor_l" onchange="toggleClosed('cl_cor_l','cor_l')"> Chiusa
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="suture-block">
+        <div class="suture-name">Lambdoidea</div>
+        <div class="suture-inputs">
+          <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+              <label>Destra</label>
+              <div class="suture-row-wrap">
+                <input type="number" id="lam_r" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_lam_r').checked=false">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+            <label class="closed-check" id="cl_lam_r_lbl" onclick="toggleClosed('cl_lam_r','lam_r')">
+              <input type="checkbox" id="cl_lam_r" onchange="toggleClosed('cl_lam_r','lam_r')"> Chiusa
+            </label>
+          </div>
+          <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+              <label>Sinistra</label>
+              <div class="suture-row-wrap">
+                <input type="number" id="lam_l" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_lam_l').checked=false">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+            <label class="closed-check" id="cl_lam_l_lbl" onclick="toggleClosed('cl_lam_l','lam_l')">
+              <input type="checkbox" id="cl_lam_l" onchange="toggleClosed('cl_lam_l','lam_l')"> Chiusa
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Note aggiuntive -->
+    <div class="section-label" style="margin-top:.6rem">Note Aggiuntive</div>
+    <div class="extras">
+      <textarea id="extraNotes" placeholder="Eventuali osservazioni aggiuntive da includere nel referto…"></textarea>
+    </div>
+
+    <button class="btn-generate" onclick="generateReport()">▶ Genera Referto</button>
+
+  </aside>
+
+  <!-- ── REPORT PANEL ── -->
+  <main class="report-panel">
+    <div class="report-container">
+      <div id="reportOutput">
+        <div class="report-placeholder">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="8" width="44" height="48" rx="4" stroke="#1b4f72" stroke-width="2"/>
+            <line x1="18" y1="22" x2="46" y2="22" stroke="#1b4f72" stroke-width="1.5"/>
+            <line x1="18" y1="30" x2="46" y2="30" stroke="#1b4f72" stroke-width="1.5"/>
+            <line x1="18" y1="38" x2="36" y2="38" stroke="#1b4f72" stroke-width="1.5"/>
+          </svg>
+          <p>Inserire i dati del paziente e le misure delle suture, poi premere <strong>Genera Referto</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// CENTILE DATA from Rozovsky et al. 2018
+// Format: { age: [p10, p25, p50, p75, p90] }
+// age = months 1–12
+// ══════════════════════════════════════════════
+const CENTILES = {
+  metopic: {
+    1:[0.16,0.34,0.59,0.88,1.16], 2:[0.14,0.31,0.54,0.81,1.07],
+    3:[0.13,0.28,0.50,0.74,0.98], 4:[0.12,0.26,0.45,0.67,0.88],
+    5:[0.11,0.23,0.40,0.60,0.79], 6:[0.09,0.20,0.35,0.53,0.70],
+    7:[0.08,0.17,0.30,0.45,0.60], 8:[0.07,0.15,0.26,0.38,0.51],
+    9:[0.06,0.12,0.21,0.31,0.41], 10:[0.04,0.09,0.16,0.24,0.32],
+    11:[0.03,0.07,0.11,0.17,0.23], 12:[0.02,0.04,0.07,0.10,0.13]
+  },
+  sag_ant: {
+    1:[0.90,1.02,1.19,1.43,1.71], 2:[0.62,0.71,0.83,0.99,1.19],
+    3:[0.50,0.57,0.67,0.80,0.96], 4:[0.51,0.58,0.69,0.82,0.98],
+    5:[0.54,0.62,0.72,0.86,1.04], 6:[0.55,0.62,0.73,0.87,1.05],
+    7:[0.53,0.61,0.71,0.85,1.02], 8:[0.47,0.54,0.63,0.75,0.90],
+    9:[0.47,0.54,0.63,0.75,0.90], 10:[0.50,0.57,0.66,0.79,0.95],
+    11:[0.46,0.52,0.61,0.73,0.87], 12:[0.38,0.43,0.50,0.60,0.72]
+  },
+  sag_mid: {
+    1:[0.97,1.15,1.38,1.63,1.87], 2:[0.85,1.01,1.20,1.42,1.64],
+    3:[0.75,0.89,1.06,1.26,1.45], 4:[0.68,0.81,0.96,1.14,1.32],
+    5:[0.63,0.75,0.89,1.06,1.22], 6:[0.59,0.70,0.84,0.99,1.14],
+    7:[0.56,0.67,0.80,0.94,1.08], 8:[0.54,0.64,0.76,0.90,1.04],
+    9:[0.52,0.62,0.74,0.87,1.00], 10:[0.51,0.61,0.72,0.85,0.98],
+    11:[0.50,0.59,0.71,0.84,0.96], 12:[0.49,0.58,0.69,0.81,0.94]
+  },
+  sag_post: {
+    1:[0.97,1.15,1.38,1.63,1.87], 2:[0.85,1.01,1.20,1.42,1.64],
+    3:[0.75,0.89,1.06,1.26,1.45], 4:[0.68,0.81,0.96,1.14,1.32],
+    5:[0.63,0.75,0.89,1.06,1.22], 6:[0.59,0.70,0.84,0.99,1.14],
+    7:[0.56,0.67,0.80,0.94,1.08], 8:[0.54,0.64,0.76,0.90,1.04],
+    9:[0.52,0.62,0.74,0.87,1.00], 10:[0.51,0.61,0.72,0.85,0.98],
+    11:[0.50,0.59,0.71,0.84,0.96], 12:[0.49,0.58,0.69,0.81,0.94]
+  },
+  cor_r: {
+    1:[0.65,0.73,0.85,1.00,1.17], 2:[0.60,0.68,0.79,0.93,1.09],
+    3:[0.56,0.63,0.74,0.87,1.01], 4:[0.52,0.60,0.69,0.82,0.95],
+    5:[0.50,0.57,0.66,0.78,0.91], 6:[0.48,0.54,0.63,0.74,0.87],
+    7:[0.46,0.53,0.61,0.72,0.84], 8:[0.45,0.51,0.60,0.70,0.82],
+    9:[0.45,0.51,0.60,0.70,0.82], 10:[0.45,0.52,0.60,0.71,0.83],
+    11:[0.46,0.52,0.61,0.71,0.83], 12:[0.46,0.53,0.61,0.72,0.84]
+  },
+  cor_l: {
+    1:[0.63,0.75,0.89,1.03,1.16], 2:[0.59,0.70,0.83,0.96,1.09],
+    3:[0.55,0.66,0.78,0.91,1.02], 4:[0.52,0.62,0.74,0.86,0.97],
+    5:[0.50,0.59,0.70,0.82,0.92], 6:[0.48,0.57,0.67,0.78,0.89],
+    7:[0.46,0.55,0.65,0.76,0.86], 8:[0.45,0.54,0.64,0.74,0.84],
+    9:[0.44,0.53,0.62,0.72,0.82], 10:[0.43,0.52,0.61,0.71,0.80],
+    11:[0.42,0.51,0.60,0.70,0.79], 12:[0.42,0.50,0.59,0.68,0.77]
+  },
+  lam_r: {
+    1:[0.77,0.88,1.01,1.18,1.37], 2:[0.75,0.85,0.98,1.14,1.33],
+    3:[0.73,0.83,0.95,1.11,1.29], 4:[0.71,0.80,0.93,1.08,1.25],
+    5:[0.69,0.78,0.90,1.05,1.22], 6:[0.67,0.76,0.87,1.02,1.18],
+    7:[0.65,0.74,0.85,0.99,1.15], 8:[0.63,0.72,0.83,0.96,1.12],
+    9:[0.61,0.70,0.80,0.94,1.09], 10:[0.60,0.68,0.78,0.91,1.06],
+    11:[0.58,0.66,0.76,0.88,1.03], 12:[0.56,0.64,0.74,0.86,0.99]
+  },
+  lam_l: {
+    1:[0.77,0.85,0.97,1.12,1.32], 2:[0.75,0.83,0.94,1.10,1.29],
+    3:[0.73,0.81,0.92,1.07,1.25], 4:[0.71,0.79,0.90,1.04,1.22],
+    5:[0.69,0.77,0.87,1.01,1.19], 6:[0.67,0.75,0.85,0.99,1.16],
+    7:[0.65,0.73,0.83,0.96,1.13], 8:[0.64,0.71,0.80,0.93,1.09],
+    9:[0.62,0.69,0.78,0.91,1.06], 10:[0.60,0.67,0.76,0.88,1.03],
+    11:[0.58,0.64,0.73,0.85,1.00], 12:[0.56,0.62,0.71,0.82,0.97]
+  }
+};
+
+const SUTURE_LABELS = {
+  metopic:  'Sutura Metopica',
+  sag_ant:  'Sagittale Anteriore',
+  sag_mid:  'Sagittale Media',
+  sag_post: 'Sagittale Posteriore',
+  cor_r:    'Coronale Destra',
+  cor_l:    'Coronale Sinistra',
+  lam_r:    'Lambdoidea Destra',
+  lam_l:    'Lambdoidea Sinistra'
+};
+
+// ── Helpers ──
+function setToday() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('examDate').value = today;
+  calcAge();
+}
+
+function calcAge() {
+  const dob = document.getElementById('dob').value;
+  const exam = document.getElementById('examDate').value;
+  const el = document.getElementById('ageDisplay');
+  if (!dob || !exam) { el.textContent = '—'; return; }
+  const d1 = new Date(dob), d2 = new Date(exam);
+  if (d2 < d1) { el.textContent = 'Data esame precedente alla nascita'; return; }
+  const diffMs = d2 - d1;
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+  const months = diffDays / 30.4375;
+  const m = Math.floor(months);
+  const d = Math.round((months - m) * 30.4375);
+  el.textContent = `Età: ${m} mes${m === 1 ? 'e' : 'i'}${d > 0 ? ' e ' + d + ' giorni' : ''}`;
+}
+
+function getAgeMonths() {
+  const dob = document.getElementById('dob').value;
+  const exam = document.getElementById('examDate').value;
+  if (!dob || !exam) return null;
+  const d1 = new Date(dob), d2 = new Date(exam);
+  if (d2 < d1) return null;
+  const months = (d2 - d1) / (1000 * 60 * 60 * 24 * 30.4375);
+  return months;
+}
+
+function clampMonth(m) {
+  // Round to nearest integer, clamp 1–12
+  const r = Math.round(m);
+  return Math.max(1, Math.min(12, r));
+}
+
+function getCentileStatus(value, key, ageMonths) {
+  if (value === null || value === '') return { status: 'nd', label: 'N.R.' };
+  const m = clampMonth(ageMonths);
+  const ref = CENTILES[key][m];
+  if (!ref) return { status: 'nd', label: 'N.R.' };
+  
+  // Special case for metopic: physiological closure expected toward end of year
+  if (key === 'metopic' && value == 0 && ageMonths >= 3) {
+    return { status: 'closed', label: 'Chiusa (fisiologica)', ref };
+  }
+  
+  if (value < ref[0]) return { status: 'low', label: `< 10° centile`, ref };
+  if (value > ref[4]) return { status: 'high', label: `> 90° centile`, ref };
+  return { status: 'ok', label: `Normale (${getCentileRange(value, ref)})`, ref };
+}
+
+function getCentileRange(value, ref) {
+  if (value < ref[0]) return '< P10';
+  if (value < ref[1]) return 'P10–P25';
+  if (value < ref[2]) return 'P25–P50';
+  if (value < ref[3]) return 'P50–P75';
+  if (value < ref[4]) return 'P75–P90';
+  return '> P90';
+}
+
+function badgeHTML(status, label) {
+  const cls = {
+    ok: 'badge-ok',
+    low: 'badge-low',
+    high: 'badge-high',
+    closed: 'badge-closed',
+    nd: 'badge-nd'
+  }[status] || 'badge-nd';
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function fmt(v) { return v !== null && v !== '' ? parseFloat(v).toFixed(2) + ' mm' : '—'; }
+
+function toggleClosed(clId, inputId) {
+  const cb = document.getElementById(clId);
+  const inp = document.getElementById(inputId);
+  const lbl = document.getElementById(clId + '_lbl');
+  if (cb.checked) {
+    inp.value = '';
+    inp.disabled = true;
+    inp.style.opacity = '0.4';
+    lbl.classList.add('active');
+  } else {
+    inp.disabled = false;
+    inp.style.opacity = '1';
+    lbl.classList.remove('active');
+  }
+}
+
+function copyReport() {
+  // Build plain text version of the report
+  const ageMonths = getAgeMonths();
+  if (!ageMonths) return;
+  const dob = document.getElementById('dob').value;
+  const examDate = document.getElementById('examDate').value;
+  const notes = document.getElementById('extraNotes').value.trim();
+  const fmtDate = s => s ? new Date(s).toLocaleDateString('it-IT') : '—';
+  const m = Math.floor(ageMonths);
+  const d = Math.round((ageMonths - m) * 30.4375);
+  const ageStr = `${m} mes${m===1?'e':'i'}${d>0?' e '+d+' giorni':''}`;
+  const monthLabel = clampMonth(ageMonths);
+
+  const ids = ['metopic','sag_ant','sag_mid','sag_post','cor_r','cor_l','lam_r','lam_l'];
+  const vals = {};
+  ids.forEach(id => {
+    const v = document.getElementById(id).value;
+    vals[id] = v === '' ? null : parseFloat(v);
+  });
+  const closed = {};
+  ids.forEach(id => { closed[id] = document.getElementById('cl_'+id)?.checked || false; });
+  const results = {};
+  ids.forEach(id => { results[id] = getCentileStatus(vals[id], id, ageMonths); });
+  const anyLow = ids.some(id => vals[id] !== null && results[id].status === 'low');
+  const anyMeasured = ids.some(id => vals[id] !== null);
+  const anyClosed = ids.some(id => closed[id]);
+  const onlyMetopicClosed = closed['metopic'] && !['sag_ant','sag_mid','sag_post','cor_r','cor_l','lam_r','lam_l'].some(id => closed[id]);
+
+  // Build finding lines (same logic as generateReport)
+  let findingLines = [];
+  const metR = results['metopic'], metV = vals['metopic'];
+  if (metV !== null) {
+    if (metR.status === 'closed') findingLines.push("Sutura metopica: chiusura fisiologica, assenza del gap ipo-ecogeno senza evidenza di ridging, compatibile con la normale evoluzione per l'età.");
+    else if (metR.status === 'low') findingLines.push(`Sutura metopica: riduzione del gap ipo-ecogeno (${fmt(metV)}, < 10° centile per l'età). Reperto da correlare clinicamente per escludere chiusura precoce.`);
+    else if (metR.status === 'high') findingLines.push(`Sutura metopica: presente, ampiezza aumentata (${fmt(metV)}, > 90° centile per l'età).`);
+    else findingLines.push(`Sutura metopica: presente, regolare, con larghezza nei limiti della norma (${fmt(metV)}).`);
+  } else { findingLines.push('Sutura metopica: non misurata.'); }
+
+  const sagIds = ['sag_ant','sag_mid','sag_post'];
+  const sagMeasured = sagIds.filter(id => vals[id] !== null);
+  if (sagMeasured.length > 0) {
+    const sagLow = sagIds.filter(id => vals[id] !== null && results[id].status === 'low');
+    const sagHigh = sagIds.filter(id => vals[id] !== null && results[id].status === 'high');
+    if (sagLow.length > 0) { const pts = sagLow.map(id => `${SUTURE_LABELS[id].split(' ')[1].toLowerCase()} (${fmt(vals[id])}, < 10° centile)`).join(', '); findingLines.push(`Sutura sagittale: riduzione del gap ipo-ecogeno nel tratto ${pts}. Reperto da correlare clinicamente.`); }
+    else if (sagHigh.length > 0) { const pts = sagHigh.map(id => `${SUTURE_LABELS[id].split(' ')[1].toLowerCase()} (${fmt(vals[id])}, > 90° centile)`).join(', '); findingLines.push(`Sutura sagittale: presente, ampiezza aumentata nel tratto ${pts}.`); }
+    else findingLines.push('Sutura sagittale: presente, regolare in tutti i tratti misurati, senza segni di craniosinostosi.');
+  } else { findingLines.push('Sutura sagittale: non misurata.'); }
+
+  const corIds = ['cor_r','cor_l'];
+  const corMeasured = corIds.filter(id => vals[id] !== null);
+  if (corMeasured.length > 0) {
+    const corLow = corIds.filter(id => vals[id] !== null && results[id].status === 'low');
+    if (corLow.length > 0) { const pts = corLow.map(id => `${id === 'cor_r' ? 'destra' : 'sinistra'} (${fmt(vals[id])}, < 10° centile)`).join(', '); findingLines.push(`Sutura coronale: riduzione del gap ipo-ecogeno a ${pts}. Reperto da correlare clinicamente.`); }
+    else { const sides = corMeasured.map(id => id === 'cor_r' ? 'destra' : 'sinistra').join(' e '); findingLines.push(`Sutura coronale: presente, regolare ${corMeasured.length === 2 ? 'bilateralmente' : 'a ' + sides}.`); }
+  } else { findingLines.push('Sutura coronale: non misurata.'); }
+
+  const lamIds = ['lam_r','lam_l'];
+  const lamMeasured = lamIds.filter(id => vals[id] !== null);
+  if (lamMeasured.length > 0) {
+    const lamLow = lamIds.filter(id => vals[id] !== null && results[id].status === 'low');
+    if (lamLow.length > 0) { const pts = lamLow.map(id => `${id === 'lam_r' ? 'destra' : 'sinistra'} (${fmt(vals[id])}, < 10° centile)`).join(', '); findingLines.push(`Sutura lambdoidea: riduzione del gap ipo-ecogeno a ${pts}. Reperto da correlare clinicamente.`); }
+    else findingLines.push('Sutura lambdoidea: presente, regolare bilateralmente.');
+  } else { findingLines.push('Sutura lambdoidea: non misurata.'); }
+
+  const nonMetopicClosed2 = ['sag_ant','sag_mid','sag_post','cor_r','cor_l','lam_r','lam_l'].some(id => closed[id]);
+  const CLOSED_NAMES2 = {
+    metopic: 'sutura metopica', sag_ant: 'sutura sagittale anteriore',
+    sag_mid: 'sutura sagittale media', sag_post: 'sutura sagittale posteriore',
+    cor_r: 'sutura coronale destra', cor_l: 'sutura coronale sinistra',
+    lam_r: 'sutura lambdoidea destra', lam_l: 'sutura lambdoidea sinistra'
+  };
+  const closedNonMetopic2 = ['sag_ant','sag_mid','sag_post','cor_r','cor_l','lam_r','lam_l'].filter(id => closed[id]);
+  const closedNonMetopicNames2 = closedNonMetopic2.map(id => CLOSED_NAMES2[id]).join(', ');
+  let diagText;
+  const lowNames2 = ids.filter(id => vals[id] !== null && results[id].status === 'low').map(id => CLOSED_NAMES2[id]).join(', ');
+  if (nonMetopicClosed2 || (anyClosed && !onlyMetopicClosed)) {
+    let diagParts2 = [`riscontro di chiusura della ${closedNonMetopicNames2}`];
+    if (anyLow) diagParts2.push(`riduzione del gap ipo-ecogeno a livello della ${lowNames2} (< 10° centile per età)`);
+    diagText = `Ecografia delle suture craniche: ${diagParts2.join('; ')}. Il reperto è sospetto per craniosinostosi e richiede correlazione clinica e valutazione specialistica.`;
+  } else if (anyLow) {
+    diagText = `Ecografia delle suture craniche: riscontro di riduzione del gap ipo-ecogeno a livello della ${lowNames2} (< 10° centile per età). Il reperto richiede correlazione clinica e valutazione specialistica per escludere craniosinostosi.`;
+  } else if (onlyMetopicClosed) {
+    diagText = 'Chiusura isolata della sutura metopica, reperto parafisiologico. Tutte le altre suture craniche appaiono nella norma. Non evidenza di craniosinostosi delle suture non metopiche.';
+  } else {
+    diagText = 'Ecografia delle suture craniche nella norma. Non evidenza di craniosinostosi.';
+  }
+
+  // Centile table as plain text - only rows with measurements
+  const pad = (s, n) => String(s).padEnd(n);
+  const COL = [27, 9, 8, 8, 28];
+  const header = pad('Sutura', COL[0]) + pad('Misura', COL[1]) + pad('P10', COL[2]) + pad('P90', COL[3]) + 'Valutazione';
+  const tableLines = [header, '-'.repeat(COL.reduce((a,b)=>a+b,0))];
+  ids.forEach(id => {
+    const v = vals[id];
+    if (v === null) return; // skip unmeasured
+    const r = results[id];
+    const ref = r.ref;
+    const name = pad(SUTURE_LABELS[id], COL[0]);
+    const val  = pad(fmt(v), COL[1]);
+    const p10  = pad(ref ? ref[0].toFixed(2)+' mm' : '—', COL[2]);
+    const p90  = pad(ref ? ref[4].toFixed(2)+' mm' : '—', COL[3]);
+    const ev   = r.status === 'low' ? '< 10° centile' : r.status === 'high' ? '> 90° centile' : r.status === 'closed' ? 'Chiusa (fisiologica)' : 'Normale';
+    tableLines.push(`${name}${val}${p10}${p90}${ev}`);
+  });
+
+  const plain = [
+    'ECOGRAFIA DELLE SUTURE CRANICHE',
+    '',
+    `Data di nascita: ${fmtDate(dob)}    Data esame: ${fmtDate(examDate)}    Età: ${ageStr}`,
+    '',
+    'TECNICA',
+    'Ecografia delle suture craniche eseguita con trasduttore lineare ad alta frequenza (7-12 MHz) in sede frontale, parietale e temporale, con il trasduttore orientato perpendicolarmente alla direzione delle suture. Si è misurata la larghezza massima del gap ipo-ecogeno tra le due rime ossee iperecogene.',
+    '',
+    'REPERTI',
+    ...findingLines,
+    notes ? '' : null,
+    notes ? notes : null,
+    '',
+    `VALORI DI RIFERIMENTO PER CENTILI (${monthLabel}° mese)`,
+    ...tableLines,
+    `(P10 = 10° percentile; P90 = 90° percentile; valori di rif.: Rozovsky et al. 2018)`,
+    '',
+    'DIAGNOSI',
+    diagText,
+    '',
+    'Rif.: Rozovsky K, Barrowman NJ, Miller E. Centile charts for cranial sutures in children younger than 1 year based on ultrasound measurements. Pediatric Radiology. 2018;48(5):701-707. https://doi.org/10.1007/s00247-017-4062-z'
+  ].filter(l => l !== null).join('\n');
+
+  navigator.clipboard.writeText(plain).then(() => {
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '✓ Copiato!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '✓ Copia Testo per PACS';
+      btn.classList.remove('copied');
+    }, 2500);
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = plain;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '✓ Copiato!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
+  });
+}
+
+function generateReport() {
+  const ageMonths = getAgeMonths();
+  const dob = document.getElementById('dob').value;
+  const examDate = document.getElementById('examDate').value;
+  const notes = document.getElementById('extraNotes').value.trim();
+  if (!ageMonths) {
+    alert('Inserire la data di nascita e la data dell\'esame prima di generare il referto.');
+    return;
+  }
+  if (ageMonths > 13) {
+    alert('Attenzione: i valori di riferimento sono validi per bambini fino a 12 mesi di età.');
+  }
+
+  const ids = ['metopic','sag_ant','sag_mid','sag_post','cor_r','cor_l','lam_r','lam_l'];
+  const vals = {};
+  ids.forEach(id => {
+    const v = document.getElementById(id).value;
+    vals[id] = v === '' ? null : parseFloat(v);
+  });
+  const closed = {};
+  ids.forEach(id => { closed[id] = document.getElementById('cl_'+id)?.checked || false; });
+
+  const results = {};
+  ids.forEach(id => {
+    results[id] = getCentileStatus(vals[id], id, ageMonths);
+  });
+
+  // Determine overall status
+  const anyLow = ids.some(id => vals[id] !== null && results[id].status === 'low');
+  const anyHigh = ids.some(id => vals[id] !== null && results[id].status === 'high');
+  const anyMeasured = ids.some(id => vals[id] !== null);
+  const anyClosed = ids.some(id => closed[id]);
+  const onlyMetopicClosed = closed['metopic'] && !['sag_ant','sag_mid','sag_post','cor_r','cor_l','lam_r','lam_l'].some(id => closed[id]);
+
+  // Age string
+  const m = Math.floor(ageMonths);
+  const d = Math.round((ageMonths - m) * 30.4375);
+  const ageStr = `${m} mes${m===1?'e':'i'}${d>0?' e '+d+' giorni':''}`;
+  const monthLabel = clampMonth(ageMonths);
+
+  // Format dates
+  const fmtDate = s => s ? new Date(s).toLocaleDateString('it-IT') : '—';
+
+  // Build table rows
+  const rows = ids.map(id => {
+    const v = vals[id];
+    const r = results[id];
+    const ref = r.ref;
+    const refStr = ref ? `${ref[0]}–${ref[4]}` : '—';
+    if (closed[id]) {
+      return `<tr>
+        <td>${SUTURE_LABELS[id]}</td>
+        <td class="val" colspan="3" style="color:#8b2500;font-style:italic">Chiusa</td>
+        <td>${badgeHTML('low','Chiusa')}</td>
+      </tr>`;
+    }
+    if (v === null) return '';
+    return `
+      <tr>
+        <td>${SUTURE_LABELS[id]}</td>
+        <td class="val">${fmt(v)}</td>
+        <td class="val">${ref ? ref[0].toFixed(2) : '—'}</td>
+        <td class="val">${ref ? ref[4].toFixed(2) : '—'}</td>
+        <td>${badgeHTML(r.status, r.label)}</td>
+      </tr>`;
+  }).join('');
+
+  // Build narrative finding text
+  let findingLines = [];
+
+  // Metopic
+  const metR = results['metopic'];
+  const metV = vals['metopic'];
+  if (closed['metopic']) {
+    findingLines.push('Sutura metopica: chiusa, assenza del gap ipo-ecogeno senza evidenza di ridging.');
+    if (onlyMetopicClosed) {
+      findingLines.push('Nota: la chiusura isolata della sutura metopica può essere parafisiologica; il reperto va inquadrato clinicamente.');
+    }
+  } else if (metV !== null) {
+    if (metR.status === 'low') {
+      findingLines.push(`Sutura metopica: riduzione del gap ipo-ecogeno (${fmt(metV)}, < 10° centile per l'età). Reperto da correlare clinicamente per escludere chiusura precoce.`);
+    } else if (metR.status === 'high') {
+      findingLines.push(`Sutura metopica: presente, ampiezza aumentata (${fmt(metV)}, > 90° centile per l'età).`);
+    } else {
+      findingLines.push(`Sutura metopica: presente, regolare, con larghezza nei limiti della norma (${fmt(metV)}).`);
+    }
+  } else {
+    findingLines.push('Sutura metopica: non misurata.');
+  }
+
+  // Sagittal
+  const sagIds = ['sag_ant','sag_mid','sag_post'];
+  const sagClosed = sagIds.filter(id => closed[id]);
+  const sagMeasured = sagIds.filter(id => vals[id] !== null && !closed[id]);
+  if (sagClosed.length === sagIds.length) {
+    findingLines.push('Sutura sagittale: chiusa in tutti i tratti, assenza del gap ipo-ecogeno.');
+  } else if (sagClosed.length > 0) {
+    const tratti = {'sag_ant':'anteriore','sag_mid':'medio','sag_post':'posteriore'};
+    const closedNames = sagClosed.map(id => tratti[id]).join(', ');
+    findingLines.push(`Sutura sagittale: chiusa nel tratto ${closedNames}, assenza del gap ipo-ecogeno.`);
+    if (sagMeasured.length > 0) {
+      const sagLow = sagMeasured.filter(id => results[id].status === 'low');
+      if (sagLow.length > 0) {
+        const pts = sagLow.map(id => `${tratti[id]} (${fmt(vals[id])}, < 10° centile)`).join(', ');
+        findingLines.push(`Nei tratti misurati: riduzione del gap ipo-ecogeno nel tratto ${pts}. Reperto da correlare clinicamente.`);
+      } else {
+        findingLines.push('Nei tratti misurati: larghezza nei limiti della norma.');
+      }
+    }
+  } else if (sagMeasured.length > 0) {
+    const sagLow = sagMeasured.filter(id => results[id].status === 'low');
+    const sagHigh = sagMeasured.filter(id => results[id].status === 'high');
+    if (sagLow.length > 0) {
+      const tratti = {'sag_ant':'anteriore','sag_mid':'medio','sag_post':'posteriore'};
+      const pts = sagLow.map(id => `${tratti[id]} (${fmt(vals[id])}, < 10° centile)`).join(', ');
+      findingLines.push(`Sutura sagittale: riduzione del gap ipo-ecogeno nel tratto ${pts}. Reperto da correlare clinicamente.`);
+    } else if (sagHigh.length > 0) {
+      const tratti = {'sag_ant':'anteriore','sag_mid':'medio','sag_post':'posteriore'};
+      const pts = sagHigh.map(id => `${tratti[id]} (${fmt(vals[id])}, > 90° centile)`).join(', ');
+      findingLines.push(`Sutura sagittale: presente, ampiezza aumentata nel tratto ${pts}.`);
+    } else {
+      findingLines.push('Sutura sagittale: presente, regolare in tutti i tratti misurati, senza segni di craniosinostosi.');
+    }
+  } else {
+    findingLines.push('Sutura sagittale: non misurata.');
+  }
+
+  // Coronal
+  const corIds = ['cor_r','cor_l'];
+  const corSideLabel = id => id === 'cor_r' ? 'destra' : 'sinistra';
+  const corClosedIds = corIds.filter(id => closed[id]);
+  const corMeasured = corIds.filter(id => vals[id] !== null && !closed[id]);
+  if (corClosedIds.length === 2) {
+    findingLines.push('Sutura coronale: chiusa bilateralmente, assenza del gap ipo-ecogeno.');
+  } else if (corClosedIds.length === 1) {
+    findingLines.push(`Sutura coronale: chiusa a ${corSideLabel(corClosedIds[0])}, assenza del gap ipo-ecogeno.`);
+    if (corMeasured.length > 0) {
+      const corLow = corMeasured.filter(id => results[id].status === 'low');
+      if (corLow.length > 0) {
+        findingLines.push(`Sutura coronale ${corSideLabel(corMeasured[0])}: riduzione del gap ipo-ecogeno (${fmt(vals[corMeasured[0]])}, < 10° centile). Reperto da correlare clinicamente.`);
+      } else {
+        findingLines.push(`Sutura coronale ${corSideLabel(corMeasured[0])}: presente, regolare.`);
+      }
+    }
+  } else if (corMeasured.length > 0) {
+    const corLow = corMeasured.filter(id => results[id].status === 'low');
+    if (corLow.length > 0) {
+      const pts = corLow.map(id => `${corSideLabel(id)} (${fmt(vals[id])}, < 10° centile)`).join(', ');
+      findingLines.push(`Sutura coronale: riduzione del gap ipo-ecogeno a ${pts}. Reperto da correlare clinicamente.`);
+    } else {
+      const sides = corMeasured.map(corSideLabel).join(' e ');
+      findingLines.push(`Sutura coronale: presente, regolare ${corMeasured.length === 2 ? 'bilateralmente' : 'a ' + sides}.`);
+    }
+  } else {
+    findingLines.push('Sutura coronale: non misurata.');
+  }
+
+  // Lambdoid
+  const lamIds = ['lam_r','lam_l'];
+  const lamSideLabel = id => id === 'lam_r' ? 'destra' : 'sinistra';
+  const lamClosedIds = lamIds.filter(id => closed[id]);
+  const lamMeasured = lamIds.filter(id => vals[id] !== null && !closed[id]);
+  if (lamClosedIds.length === 2) {
+    findingLines.push('Sutura lambdoidea: chiusa bilateralmente, assenza del gap ipo-ecogeno.');
+  } else if (lamClosedIds.length === 1) {
+    findingLines.push(`Sutura lambdoidea: chiusa a ${lamSideLabel(lamClosedIds[0])}, assenza del gap ipo-ecogeno.`);
+    if (lamMeasured.length > 0) {
+      const lamLow = lamMeasured.filter(id => results[id].status === 'low');
+      if (lamLow.length > 0) {
+        findingLines.push(`Sutura lambdoidea ${lamSideLabel(lamMeasured[0])}: riduzione del gap ipo-ecogeno (${fmt(vals[lamMeasured[0]])}, < 10° centile). Reperto da correlare clinicamente.`);
+      } else {
+        findingLines.push(`Sutura lambdoidea ${lamSideLabel(lamMeasured[0])}: presente, regolare.`);
+      }
+    }
+  } else if (lamMeasured.length > 0) {
+    const lamLow = lamMeasured.filter(id => results[id].status === 'low');
+    if (lamLow.length > 0) {
+      const pts = lamLow.map(id => `${lamSideLabel(id)} (${fmt(vals[id])}, < 10° centile)`).join(', ');
+      findingLines.push(`Sutura lambdoidea: riduzione del gap ipo-ecogeno a ${pts}. Reperto da correlare clinicamente.`);
+    } else {
+      findingLines.push('Sutura lambdoidea: presente, regolare bilateralmente.');
+    }
+  } else {
+    findingLines.push('Sutura lambdoidea: non misurata.');
+  }
+
+  const findingText = findingLines.join('\n');
+
+  // Diagnosis
+  const nonMetopicClosed = ['sag_ant','sag_mid','sag_post','cor_r','cor_l','lam_r','lam_l'].some(id => closed[id]);
+  const CLOSED_NAMES = {
+    metopic: 'sutura metopica', sag_ant: 'sutura sagittale anteriore',
+    sag_mid: 'sutura sagittale media', sag_post: 'sutura sagittale posteriore',
+    cor_r: 'sutura coronale destra', cor_l: 'sutura coronale sinistra',
+    lam_r: 'sutura lambdoidea destra', lam_l: 'sutura lambdoidea sinistra'
+  };
+  const closedNonMetopic = ['sag_ant','sag_mid','sag_post','cor_r','cor_l','lam_r','lam_l'].filter(id => closed[id]);
+  const closedNonMetopicNames = closedNonMetopic.map(id => CLOSED_NAMES[id]).join(', ');
+  let diagClass, diagTitle, diagText;
+  const lowNames = ids.filter(id => vals[id] !== null && results[id].status === 'low').map(id => CLOSED_NAMES[id]).join(', ');
+  if (nonMetopicClosed || (anyClosed && !onlyMetopicClosed)) {
+    diagClass = 'abnormal';
+    diagTitle = 'DIAGNOSI';
+    let diagParts = [`riscontro di chiusura della ${closedNonMetopicNames}`];
+    if (anyLow) diagParts.push(`riduzione del gap ipo-ecogeno a livello della ${lowNames} (< 10° centile per età)`);
+    diagText = `Ecografia delle suture craniche: ${diagParts.join('; ')}. Il reperto è sospetto per craniosinostosi e richiede correlazione clinica e valutazione specialistica.`;
+  } else if (anyLow) {
+    diagClass = 'abnormal';
+    diagTitle = 'DIAGNOSI';
+    diagText = `Ecografia delle suture craniche: riscontro di riduzione del gap ipo-ecogeno a livello della ${lowNames} (< 10° centile per età). Il reperto richiede correlazione clinica e valutazione specialistica per escludere craniosinostosi.`;
+  } else if (onlyMetopicClosed) {
+    diagClass = 'normal';
+    diagTitle = 'DIAGNOSI';
+    diagText = 'Chiusura isolata della sutura metopica, reperto parafisiologico. Tutte le altre suture craniche appaiono nella norma. Non evidenza di craniosinostosi delle suture non metopiche.';
+  } else {
+    diagClass = 'normal';
+    diagTitle = 'DIAGNOSI';
+    diagText = 'Ecografia delle suture craniche nella norma. Non evidenza di craniosinostosi.';
+  }
+
+  const html = `
+    <div class="report-card">
+      <div class="report-header">
+        <h2>Ecografia delle Suture Craniche</h2>
+        <div class="report-meta">
+          <div>Data di nascita: <span>${fmtDate(dob)}</span></div>
+          <div>Data esame: <span>${fmtDate(examDate)}</span></div>
+          <div>Età all'esame: <span>${ageStr}</span></div>
+          <div>Mese di riferimento centili: <span>${monthLabel}° mese</span></div>
+        </div>
+      </div>
+
+      <div class="report-section-title">Tecnica</div>
+      <p>Ecografia delle suture craniche eseguita con trasduttore lineare ad alta frequenza (7–12 MHz) in sede frontale, parietale e temporale, con il trasduttore orientato perpendicolarmente alla direzione delle suture. Si è misurata la larghezza massima del gap ipo-ecogeno tra le due rime ossee iperecogene .</p>
+
+      <div class="report-section-title">Reperti</div>
+      <p class="report-finding-text">${findingText.replace(/\n/g, '\n')}</p>
+      ${notes ? `\n<p style="margin-top:.7rem;font-style:italic;color:#555">${notes}</p>` : ''}
+
+      <div class="report-section-title">Valori di Riferimento per Centili (${monthLabel}° mese)</div>
+      <table class="centile-table">
+        <thead>
+          <tr>
+            <th>Sutura</th>
+            <th>Misura</th>
+            <th>P10 (mm)</th>
+            <th>P90 (mm)</th>
+            <th>Valutazione</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p style="font-size:.72rem;color:#999;margin-top:.4rem">I valori di riferimento si riferiscono al mese più vicino all'età dell'esame. P10 = 10° percentile; P90 = 90° percentile.</p>
+
+      <div class="diagnosis-box ${diagClass}">
+        <h3>${diagTitle}</h3>
+        <p>${diagText}</p>
+      </div>
+
+      <div class="report-citation">
+        <strong>Riferimento:</strong> Rozovsky K, Barrowman NJ, Miller E. Centile charts for cranial sutures in children younger than 1 year based on ultrasound measurements. <em>Pediatric Radiology</em>. 2018;48(5):701–707. https://doi.org/10.1007/s00247-017-4062-z
+      </div>
+
+      <div class="report-actions">
+        <button class="btn-copy" id="btnCopy" onclick="copyReport()">&#10003; Copia Testo per PACS</button>
+        <button class="btn-print" onclick="window.print()">Stampa / Salva PDF</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('reportOutput').innerHTML = html;
+  document.getElementById('reportOutput').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Init: set today's exam date
+window.addEventListener('DOMContentLoaded', () => {
+  setToday();
+});
+</script>
+</body>
+</html>

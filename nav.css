@@ -1,0 +1,269 @@
+/* ==========================================================================
+   NAVBAR CONDIVISA — con menu a tendina per categorie e sottocategorie
+   Stile neutro pensato per convivere con qualsiasi tema delle singole pagine
+   (ogni pagina ha la sua palette --accent ecc, la navbar resta indipendente)
+   ========================================================================== */
+
+.site-nav {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: #14181f;
+  color: #e8e8e6;
+  border-bottom: 3px solid #2b6cb0;
+  position: relative;
+  z-index: 200;
+}
+
+.site-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1.25rem;
+  height: 48px;
+}
+
+.site-nav-home {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.site-nav-home:hover {
+  color: #9ec6ec;
+}
+
+.site-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+  height: 100%;
+}
+
+.site-nav-links::-webkit-scrollbar {
+  display: none;
+}
+
+/* link diretti (senza categoria) usano la stessa classe .nav-link */
+.site-nav-links > a {
+  font-size: 0.82rem;
+  color: #b8bcc4;
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  transition: color .15s, background .15s;
+}
+
+.site-nav-links > a:hover {
+  color: #fff;
+  background: #1c222c;
+}
+
+.site-nav-links > a.active {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── CATEGORIE / DROPDOWN ── */
+.nav-category {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.cat-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: #b8bcc4;
+  white-space: nowrap;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color .15s, background .15s;
+}
+
+.cat-trigger:hover {
+  color: #fff;
+  background: #1c222c;
+}
+
+.cat-trigger.active {
+  color: #fff;
+  font-weight: 600;
+}
+
+.cat-trigger .caret {
+  flex-shrink: 0;
+  transition: transform .15s;
+}
+
+.nav-category.open .cat-trigger .caret {
+  transform: rotate(180deg);
+}
+
+.nav-category.open .cat-trigger {
+  color: #fff;
+  background: #1c222c;
+}
+
+.nav-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background: #1c222c;
+  border: 1px solid #2a2f3a;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .35);
+  padding: 0.4rem 0;
+  z-index: 210;
+}
+
+.nav-category.open .nav-dropdown {
+  display: block;
+}
+
+.nav-dropdown a {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 0.82rem;
+  color: #b8bcc4;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-dropdown a:hover {
+  color: #fff;
+  background: #262c38;
+}
+
+.nav-dropdown a.active {
+  color: #fff;
+  font-weight: 600;
+  border-left: 2px solid #2b6cb0;
+  padding-left: calc(1rem - 2px);
+}
+
+.subcat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #6c7280;
+  padding: 0.6rem 1rem 0.25rem;
+}
+
+.subcat-label:first-child {
+  padding-top: 0.4rem;
+}
+
+.site-nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 720px) {
+  .site-nav-toggle {
+    display: block;
+    margin-left: auto;
+  }
+
+  .site-nav-links {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    height: auto;
+    position: absolute;
+    top: 48px;
+    left: 0;
+    right: 0;
+    background: #14181f;
+    border-bottom: 3px solid #2b6cb0;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+
+  .site-nav-links.open {
+    display: flex;
+  }
+
+  .site-nav-links > a {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid #2a2f3a;
+    border-radius: 0;
+    border-left: 3px solid transparent;
+  }
+
+  .site-nav-links > a.active {
+    border-left-color: #2b6cb0;
+  }
+
+  .nav-category {
+    height: auto;
+    display: block;
+    border-bottom: 1px solid #2a2f3a;
+  }
+
+  .cat-trigger {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.85rem 1.25rem;
+    border-radius: 0;
+  }
+
+  .nav-category.open .cat-trigger {
+    background: #1c222c;
+  }
+
+  .nav-dropdown {
+    position: static;
+    display: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: #10141b;
+    padding: 0;
+  }
+
+  .nav-category.open .nav-dropdown {
+    display: block;
+  }
+
+  .nav-dropdown a {
+    padding: 0.7rem 1.25rem 0.7rem 2.25rem;
+  }
+
+  .nav-dropdown a.active {
+    padding-left: calc(2.25rem - 2px);
+  }
+
+  .subcat-label {
+    padding: 0.6rem 1.25rem 0.25rem 2.25rem;
+  }
+}
