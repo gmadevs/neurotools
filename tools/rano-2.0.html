@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="it" data-root="..">
+<head>
+<link rel="stylesheet" href="../assets/nav.css">
+<script src="../assets/site-config.js"></script>
+<script src="../assets/nav.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RANO 2.0 – Calcolatore Risposta Radiologica</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1c22;
+    --paper: #f5f4f0;
+    --card: #ffffff;
+    --rule: #d0cfc8;
+    --accent: #1b4f72;
+    --accent-light: #d6e8f5;
+    --warn: #8b2500;
+    --warn-bg: #fdecea;
+    --ok: #1a4731;
+    --ok-bg: #e8f5ee;
+    --mid: #4a3800;
+    --mid-bg: #fdf8e1;
+    --neutral-bg: #eef3f8;
+    --neutral: #1b4f72;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 1.5rem 2rem 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1.2rem;
+  }
+  header h1 {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  header span {
+    font-size: 0.78rem;
+    opacity: .7;
+    font-style: italic;
+  }
+
+  /* ── LAYOUT ── */
+  .workspace {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    min-height: calc(100vh - 68px);
+  }
+
+  /* ── PANEL SINISTRA ── */
+  .input-panel {
+    background: var(--card);
+    border-right: 1px solid var(--rule);
+    padding: 1.8rem 1.5rem 2rem;
+    overflow-y: auto;
+  }
+
+  /* ── PANEL DESTRA ── */
+  .output-panel {
+    background: var(--paper);
+    padding: 1.8rem 1.5rem 2rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: .6rem;
+    padding-bottom: .35rem;
+    border-bottom: 1.5px solid var(--accent-light);
+  }
+
+  .section-block {
+    margin-bottom: 1.6rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: .3rem;
+    color: #3a3c45;
+  }
+
+  .hint {
+    font-size: 0.72rem;
+    color: #7a7870;
+    margin-top: .2rem;
+  }
+
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: .45rem .7rem;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    background: #fff;
+    color: var(--ink);
+    transition: border-color .15s;
+  }
+
+  input[type="number"]:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .75rem;
+  }
+
+  .field-grid.full { grid-template-columns: 1fr; }
+  .hidden { display: none !important; }
+
+  /* ── MODE SELECTOR ── */
+  .mode-selector {
+    display: flex;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 1.4rem;
+    gap: 3px;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: .45rem .8rem;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #7a7870;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+
+  .mode-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ── CHECKBOXES ── */
+  .check {
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+    padding: .75rem;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--paper);
+    margin-bottom: .6rem;
+  }
+
+  .check input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin-top: 2px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .check-label {
+    font-size: 0.8rem;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+
+  .check-label strong { font-weight: 600; }
+
+  /* ── ACTIONS ── */
+  .actions {
+    display: flex;
+    gap: .75rem;
+    margin-top: 1.2rem;
+  }
+
+  .btn {
+    padding: .55rem 1.2rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    cursor: pointer;
+    border: none;
+    transition: opacity .15s;
+  }
+
+  .btn:hover { opacity: .85; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-secondary {
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+  }
+
+  /* ── OUTPUT ── */
+  .result-block {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+  }
+
+  .result-status {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .4rem 1.1rem;
+    border-radius: 99px;
+    margin-bottom: .8rem;
+    background: var(--neutral-bg);
+    color: var(--neutral);
+  }
+
+  .result-status.ok   { background: var(--ok-bg);   color: var(--ok); }
+  .result-status.warn { background: var(--mid-bg);  color: var(--mid); }
+  .result-status.danger { background: var(--warn-bg); color: var(--warn); }
+
+  .result-main {
+    font-family: var(--mono);
+    font-size: 2.4rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -.02em;
+    margin-bottom: .5rem;
+    color: var(--ink);
+  }
+
+  .result-copy {
+    font-size: 0.82rem;
+    color: #5a5c65;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .6rem;
+  }
+
+  .stat {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: .6rem .8rem;
+  }
+
+  .stat small {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #7a7870;
+    margin-bottom: .25rem;
+  }
+
+  .stat strong {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+  }
+
+  .footer-note {
+    margin-top: .8rem;
+    padding: .6rem .8rem;
+    background: var(--paper);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #7a7870;
+    border-left: 3px solid var(--rule);
+  }
+
+  /* ── NOTE INFO ── */
+  .note {
+    border-radius: 6px;
+    padding: .8rem 1rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    border: 1px solid;
+  }
+
+  .note.info    { background: var(--neutral-bg); color: var(--neutral); border-color: var(--accent-light); }
+  .note.warning { background: var(--mid-bg);     color: var(--mid);     border-color: #e0c96a; }
+
+  .note strong { font-weight: 600; display: block; margin-bottom: .25rem; }
+
+  /* ── RULE CARD ── */
+  .rule-block {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+  }
+
+  .rule-item {
+    font-size: 0.82rem;
+    color: #5a5c65;
+    padding: .55rem 0;
+    border-bottom: 1px solid var(--rule);
+    line-height: 1.5;
+  }
+
+  .rule-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .rule-item:first-child { padding-top: 0; }
+  .rule-item strong { color: var(--ink); }
+
+  /* ── METRIC PILLS (info header) ── */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .6rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .metric-pill {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: .6rem .8rem;
+  }
+
+  .metric-pill small {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #7a7870;
+    margin-bottom: .25rem;
+  }
+
+  .metric-pill strong {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--ink);
+    margin-bottom: .15rem;
+  }
+
+  .metric-pill span {
+    font-size: 0.72rem;
+    color: #7a7870;
+  }
+
+  @media (max-width: 780px) {
+    .workspace { grid-template-columns: 1fr; }
+    .output-panel { border-top: 1px solid var(--rule); }
+    .field-grid { grid-template-columns: 1fr; }
+    .metrics-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>RANO 2.0</h1>
+  <span>Calcolatore della risposta radiologica – Neuro-oncologia
+    <a href="https://pubmed.ncbi.nlm.nih.gov/37774317/" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin-left:.4rem">
+      <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
+    </a>
+  </span>
+</header>
+
+<div class="workspace">
+
+  <!-- ── PANEL SINISTRA ── -->
+  <div class="input-panel">
+
+    <div class="section-block">
+      <div class="section-label">Modalità di calcolo</div>
+      <div class="mode-selector">
+        <button type="button" class="mode-btn active" id="btn2D" onclick="setMode('2D')">2D – Diametri</button>
+        <button type="button" class="mode-btn" id="btn3D" onclick="setMode('3D')">3D – Volume</button>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric-pill">
+          <small>Progressione</small>
+          <strong id="labelMetricPd">≥ 25% (2D)</strong>
+          <span id="descMetricPd">Aumento del prodotto rispetto a baseline o nadir.</span>
+        </div>
+        <div class="metric-pill">
+          <small>Risposta parziale</small>
+          <strong id="labelMetricPr">≥ 50% (2D)</strong>
+          <span id="descMetricPr">Riduzione geometrica del target radiologico.</span>
+        </div>
+        <div class="metric-pill">
+          <small>Finestra PsP</small>
+          <strong>12 settimane</strong>
+          <span>Interpretare con cautela gli incrementi precoci post-RT.</span>
+        </div>
+      </div>
+    </div>
+
+    <form id="ranoForm">
+
+      <div class="section-block">
+        <div class="section-label">Baseline</div>
+        <p id="baselineSubtle" style="font-size:.75rem;color:#7a7870;margin-bottom:.8rem">Prodotto bidimensionale di riferimento.</p>
+
+        <div class="field-grid" id="grid2DBaseline">
+          <div class="form-group">
+            <label for="base1">Diametro 1 (mm)</label>
+            <input id="base1" type="number" step="0.1" min="0" placeholder="es. 24">
+          </div>
+          <div class="form-group">
+            <label for="base2">Diametro 2 (mm)</label>
+            <input id="base2" type="number" step="0.1" min="0" placeholder="es. 18">
+          </div>
+        </div>
+
+        <div class="field-grid full hidden" id="grid3DBaseline">
+          <div class="form-group">
+            <label for="baseVol">Volume baseline (mm³ o cm³)</label>
+            <input id="baseVol" type="number" step="0.1" min="0" placeholder="es. 4200">
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Follow-up</div>
+        <p id="currentSubtle" style="font-size:.75rem;color:#7a7870;margin-bottom:.8rem">Misure dell'esame attuale.</p>
+
+        <div class="field-grid" id="grid2DCurrent">
+          <div class="form-group">
+            <label for="curr1">Diametro 1 (mm)</label>
+            <input id="curr1" type="number" step="0.1" min="0" placeholder="es. 31">
+          </div>
+          <div class="form-group">
+            <label for="curr2">Diametro 2 (mm)</label>
+            <input id="curr2" type="number" step="0.1" min="0" placeholder="es. 20">
+          </div>
+        </div>
+
+        <div class="field-grid full hidden" id="grid3DCurrent">
+          <div class="form-group">
+            <label for="currVol">Volume attuale (mm³ o cm³)</label>
+            <input id="currVol" type="number" step="0.1" min="0" placeholder="es. 5800">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:.8rem">
+          <label for="weeks">Settimane dal termine della RT</label>
+          <input id="weeks" type="number" step="0.1" min="0" placeholder="es. 8">
+          <div class="hint">Serve per segnalare la finestra potenziale di pseudoprogressione (≤ 12 sett.).</div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Fattori integrativi</div>
+
+        <label class="check">
+          <input id="newLesion" type="checkbox">
+          <span class="check-label"><strong>Nuova lesione definita.</strong> La comparsa di una nuova lesione aumenta fortemente il sospetto o la certezza di progressione.</span>
+        </label>
+        <label class="check">
+          <input id="clinicalDecline" type="checkbox">
+          <span class="check-label"><strong>Deterioramento neurologico significativo.</strong> Se attribuibile al tumore e non ad altre cause, può configurare progressione clinica.</span>
+        </label>
+        <label class="check">
+          <input id="steroidsNotStable" type="checkbox">
+          <span class="check-label"><strong>Steroidi in aumento.</strong> Le risposte radiologiche favorevoli richiedono dose stabile o in riduzione.</span>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">Calcola classificazione</button>
+        <button class="btn btn-secondary" type="button" id="resetBtn">Azzera</button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- ── PANEL DESTRA ── -->
+  <div class="output-panel">
+
+    <div>
+      <div class="section-label">Risultato</div>
+      <div class="result-block" aria-live="polite">
+        <div id="resultStatus" class="result-status">In attesa di dati</div>
+        <div id="resultMain" class="result-main">—</div>
+        <p id="resultCopy" class="result-copy">Inserisci le misure baseline e di follow-up per ottenere la variazione percentuale e una classificazione orientativa.</p>
+
+        <div class="stats-grid">
+          <div class="stat">
+            <small id="statLabelBase">Prodotto baseline</small>
+            <strong id="baseProduct">—</strong>
+          </div>
+          <div class="stat">
+            <small id="statLabelCurr">Prodotto attuale</small>
+            <strong id="currentProduct">—</strong>
+          </div>
+          <div class="stat">
+            <small>Variazione</small>
+            <strong id="percentChange">—</strong>
+          </div>
+          <div class="stat">
+            <small>Nota PsP</small>
+            <strong id="pspFlag">—</strong>
+          </div>
+        </div>
+
+        <div id="footerNote" class="footer-note">Il risultato è un supporto al ragionamento e non sostituisce il giudizio integrato neuroradiologico e clinico.</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Criteri RANO 2.0</div>
+      <div class="rule-block">
+        <div class="rule-list">
+          <div class="rule-item" id="rulePd"><strong>PD:</strong> aumento del prodotto bidimensionale ≥ 25%, oppure nuova lesione, oppure peggioramento clinico significativo.</div>
+          <div class="rule-item" id="rulePr"><strong>PR:</strong> riduzione almeno del 50% del prodotto rispetto alla baseline, in assenza di elementi contrari.</div>
+          <div class="rule-item"><strong>PsP:</strong> nelle prime 12 settimane post-RT serve prudenza prima di concludere per progressione vera.</div>
+          <div class="rule-item"><strong>Steroidi:</strong> una risposta radiologica favorevole è più credibile se la dose è stabile o in riduzione.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;gap:.6rem">
+      <div class="note info">
+        <strong>Baseline post-RT</strong>
+        Nei pazienti con nuova diagnosi la baseline utile per il confronto è in genere la RM eseguita dopo chemio-radioterapia, non quella immediatamente pre-trattamento.
+      </div>
+      <div class="note warning">
+        <strong>Pseudoprogressione</strong>
+        Se il controllo ricade entro circa 12 settimane dal termine della RT, un incremento dimensionale isolato può non equivalere a vera progressione.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let currentMode = '2D';
+
+  const btn2D = document.getElementById('btn2D');
+  const btn3D = document.getElementById('btn3D');
+  const grid2DBaseline = document.getElementById('grid2DBaseline');
+  const grid3DBaseline = document.getElementById('grid3DBaseline');
+  const grid2DCurrent = document.getElementById('grid2DCurrent');
+  const grid3DCurrent = document.getElementById('grid3DCurrent');
+  const baselineSubtle = document.getElementById('baselineSubtle');
+  const currentSubtle = document.getElementById('currentSubtle');
+  const statLabelBase = document.getElementById('statLabelBase');
+  const statLabelCurr = document.getElementById('statLabelCurr');
+  const labelMetricPd = document.getElementById('labelMetricPd');
+  const descMetricPd = document.getElementById('descMetricPd');
+  const labelMetricPr = document.getElementById('labelMetricPr');
+  const descMetricPr = document.getElementById('descMetricPr');
+  const rulePd = document.getElementById('rulePd');
+  const rulePr = document.getElementById('rulePr');
+  const form = document.getElementById('ranoForm');
+  const resetBtn = document.getElementById('resetBtn');
+  const resultStatus = document.getElementById('resultStatus');
+  const resultMain = document.getElementById('resultMain');
+  const resultCopy = document.getElementById('resultCopy');
+  const baseProductEl = document.getElementById('baseProduct');
+  const currentProductEl = document.getElementById('currentProduct');
+  const percentChangeEl = document.getElementById('percentChange');
+  const pspFlagEl = document.getElementById('pspFlag');
+  const footerNote = document.getElementById('footerNote');
+
+  const fmt = (n, suffix = '') => Number.isFinite(n) ? `${n.toFixed(1)}${suffix}` : '—';
+
+  function setMode(mode) {
+    currentMode = mode;
+    resetOutput();
+    form.reset();
+
+    if (mode === '2D') {
+      btn2D.classList.add('active');
+      btn3D.classList.remove('active');
+      grid2DBaseline.classList.remove('hidden');
+      grid3DBaseline.classList.add('hidden');
+      grid2DCurrent.classList.remove('hidden');
+      grid3DCurrent.classList.add('hidden');
+
+      baselineSubtle.textContent = "Prodotto bidimensionale di riferimento.";
+      currentSubtle.textContent = "Misure dell'esame attuale.";
+      statLabelBase.textContent = "Prodotto baseline";
+      statLabelCurr.textContent = "Prodotto attuale";
+      labelMetricPd.innerHTML = "&ge; 25% (2D)";
+      descMetricPd.textContent = "Aumento del prodotto rispetto a baseline o nadir.";
+      labelMetricPr.innerHTML = "&ge; 50% (2D)";
+      descMetricPr.textContent = "Riduzione del prodotto bidimensionale.";
+      rulePd.innerHTML = "<strong>PD:</strong> aumento del prodotto bidimensionale &ge; 25%, oppure nuova lesione, oppure peggioramento clinico significativo.";
+      rulePr.innerHTML = "<strong>PR:</strong> riduzione almeno del 50% del prodotto rispetto alla baseline, in assenza di elementi contrari.";
+    } else {
+      btn2D.classList.remove('active');
+      btn3D.classList.add('active');
+      grid2DBaseline.classList.add('hidden');
+      grid3DBaseline.classList.remove('hidden');
+      grid2DCurrent.classList.add('hidden');
+      grid3DCurrent.classList.remove('hidden');
+
+      baselineSubtle.textContent = "Volume tumorale tridimensionale di riferimento.";
+      currentSubtle.textContent = "Volume dell'esame attuale.";
+      statLabelBase.textContent = "Volume baseline";
+      statLabelCurr.textContent = "Volume attuale";
+      labelMetricPd.innerHTML = "&ge; 40% (3D)";
+      descMetricPd.textContent = "Aumento volumetrico rispetto a baseline o nadir.";
+      labelMetricPr.innerHTML = "&ge; 65% (3D)";
+      descMetricPr.textContent = "Riduzione del volume tridimensionale.";
+      rulePd.innerHTML = "<strong>PD:</strong> aumento volumetrico &ge; 40%, oppure nuova lesione, oppure peggioramento clinico significativo.";
+      rulePr.innerHTML = "<strong>PR:</strong> riduzione almeno del 65% del volume rispetto alla baseline, in assenza di elementi contrari.";
+    }
+  }
+
+  function setStatus(type, label) {
+    resultStatus.className = `result-status ${type}`;
+    resultStatus.textContent = label;
+  }
+
+  function resetOutput() {
+    setStatus('', 'In attesa di dati');
+    resultMain.textContent = '—';
+    resultCopy.textContent = 'Inserisci le misure baseline e di follow-up per ottenere la variazione percentuale e una classificazione orientativa.';
+    baseProductEl.textContent = '—';
+    currentProductEl.textContent = '—';
+    percentChangeEl.textContent = '—';
+    pspFlagEl.textContent = '—';
+    footerNote.textContent = 'Il risultato è un supporto al ragionamento e non sostituisce il giudizio integrato neuroradiologico e clinico.';
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const weeks = parseFloat(document.getElementById('weeks').value);
+    const newLesion = document.getElementById('newLesion').checked;
+    const clinicalDecline = document.getElementById('clinicalDecline').checked;
+    const steroidsNotStable = document.getElementById('steroidsNotStable').checked;
+
+    let baseValue = 0, currentValue = 0, isValidGeometry = false;
+
+    if (currentMode === '2D') {
+      const base1 = parseFloat(document.getElementById('base1').value);
+      const base2 = parseFloat(document.getElementById('base2').value);
+      const curr1 = parseFloat(document.getElementById('curr1').value);
+      const curr2 = parseFloat(document.getElementById('curr2').value);
+      if ([base1, base2, curr1, curr2].every(v => Number.isFinite(v) && v >= 0)) {
+        baseValue = base1 * base2;
+        currentValue = curr1 * curr2;
+        isValidGeometry = true;
+      }
+    } else {
+      const baseVol = parseFloat(document.getElementById('baseVol').value);
+      const currVol = parseFloat(document.getElementById('currVol').value);
+      if ([baseVol, currVol].every(v => Number.isFinite(v) && v >= 0)) {
+        baseValue = baseVol;
+        currentValue = currVol;
+        isValidGeometry = true;
+      }
+    }
+
+    if (!isValidGeometry) {
+      setStatus('warn', 'Dati incompleti');
+      resultMain.textContent = 'Controlla i campi';
+      resultCopy.textContent = currentMode === '2D'
+        ? 'Servono quattro diametri validi per eseguire il calcolo del prodotto bidimensionale.'
+        : 'Inserisci un volume di baseline e attuale valido per procedere con l\'analisi 3D.';
+      baseProductEl.textContent = '—';
+      currentProductEl.textContent = '—';
+      percentChangeEl.textContent = '—';
+      pspFlagEl.textContent = Number.isFinite(weeks) ? (weeks <= 12 ? 'Possibile' : 'Fuori finestra') : '—';
+      footerNote.textContent = 'Verifica l\'inserimento delle misure prima di interpretare il risultato.';
+      return;
+    }
+
+    const changePct = baseValue === 0 ? NaN : ((currentValue - baseValue) / baseValue) * 100;
+    const inPspWindow = Number.isFinite(weeks) && weeks <= 12;
+    const pdThreshold = currentMode === '2D' ? 25 : 40;
+    const prThreshold = currentMode === '2D' ? -50 : -65;
+
+    let classification = 'SD';
+    let statusType = '';
+    let copy = 'Quadro compatibile con stabilità radiologica sulla base delle sole misure inserite.';
+
+    if (newLesion || clinicalDecline) {
+      classification = 'PD';
+      statusType = 'danger';
+      copy = 'Elementi clinici o radiologici aggiuntivi orientano verso progressione, indipendentemente dalla sola variazione geometrica.';
+    } else if (Number.isFinite(changePct) && changePct >= pdThreshold) {
+      classification = inPspWindow ? 'Sospetta PD / PsP' : 'PD';
+      statusType = inPspWindow ? 'warn' : 'danger';
+      copy = inPspWindow
+        ? `L'aumento supera la soglia di progressione per il modello ${currentMode} (≥${pdThreshold}%), ma la finestra temporale richiede cautela per possibile pseudoprogressione.`
+        : `L'aumento supera la soglia del ${pdThreshold}% (${currentMode}) e supporta la classificazione di progressione radiologica.`;
+    } else if (Number.isFinite(changePct) && changePct <= prThreshold) {
+      classification = steroidsNotStable ? 'Riduzione non confermabile come PR' : 'PR';
+      statusType = steroidsNotStable ? 'warn' : 'ok';
+      copy = steroidsNotStable
+        ? `La riduzione soddisfa la soglia ${currentMode} (≤${prThreshold}%), ma l'aumento degli steroidi rende prudente non assegnare automaticamente una PR.`
+        : `La riduzione supera la soglia del ${Math.abs(prThreshold)}% (${currentMode}) ed è compatibile con risposta parziale radiologica.`;
+    }
+
+    setStatus(statusType, classification);
+    resultMain.textContent = Number.isFinite(changePct) ? `${changePct >= 0 ? '+' : ''}${changePct.toFixed(1)}%` : 'n.d.';
+    resultCopy.textContent = copy;
+
+    const unit = currentMode === '2D' ? ' mm²' : '';
+    baseProductEl.textContent = fmt(baseValue, unit);
+    currentProductEl.textContent = fmt(currentValue, unit);
+    percentChangeEl.textContent = Number.isFinite(changePct) ? `${changePct >= 0 ? '+' : ''}${changePct.toFixed(1)}%` : '—';
+    pspFlagEl.textContent = Number.isFinite(weeks) ? (inPspWindow ? 'Possibile' : 'No') : 'Non inserito';
+
+    const notes = [];
+    if (newLesion) notes.push('Nuova lesione presente');
+    if (clinicalDecline) notes.push('Deterioramento neurologico significativo');
+    if (steroidsNotStable) notes.push('Steroidi non stabili/in aumento');
+    if (inPspWindow) notes.push('Controllo entro 12 settimane da RT');
+
+    footerNote.textContent = notes.length
+      ? `Fattori da integrare nel giudizio: ${notes.join(' · ')}.`
+      : 'Nessun fattore integrativo selezionato oltre alle misure dimensionali.';
+  });
+
+  resetBtn.addEventListener('click', () => { form.reset(); resetOutput(); });
+
+  resetOutput();
+</script>
+</body>
+</html>

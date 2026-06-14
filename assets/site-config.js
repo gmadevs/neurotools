@@ -33,6 +33,14 @@ window.SITE_TOOLS = [
     subcategory: "Ecografia"
   }
 
+  ,{
+    id: "rano-2.0",
+    title: "RANO 2.0",
+    description: "Calcolatore della risposta radiologica secondo i criteri RANO 2.0, con supporto per misure 2D e volumetria 3D.",
+    url: "tools/rano-2.0.html",
+    category: "Neuro-oncologia"
+  }
+
   /* Esempi per aggiungere nuovi strumenti, anche annidati:
 
   ,{

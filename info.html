@@ -210,13 +210,24 @@
       Hai trovato un errore, vuoi suggerire un nuovo strumento o proporre una modifica?<br>
       Scrivimi direttamente: ogni contributo è benvenuto.
     </p>
-    <a class="btn-feedback" href="mailto:giorgiomaria.agazzi@gmail.com?subject=Suggerimento%20Neuro-tools">
+    <button class="btn-feedback" id="copyEmailBtn" onclick="copyEmail()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="2" y="4" width="20" height="16" rx="2"/>
         <path d="M2 7l10 7 10-7"/>
       </svg>
-      Invia un suggerimento
-    </a>
+      <span id="copyEmailLabel">Clicca per copiare la mail di contatto</span>
+    </button>
+    <script>
+      function copyEmail() {
+        navigator.clipboard.writeText('giorgiomaria.agazzi@gmail.com').then(function() {
+          var label = document.getElementById('copyEmailLabel');
+          label.textContent = 'Mail copiata!';
+          setTimeout(function() {
+            label.textContent = 'Clicca per copiare la mail di contatto';
+          }, 2000);
+        });
+      }
+    </script>
   </section>
 
 </div>
