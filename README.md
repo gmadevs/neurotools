@@ -73,4 +73,4 @@ Per aggiungere un nuovo strumento bastano due passi: creare la pagina HTML e agg
 
 ## Licenza
 
-Rilasciato sotto licenza [CC0 1.0 Universal](LICENSE) — dominio pubblico, nessuna restrizione d'uso.
+Quest'opera è distribuita sotto licenza [Creative Commons Attribuzione – Non Commerciale – Non Opere Derivate 4.0 Internazionale](LICENSE). [![CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.it)
