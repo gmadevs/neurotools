@@ -26,8 +26,8 @@ window.SITE_TITLE = "Neuro-tools";
 window.SITE_TOOLS = [
   {
     id: "suture-craniche",
-    title: "Suture Craniche",
-    description: "Generatore di referto ecografico per le suture craniche, basato sui centili di Rozovsky et al. 2018.",
+    title: "Suture craniche",
+    description: "Referto ecografico per la valutazione delle suture craniche",
     url: "tools/suture-craniche.html",
     category: "Pediatrica",
     subcategory: "Ecografia"
@@ -35,8 +35,8 @@ window.SITE_TOOLS = [
 
   ,{
     id: "doppler-cerebrale-neonatale",
-    title: "Doppler Cerebrale Neonatale",
-    description: "Valutazione delle velocità di flusso cerebrale (ACA e MCA) nel prematuro, con centili per GA e età postnatale. Basato su Romagnoli et al. 2006.",
+    title: "Doppler neonatale",
+    description: "Valori doppler (ACA e MCA) nel prematuro, con centili per GA e età postnatale",
     url: "tools/doppler-cerebrale-neonatale.html",
     category: "Pediatrica",
     subcategory: "Ecografia"
@@ -44,8 +44,8 @@ window.SITE_TOOLS = [
 
   ,{
     id: "ipofisi-rm-pediatrica",
-    title: "Ipofisi RM Pediatrica",
-    description: "Centili per le misure RM dell'ipofisi (altezza, larghezza, volume, rapporto PS/BA) dal neonato all'adolescente. Basato su Sari et al. 2014.",
+    title: "Biometria ipofisi",
+    description: "Centili per le misure RM dell'ipofisi (altezza, larghezza, volume, rapporto PS/BA) dal neonato all'adolescente",
     url: "tools/ipofisi-rm-pediatrica.html",
     category: "Pediatrica",
     subcategory: "Risonanza Magnetica"

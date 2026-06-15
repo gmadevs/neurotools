@@ -17,6 +17,7 @@
     --rule: #d0cfc8;
     --accent: #1b4f72;
     --accent-light: #d6e8f5;
+    --sidebar-w: 220px;
     --mono: 'IBM Plex Mono', monospace;
     --sans: 'IBM Plex Sans', sans-serif;
   }
@@ -32,223 +33,354 @@
   .hero {
     background: var(--accent);
     color: #fff;
-    padding: 3rem 1.5rem 2.5rem;
+    padding: 1.1rem 1.5rem;
     text-align: center;
   }
 
-  .hero h1 {
-    font-family: var(--mono);
-    font-size: 1.6rem;
-    font-weight: 600;
-    letter-spacing: .04em;
-    margin-bottom: .6rem;
-  }
-
-  .hero p {
-    font-size: 0.95rem;
-    opacity: .8;
-    max-width: 540px;
+  .search-wrap {
+    max-width: 500px;
     margin: 0 auto;
-    line-height: 1.5;
+    position: relative;
   }
 
-  /* ── GRID ── */
-  .tools-wrap {
+  .search-wrap input {
+    width: 100%;
+    padding: .6rem 1rem .6rem 2.4rem;
+    border: none;
+    border-radius: 4px;
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    background: rgba(255,255,255,.15);
+    color: #fff;
+    outline: none;
+    transition: background .15s;
+  }
+
+  .search-wrap input::placeholder { color: rgba(255,255,255,.6); }
+  .search-wrap input:focus { background: rgba(255,255,255,.25); }
+
+  .search-wrap svg {
+    position: absolute;
+    left: .7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: .6;
+    pointer-events: none;
+  }
+
+  /* ── LAYOUT ── */
+  .main-layout {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 2.5rem 1.5rem 4rem;
+    display: flex;
+    align-items: flex-start;
+    padding: 2rem 1.5rem 4rem;
+    gap: 2rem;
   }
 
-  .category-label {
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    position: sticky;
+    top: 1rem;
+  }
+
+  .sidebar-title {
     font-family: var(--mono);
-    font-size: 0.9rem;
+    font-size: 0.65rem;
     font-weight: 600;
     letter-spacing: .12em;
     text-transform: uppercase;
+    color: #8a8d97;
+    margin-bottom: .8rem;
+  }
+
+  .sidebar-list {
+    list-style: none;
+  }
+
+  .sidebar-list li + li { margin-top: 2px; }
+
+  .sidebar-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    padding: .45rem .7rem;
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .12s, color .12s;
+  }
+
+  .sidebar-btn:hover { background: var(--accent-light); color: var(--accent); }
+
+  .sidebar-btn.active {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .sidebar-count {
+    float: right;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    opacity: .6;
+    margin-top: 1px;
+  }
+
+  /* ── TOOL LIST ── */
+  .tools-col {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .category-section { margin-bottom: 2rem; }
+
+  .category-heading {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
     color: var(--accent);
-    margin: 2rem 0 1rem;
-    padding-bottom: .4rem;
+    padding-bottom: .45rem;
     border-bottom: 1.5px solid var(--accent-light);
+    margin-bottom: .8rem;
   }
 
-  .category-label:first-child {
-    margin-top: 0;
-  }
-
-  .subcategory-label {
+  .subcategory-heading {
     font-family: var(--mono);
     font-size: 0.65rem;
     font-weight: 600;
     letter-spacing: .1em;
     text-transform: uppercase;
     color: #8a8d97;
-    margin: 1.2rem 0 .7rem;
+    margin: 1rem 0 .5rem;
   }
 
-  .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1rem;
-  }
+  .tool-list { list-style: none; }
 
-  .tool-card {
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    padding: 1.2rem 1.3rem;
+  .tool-item {
+    display: flex;
+    align-items: baseline;
+    gap: .8rem;
+    padding: .55rem .7rem;
+    border-radius: 4px;
     text-decoration: none;
     color: var(--ink);
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-    transition: border-color .15s, box-shadow .15s, transform .15s;
+    transition: background .12s;
   }
 
-  .tool-card:hover {
-    border-color: var(--accent);
-    box-shadow: 0 4px 14px rgba(27, 79, 114, 0.12);
-    transform: translateY(-2px);
-  }
+  .tool-item:hover { background: var(--accent-light); }
 
-  .tool-card h2 {
-    font-family: var(--mono);
-    font-size: 0.92rem;
+  .tool-item-title {
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--accent);
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
-  .tool-card p {
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: #4a4d57;
-  }
-
-  .empty-state {
-    font-size: 0.9rem;
-    color: #6a6d77;
-    font-style: italic;
-  }
-
-  /* ── NOVITÀ ── */
-  .updates-wrap {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 0;
-  }
-
-  .updates-label {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: #1a7a4a;
-    margin-bottom: 1rem;
-    padding-bottom: .4rem;
-    border-bottom: 1.5px solid #c3e8d5;
+  .tool-item-desc {
+    font-size: 0.83rem;
+    color: #5a5d67;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .badge-new {
     display: inline-block;
     font-family: var(--mono);
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     font-weight: 600;
     letter-spacing: .08em;
     text-transform: uppercase;
     background: #1a7a4a;
     color: #fff;
     border-radius: 3px;
-    padding: 1px 6px;
+    padding: 1px 5px;
     vertical-align: middle;
-    margin-left: .45rem;
+    margin-left: .35rem;
     position: relative;
     top: -1px;
+    flex-shrink: 0;
+  }
+
+  .no-results {
+    font-size: 0.9rem;
+    color: #6a6d77;
+    font-style: italic;
+    padding: 1rem .7rem;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .tool-item-desc { display: none; }
   }
 </style>
 </head>
 <body>
 
 <div class="hero">
-  <h1>Neuro-Tools</h1>
-  <p>Una raccolta di generatori di referto e calcolatori di centili per la pratica clinica quotidiana. Seleziona uno strumento dall'elenco qui sotto o dalla barra in alto.</p>
-</div>
-
-<div class="updates-wrap">
-  <div class="updates-label">Aggiornamenti recenti</div>
-  <div class="tools-grid">
-    <a class="tool-card" href="tools/rano-2.0.html">
-      <h2>RANO 2.0 <span class="badge-new">Nuovo</span></h2>
-      <p>Calcolatore della risposta radiologica secondo i criteri RANO 2.0, con supporto per misure 2D e volumetria 3D.</p>
-    </a>
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="6.5" cy="6.5" r="5" stroke="white" stroke-width="1.5"/>
+      <line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <input type="text" id="search-input" placeholder="Cerca uno strumento…" autocomplete="off">
   </div>
 </div>
 
-<div class="tools-wrap" id="tools-wrap">
-  <!-- Generato dinamicamente da assets/site-config.js -->
+<div class="main-layout">
+  <nav class="sidebar">
+    <div class="sidebar-title">Categorie</div>
+    <ul class="sidebar-list" id="sidebar-list"></ul>
+  </nav>
+
+  <div class="tools-col" id="tools-col"></div>
 </div>
 
 <script src="assets/site-config.js"></script>
 <script src="assets/nav.js"></script>
 <script>
-  (function () {
-    var wrap = document.getElementById('tools-wrap');
-    var tools = window.SITE_TOOLS || [];
+(function () {
+  var tools = window.SITE_TOOLS || [];
+  var NEW_IDS = ['rano-2.0'];
 
-    if (tools.length === 0) {
-      wrap.innerHTML = '<p class="empty-state">Nessuno strumento configurato ancora. Aggiungilo in assets/site-config.js</p>';
+  // ── build category structure (sorted alphabetically) ──
+  var categories = [];
+  var byCategory = {};
+  tools.forEach(function (t) {
+    var cat = t.category || 'Altri strumenti';
+    if (!byCategory[cat]) {
+      byCategory[cat] = { direct: [], subcats: [], bySubcat: {} };
+      categories.push(cat);
+    }
+    var g = byCategory[cat];
+    if (t.subcategory) {
+      if (!g.bySubcat[t.subcategory]) { g.bySubcat[t.subcategory] = []; g.subcats.push(t.subcategory); }
+      g.bySubcat[t.subcategory].push(t);
+    } else {
+      g.direct.push(t);
+    }
+  });
+
+  // ordine alfabetico categorie e sottocategorie
+  categories.sort(function (a, b) { return a.localeCompare(b, 'it'); });
+  categories.forEach(function (cat) {
+    byCategory[cat].subcats.sort(function (a, b) { return a.localeCompare(b, 'it'); });
+  });
+
+  var activeCategory = 'all';
+
+  // ── sidebar ──
+  var sidebarList = document.getElementById('sidebar-list');
+
+  function buildSidebar(filtered) {
+    var counts = { all: filtered.length };
+    categories.forEach(function (cat) {
+      counts[cat] = filtered.filter(function (t) { return (t.category || 'Altri strumenti') === cat; }).length;
+    });
+
+    var items = [{ key: 'all', label: 'Tutti gli strumenti' }].concat(
+      categories.map(function (c) { return { key: c, label: c }; })
+    );
+
+    sidebarList.innerHTML = items.map(function (item) {
+      return '<li><button class="sidebar-btn' + (activeCategory === item.key ? ' active' : '') +
+             '" data-cat="' + item.key + '">' +
+             item.label +
+             '<span class="sidebar-count">' + (counts[item.key] || 0) + '</span>' +
+             '</button></li>';
+    }).join('');
+
+    sidebarList.querySelectorAll('.sidebar-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activeCategory = btn.dataset.cat;
+        render();
+      });
+    });
+  }
+
+  // ── tool list ──
+  var toolsCol = document.getElementById('tools-col');
+
+  function itemHtml(t) {
+    var isNew = NEW_IDS.indexOf(t.id) !== -1;
+    return '<li><a class="tool-item" href="' + t.url + '">' +
+           '<span class="tool-item-title">' + t.title + (isNew ? '<span class="badge-new">Nuovo</span>' : '') + '</span>' +
+           '<span class="tool-item-desc">' + t.description + '</span>' +
+           '</a></li>';
+  }
+
+  function buildList(filtered) {
+    if (filtered.length === 0) {
+      toolsCol.innerHTML = '<p class="no-results">Nessuno strumento trovato.</p>';
       return;
     }
 
-    // Raggruppa per categoria e, dove presente, per sottocategoria,
-    // mantenendo l'ordine di apparizione in SITE_TOOLS
-    var categories = [];
-    var byCategory = {};
-    tools.forEach(function (t) {
-      var cat = t.category || 'Altri strumenti';
-      if (!byCategory[cat]) {
-        byCategory[cat] = { direct: [], subcats: [], bySubcat: {} };
-        categories.push(cat);
-      }
-      var group = byCategory[cat];
-      if (t.subcategory) {
-        if (!group.bySubcat[t.subcategory]) {
-          group.bySubcat[t.subcategory] = [];
-          group.subcats.push(t.subcategory);
-        }
-        group.bySubcat[t.subcategory].push(t);
-      } else {
-        group.direct.push(t);
-      }
-    });
-
-    function cardHtml(t) {
-      return '<a class="tool-card" href="' + t.url + '">' +
-               '<h2>' + t.title + '</h2>' +
-               '<p>' + t.description + '</p>' +
-             '</a>';
-    }
+    var visibleCats = activeCategory === 'all'
+      ? categories
+      : categories.filter(function (c) { return c === activeCategory; });
 
     var html = '';
-    categories.forEach(function (cat) {
-      var group = byCategory[cat];
-      html += '<div class="category-label">' + cat + '</div>';
+    visibleCats.forEach(function (cat) {
+      var g = byCategory[cat];
+      var catItems = filtered.filter(function (t) { return (t.category || 'Altri strumenti') === cat; });
+      if (catItems.length === 0) return;
 
-      if (group.direct.length) {
-        html += '<div class="tools-grid">';
-        group.direct.forEach(function (t) { html += cardHtml(t); });
-        html += '</div>';
+      html += '<div class="category-section"><div class="category-heading">' + cat + '</div>';
+
+      var directItems = catItems.filter(function (t) { return !t.subcategory; });
+      if (directItems.length) {
+        html += '<ul class="tool-list">' + directItems.map(itemHtml).join('') + '</ul>';
       }
 
-      group.subcats.forEach(function (sub) {
-        html += '<div class="subcategory-label">' + sub + '</div>';
-        html += '<div class="tools-grid">';
-        group.bySubcat[sub].forEach(function (t) { html += cardHtml(t); });
-        html += '</div>';
+      g.subcats.forEach(function (sub) {
+        var subItems = catItems.filter(function (t) { return t.subcategory === sub; });
+        if (!subItems.length) return;
+        html += '<div class="subcategory-heading">' + sub + '</div>';
+        html += '<ul class="tool-list">' + subItems.map(itemHtml).join('') + '</ul>';
       });
+
+      html += '</div>';
     });
 
-    wrap.innerHTML = html;
-  })();
+    toolsCol.innerHTML = html;
+  }
+
+  // ── render ──
+  function render() {
+    var query = document.getElementById('search-input').value.trim().toLowerCase();
+
+    var filtered = tools.filter(function (t) {
+      var matchCat = activeCategory === 'all' || (t.category || 'Altri strumenti') === activeCategory;
+      var matchSearch = !query ||
+        t.title.toLowerCase().indexOf(query) !== -1 ||
+        t.description.toLowerCase().indexOf(query) !== -1 ||
+        (t.category || '').toLowerCase().indexOf(query) !== -1;
+      return matchCat && matchSearch;
+    });
+
+    buildSidebar(filtered);
+    buildList(filtered);
+  }
+
+  document.getElementById('search-input').addEventListener('input', function () {
+    activeCategory = 'all';
+    render();
+  });
+
+  render();
+})();
 </script>
 
 </body>
