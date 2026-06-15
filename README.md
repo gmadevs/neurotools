@@ -2,7 +2,7 @@
 
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-live-brightgreen?logo=github)](https://gmadevs.github.io/neurotools/)
-[![License: CC0-1.0](https://img.shields.io/badge/License-CC0%201.0-lightgrey.svg)](LICENSE)
+[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 [![Made with HTML](https://img.shields.io/badge/Made%20with-HTML%2FCSS%2FJS-orange?logo=html5)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/gmadevs/neurotools/pulls)
 [![GitHub last commit](https://img.shields.io/github/last-commit/gmadevs/neurotools?label=ultimo%20commit&logo=git)](https://github.com/gmadevs/neurotools/commits/main)
