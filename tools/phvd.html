@@ -795,14 +795,36 @@ function copyReport() {
   const fmtM = v => v !== null ? v.toFixed(1) + ' mm' : 'n.r.';
   const pmaStr = pma ? `${pma.weeks}s + ${pma.days}g` : 'n.d.';
 
+  // Ricalcola soglie VI
+  const pmaFrac = pma ? pma.weeks + pma.days / 7 : null;
+  const vi97 = pmaFrac ? getVI97(pmaFrac) : null;
+  const vi97plus4 = vi97 !== null ? vi97 + 4 : null;
+
+  const fmtDiff = (v, ref) => {
+    if (v === null || ref === null) return '';
+    const d = v - ref;
+    return d >= 0 ? ` [+${d.toFixed(1)} vs P97]` : ` [${d.toFixed(1)} vs P97]`;
+  };
+
   let plain = `PHVD - Ecografia Cerebrale Neonatale\n`;
   plain += `PMA: ${pmaStr}\n\n`;
+
+  // Soglie
+  if (vi97 !== null) {
+    plain += `SOGLIE VI (PMA ${pmaStr}):\n`;
+    plain += `  VI 97° centile (P97):   ${vi97.toFixed(1)} mm\n`;
+    plain += `  VI P97 + 4 mm (severo): ${vi97plus4.toFixed(1)} mm\n`;
+    plain += `  AHW: >6 mm = lieve/mod. | >10 mm = severo\n`;
+    plain += `  TOD: >25 mm = severo\n\n`;
+  }
+
+  // Misure con percentile
   plain += `MISURE:\n`;
-  plain += `  VI  dx ${fmtM(viR)}  |  sin ${fmtM(viL)}\n`;
+  plain += `  VI  dx ${fmtM(viR)}${fmtDiff(viR, vi97)}  |  sin ${fmtM(viL)}${fmtDiff(viL, vi97)}\n`;
   plain += `  AHW dx ${fmtM(ahwR)}  |  sin ${fmtM(ahwL)}\n`;
   plain += `  TOD dx ${fmtM(todR)}  |  sin ${fmtM(todL)}\n\n`;
 
-  // Repeat classification from output panel text
+  // Classificazione
   const statusEl = document.querySelector('.result-status');
   const mainEl = document.querySelector('.result-main');
   if (statusEl) plain += `CLASSIFICAZIONE: ${statusEl.textContent.trim()}\n`;
@@ -813,6 +835,11 @@ function copyReport() {
     plain += `\nACCORGIMENTI:\n`;
     items.forEach(li => { plain += `- ${li.textContent.trim()}\n`; });
   }
+
+  // Reference
+  plain += `\n---\n`;
+  plain += `Centili: Brouwer MJ et al., Radiology 2012;262:224-33.\n`;
+  plain += `Algoritmo: Acun C et al., Semin Fetal Neonatal Med 2026 (Fig. 4); El-Dib M et al., J Pediatr 2020.\n`;
 
   const btn = document.getElementById('btnCopy');
   if (navigator.clipboard && navigator.clipboard.writeText) {
