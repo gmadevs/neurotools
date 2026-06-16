@@ -367,9 +367,53 @@
     color: var(--ink);
   }
 
+  .btn-copy {
+    padding: .55rem 1.2rem;
+    background: var(--ok);
+    border: none;
+    color: #fff;
+    border-radius: 5px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn-copy:hover { background: #145a38; }
+  .btn-copy.copied { background: #555; }
+
+  .btn-print {
+    padding: .55rem 1.1rem;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 5px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-print:hover { background: var(--accent); color: #fff; }
+
+  .report-actions {
+    display: flex;
+    gap: .7rem;
+    margin-top: 1.4rem;
+    align-items: center;
+  }
+
   @media (max-width: 800px) {
     .workspace { grid-template-columns: 1fr; }
     .output-panel { border-top: 1px solid var(--rule); }
+  }
+
+  @media print {
+    header, .input-panel, .report-actions { display: none !important; }
   }
 </style>
 </head>
@@ -728,8 +772,67 @@ function calculate() {
     </div>
   `;
 
+  const actions = `
+    <div class="report-actions">
+      <button class="btn-copy" id="btnCopy" onclick="copyReport()">&#10003; Copia Testo per PACS</button>
+      <button class="btn-print" onclick="window.print()">Stampa / Salva PDF</button>
+    </div>
+  `;
+
   document.getElementById('placeholder-msg') && (document.getElementById('placeholder-msg').remove());
-  document.getElementById('output-panel').innerHTML = html;
+  document.getElementById('output-panel').innerHTML = html + actions;
+}
+
+function copyReport() {
+  const pma = getPMA();
+  const viR = parseFloat(document.getElementById('vi-r').value) || null;
+  const viL = parseFloat(document.getElementById('vi-l').value) || null;
+  const ahwR = parseFloat(document.getElementById('ahw-r').value) || null;
+  const ahwL = parseFloat(document.getElementById('ahw-l').value) || null;
+  const todR = parseFloat(document.getElementById('tod-r').value) || null;
+  const todL = parseFloat(document.getElementById('tod-l').value) || null;
+
+  const fmtM = v => v !== null ? v.toFixed(1) + ' mm' : 'n.r.';
+  const pmaStr = pma ? `${pma.weeks}s + ${pma.days}g` : 'n.d.';
+
+  let plain = `PHVD - Ecografia Cerebrale Neonatale\n`;
+  plain += `PMA: ${pmaStr}\n\n`;
+  plain += `MISURE:\n`;
+  plain += `  VI  dx ${fmtM(viR)}  |  sin ${fmtM(viL)}\n`;
+  plain += `  AHW dx ${fmtM(ahwR)}  |  sin ${fmtM(ahwL)}\n`;
+  plain += `  TOD dx ${fmtM(todR)}  |  sin ${fmtM(todL)}\n\n`;
+
+  // Repeat classification from output panel text
+  const statusEl = document.querySelector('.result-status');
+  const mainEl = document.querySelector('.result-main');
+  if (statusEl) plain += `CLASSIFICAZIONE: ${statusEl.textContent.trim()}\n`;
+  if (mainEl) plain += `${mainEl.textContent.trim()}\n`;
+
+  const items = document.querySelectorAll('.action-list li');
+  if (items.length) {
+    plain += `\nACCORGIMENTI:\n`;
+    items.forEach(li => { plain += `- ${li.textContent.trim()}\n`; });
+  }
+
+  const btn = document.getElementById('btnCopy');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(plain).then(() => {
+      btn.textContent = '✓ Copiato!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = plain;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓ Copiato!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
+  }
 }
 
 function resetAll() {
