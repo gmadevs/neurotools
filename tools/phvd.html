@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="it" data-root="..">
+<head>
+<link rel="stylesheet" href="../assets/nav.css">
+<script src="../assets/site-config.js"></script>
+<script src="../assets/nav.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHVD – Monitoraggio Dilatazione Ventricolare</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1c22;
+    --paper: #f5f4f0;
+    --card: #ffffff;
+    --rule: #d0cfc8;
+    --accent: #1b4f72;
+    --accent-light: #d6e8f5;
+    --warn: #8b2500;
+    --warn-bg: #fdecea;
+    --ok: #1a4731;
+    --ok-bg: #e8f5ee;
+    --mid: #4a3800;
+    --mid-bg: #fdf8e1;
+    --neutral-bg: #eef3f8;
+    --neutral: #1b4f72;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 1.5rem 2rem 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1.2rem;
+  }
+  header h1 {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  header span {
+    font-size: 0.78rem;
+    opacity: .7;
+    font-style: italic;
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    min-height: calc(100vh - 68px);
+  }
+
+  .input-panel {
+    background: var(--card);
+    border-right: 1px solid var(--rule);
+    padding: 1.8rem 1.5rem 2rem;
+    overflow-y: auto;
+  }
+
+  .output-panel {
+    background: var(--paper);
+    padding: 1.8rem 1.5rem 2rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: .6rem;
+    padding-bottom: .35rem;
+    border-bottom: 1.5px solid var(--accent-light);
+  }
+
+  .section-block { margin-bottom: 1.6rem; }
+  .form-group { margin-bottom: 1rem; }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: .3rem;
+    color: #3a3c45;
+  }
+
+  .hint {
+    font-size: 0.72rem;
+    color: #7a7870;
+    margin-top: .2rem;
+  }
+
+  input[type="number"],
+  input[type="date"],
+  select {
+    width: 100%;
+    padding: .45rem .7rem;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    background: #fff;
+    color: var(--ink);
+    transition: border-color .15s;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .75rem;
+  }
+
+  .field-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: .75rem;
+  }
+
+  .date-with-btn {
+    display: flex;
+    gap: .5rem;
+    align-items: flex-end;
+  }
+  .date-with-btn input { flex: 1; }
+
+  .btn-today {
+    padding: .45rem .75rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--accent);
+    white-space: nowrap;
+    transition: background .15s;
+  }
+  .btn-today:hover { background: var(--accent-light); }
+
+  .pma-display {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .55rem .8rem;
+    background: var(--neutral-bg);
+    border: 1px solid var(--accent-light);
+    border-radius: 6px;
+    margin-top: .75rem;
+  }
+  .pma-display .pma-label {
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 600;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .pma-display .pma-value {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .measure-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 1fr;
+    gap: .5rem;
+    align-items: center;
+    margin-bottom: .55rem;
+  }
+  .measure-row .meas-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #3a3c45;
+    font-family: var(--mono);
+  }
+
+  .actions {
+    display: flex;
+    gap: .75rem;
+    margin-top: 1.2rem;
+  }
+
+  .btn {
+    padding: .55rem 1.2rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    cursor: pointer;
+    border: none;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
+
+  /* OUTPUT */
+  .result-block {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+  }
+
+  .result-status {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .4rem 1.1rem;
+    border-radius: 99px;
+    margin-bottom: .8rem;
+    background: var(--neutral-bg);
+    color: var(--neutral);
+  }
+  .result-status.ok      { background: var(--ok-bg);   color: var(--ok); }
+  .result-status.warn    { background: var(--mid-bg);  color: var(--mid); }
+  .result-status.danger  { background: var(--warn-bg); color: var(--warn); }
+
+  .result-main {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -.01em;
+    margin-bottom: .5rem;
+    color: var(--ink);
+  }
+
+  .result-copy {
+    font-size: 0.82rem;
+    color: #5a5c65;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  /* METRICS TABLE */
+  .metrics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+  .metrics-table th {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #7a7870;
+    padding: .4rem .6rem;
+    text-align: left;
+    border-bottom: 1px solid var(--rule);
+  }
+  .metrics-table td {
+    padding: .5rem .6rem;
+    border-bottom: 1px solid #ebebeb;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+  }
+  .metrics-table tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    padding: .15rem .5rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .badge-ok     { background: var(--ok-bg);   color: var(--ok); }
+  .badge-warn   { background: var(--mid-bg);  color: var(--mid); }
+  .badge-danger { background: var(--warn-bg); color: var(--warn); }
+  .badge-na     { background: #f0f0ee; color: #9a9890; }
+
+  .action-list {
+    list-style: none;
+    padding: 0;
+    margin: .6rem 0 0;
+  }
+  .action-list li {
+    display: flex;
+    gap: .6rem;
+    align-items: flex-start;
+    font-size: 0.82rem;
+    color: #3a3c45;
+    margin-bottom: .45rem;
+    line-height: 1.4;
+  }
+  .action-list li::before {
+    content: "→";
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .ref-note {
+    font-size: 0.7rem;
+    color: #9a9890;
+    margin-top: .8rem;
+    line-height: 1.4;
+  }
+
+  .placeholder {
+    text-align: center;
+    color: #9a9890;
+    font-size: 0.85rem;
+    padding: 3rem 1rem;
+    font-style: italic;
+  }
+
+  .vi-threshold-row {
+    display: flex;
+    gap: .6rem;
+    align-items: center;
+    padding: .5rem .6rem;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    margin-bottom: .5rem;
+    font-size: 0.8rem;
+  }
+  .vi-threshold-row .th-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: #7a7870;
+    min-width: 120px;
+  }
+  .vi-threshold-row .th-value {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  @media (max-width: 800px) {
+    .workspace { grid-template-columns: 1fr; }
+    .output-panel { border-top: 1px solid var(--rule); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>PHVD Monitor</h1>
+  <span>Dilatazione Ventricolare Post-Emorragica – Criteri Brouwer / ELVIS
+    <a href="https://pubmed.ncbi.nlm.nih.gov/41876331/" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin-left:.4rem">
+      <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
+    </a>
+  </span>
+</header>
+
+<div class="workspace">
+  <!-- ── INPUT PANEL ── -->
+  <div class="input-panel">
+
+    <div class="section-block">
+      <div class="section-label">Dati paziente</div>
+
+      <div class="form-group">
+        <label>Data di nascita</label>
+        <input type="date" id="dob">
+      </div>
+
+      <div class="form-group">
+        <label>Età gestazionale alla nascita</label>
+        <div class="field-grid">
+          <div>
+            <input type="number" id="ga-weeks" min="22" max="42" placeholder="settimane" step="1">
+            <div class="hint">settimane</div>
+          </div>
+          <div>
+            <input type="number" id="ga-days" min="0" max="6" placeholder="giorni" step="1" value="0">
+            <div class="hint">giorni (0–6)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Data dell'ecografia</label>
+        <div class="date-with-btn">
+          <input type="date" id="eco-date">
+          <button class="btn-today" onclick="setToday()">Oggi</button>
+        </div>
+      </div>
+
+      <div class="pma-display" id="pma-display" style="display:none">
+        <span class="pma-label">PMA</span>
+        <span class="pma-value" id="pma-value">—</span>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Misure ecografiche (mm)</div>
+
+      <div style="display:grid; grid-template-columns:90px 1fr 1fr; gap:.4rem; margin-bottom:.35rem;">
+        <div></div>
+        <div style="font-size:0.7rem;font-family:var(--mono);color:#7a7870;text-align:center;">Destro</div>
+        <div style="font-size:0.7rem;font-family:var(--mono);color:#7a7870;text-align:center;">Sinistro</div>
+      </div>
+
+      <div class="measure-row">
+        <div class="meas-label">VI</div>
+        <input type="number" id="vi-r" min="0" max="40" step="0.1" placeholder="mm">
+        <input type="number" id="vi-l" min="0" max="40" step="0.1" placeholder="mm">
+      </div>
+      <div style="font-size:0.7rem;color:#7a7870;margin:-0.3rem 0 .6rem 94px;">Ventricular Index – piano coronale al forame di Monro</div>
+
+      <div class="measure-row">
+        <div class="meas-label">AHW</div>
+        <input type="number" id="ahw-r" min="0" max="30" step="0.1" placeholder="mm">
+        <input type="number" id="ahw-l" min="0" max="30" step="0.1" placeholder="mm">
+      </div>
+      <div style="font-size:0.7rem;color:#7a7870;margin:-0.3rem 0 .6rem 94px;">Anterior Horn Width – piano coronale caudotalamica</div>
+
+      <div class="measure-row">
+        <div class="meas-label">TOD</div>
+        <input type="number" id="tod-r" min="0" max="60" step="0.1" placeholder="mm">
+        <input type="number" id="tod-l" min="0" max="60" step="0.1" placeholder="mm">
+      </div>
+      <div style="font-size:0.7rem;color:#7a7870;margin:-0.3rem 0 .6rem 94px;">Thalamo-Occipital Distance – piano parasagittale</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="calculate()">Calcola</button>
+      <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+  <!-- ── OUTPUT PANEL ── -->
+  <div class="output-panel" id="output-panel">
+    <div class="placeholder" id="placeholder-msg">
+      Inserisci i dati del paziente e le misure ecografiche, poi premi <strong>Calcola</strong>.
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CENTILI VI (97° percentile) da Brouwer et al. 2012 – Radiology 262:224-233
+// Valori per età post-mestruale (PMA) in settimane (24–42w)
+// Fonte: figure 3 del paper (Acun et al. 2026, Sem Fetal Neonatal Med)
+const VI_P97 = {
+  24: 12.0, 25: 12.4, 26: 12.8, 27: 13.2, 28: 13.6,
+  29: 14.0, 30: 14.4, 31: 14.8, 32: 15.2, 33: 15.6,
+  34: 16.0, 35: 16.3, 36: 16.6, 37: 16.9, 38: 17.2,
+  39: 17.5, 40: 17.8, 41: 18.1, 42: 18.4
+};
+
+function getVI97(pmaWeeks) {
+  const w = Math.round(pmaWeeks);
+  const clamped = Math.max(24, Math.min(42, w));
+  if (VI_P97[clamped] !== undefined) return VI_P97[clamped];
+  // linear interpolation fallback
+  if (clamped < 24) return VI_P97[24];
+  return VI_P97[42];
+}
+
+function setToday() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('eco-date').value = today;
+  updatePMA();
+}
+
+function updatePMA() {
+  const dob = document.getElementById('dob').value;
+  const ecoDate = document.getElementById('eco-date').value;
+  const gaWeeks = parseInt(document.getElementById('ga-weeks').value) || 0;
+  const gaDays = parseInt(document.getElementById('ga-days').value) || 0;
+
+  const display = document.getElementById('pma-display');
+
+  if (!dob || !ecoDate || !gaWeeks) {
+    display.style.display = 'none';
+    return;
+  }
+
+  const dobDate = new Date(dob);
+  const ecoD = new Date(ecoDate);
+  const postnatalDays = Math.round((ecoD - dobDate) / (1000 * 60 * 60 * 24));
+
+  if (postnatalDays < 0) { display.style.display = 'none'; return; }
+
+  const totalDays = gaWeeks * 7 + gaDays + postnatalDays;
+  const pmaW = Math.floor(totalDays / 7);
+  const pmaD = totalDays % 7;
+
+  document.getElementById('pma-value').textContent = pmaW + 's + ' + pmaD + 'g';
+  display.style.display = 'flex';
+}
+
+['dob','eco-date','ga-weeks','ga-days'].forEach(id => {
+  document.getElementById(id).addEventListener('change', updatePMA);
+});
+
+function getPMA() {
+  const dob = document.getElementById('dob').value;
+  const ecoDate = document.getElementById('eco-date').value;
+  const gaWeeks = parseInt(document.getElementById('ga-weeks').value) || 0;
+  const gaDays = parseInt(document.getElementById('ga-days').value) || 0;
+
+  if (!dob || !ecoDate || !gaWeeks) return null;
+
+  const dobDate = new Date(dob);
+  const ecoD = new Date(ecoDate);
+  const postnatalDays = Math.round((ecoD - dobDate) / (1000 * 60 * 60 * 24));
+  if (postnatalDays < 0) return null;
+
+  const totalDays = gaWeeks * 7 + gaDays + postnatalDays;
+  return { weeks: Math.floor(totalDays / 7), days: totalDays % 7, totalDays };
+}
+
+function fmtMm(v) {
+  return v !== null ? v.toFixed(1) + ' mm' : '—';
+}
+
+function badgeHtml(cls, txt) {
+  return '<span class="badge badge-' + cls + '">' + txt + '</span>';
+}
+
+function calculate() {
+  const pma = getPMA();
+  if (!pma) {
+    alert('Inserire data di nascita, età gestazionale e data dell\'ecografia.');
+    return;
+  }
+
+  // Leggi misure
+  const viR  = parseFloat(document.getElementById('vi-r').value)  || null;
+  const viL  = parseFloat(document.getElementById('vi-l').value)  || null;
+  const ahwR = parseFloat(document.getElementById('ahw-r').value) || null;
+  const ahwL = parseFloat(document.getElementById('ahw-l').value) || null;
+  const todR = parseFloat(document.getElementById('tod-r').value) || null;
+  const todL = parseFloat(document.getElementById('tod-l').value) || null;
+
+  // Valore massimo per lato
+  const viMax  = (viR !== null && viL !== null) ? Math.max(viR, viL) : (viR ?? viL);
+  const ahwMax = (ahwR !== null && ahwL !== null) ? Math.max(ahwR, ahwL) : (ahwR ?? ahwL);
+  const todMax = (todR !== null && todL !== null) ? Math.max(todR, todL) : (todR ?? todL);
+
+  const pmaFrac = pma.weeks + pma.days / 7;
+  const vi97 = getVI97(pmaFrac);
+  const vi97plus4 = vi97 + 4;
+
+  // Classificazione VI
+  function classifyVI(v) {
+    if (v === null) return 'na';
+    if (v > vi97plus4) return 'danger';
+    if (v > vi97)      return 'warn';
+    return 'ok';
+  }
+  function classifyAHW(v) {
+    if (v === null) return 'na';
+    if (v > 10) return 'danger';
+    if (v > 6)  return 'warn';
+    return 'ok';
+  }
+  function classifyTOD(v) {
+    if (v === null) return 'na';
+    if (v > 25) return 'danger';
+    return 'ok';
+  }
+
+  const viRcls  = classifyVI(viR);
+  const viLcls  = classifyVI(viL);
+  const ahwRcls = classifyAHW(ahwR);
+  const ahwLcls = classifyAHW(ahwL);
+  const todRcls = classifyTOD(todR);
+  const todLcls = classifyTOD(todL);
+
+  // Algoritmo globale (worst case)
+  const viMaxCls  = classifyVI(viMax);
+  const ahwMaxCls = classifyAHW(ahwMax);
+  const todMaxCls = classifyTOD(todMax);
+
+  const severeCriteria = (viMaxCls === 'danger') || (ahwMaxCls === 'danger') || (todMaxCls === 'danger');
+  const mildCriteria   = (viMaxCls !== 'ok' && viMaxCls !== 'na') || (ahwMaxCls !== 'ok' && ahwMaxCls !== 'na') || (todMaxCls !== 'ok' && todMaxCls !== 'na');
+
+  let globalResult, globalCls, globalActions;
+
+  if (severeCriteria) {
+    globalResult = 'Dilatazione Severa / Rapida Progressione';
+    globalCls = 'danger';
+    globalActions = [
+      'Consulto urgente neurochirurgico',
+      'Drenaggio CSF neurochirurgico temporaneo: VAD (ventricular access device) o VSG shunt',
+      'Monitoraggio ecografico ravvicinato',
+      'Valutazione multidisciplinare (neonatologia, neurologia, neurochirurgia)'
+    ];
+  } else if (mildCriteria) {
+    globalResult = 'Dilatazione Lieve / Moderata';
+    globalCls = 'warn';
+    globalActions = [
+      'Consulto neurologia e neurochirurgia',
+      'Eseguire 2–3 punture lombari sotto guida ecografica',
+      'Aumentare frequenza ecografie (≥ 2×/settimana)',
+      'Review multidisciplinare continua'
+    ];
+  } else {
+    globalResult = 'Misure nella norma';
+    globalCls = 'ok';
+    globalActions = [
+      'Continuare ecografie seriate (≥ 2×/settimana se IVH severa recente)',
+      'Se stabili per 2 settimane consecutive: ridurre a 1×/settimana',
+      'Continuare monitoraggio fino a ~34 settimane PMA o dimissione'
+    ];
+  }
+
+  // Badge text
+  function badgeText(cls) {
+    if (cls === 'ok') return 'Normale';
+    if (cls === 'warn') return 'Lieve/Mod.';
+    if (cls === 'danger') return 'Severo';
+    return 'n.d.';
+  }
+
+  function viExtra(v) {
+    if (v === null) return '';
+    const diff = v - vi97;
+    if (diff > 0) return ' (+' + diff.toFixed(1) + ' vs P97)';
+    return ' (' + diff.toFixed(1) + ' vs P97)';
+  }
+
+  const html = `
+    <div class="result-block">
+      <div class="section-label">Risultato algoritmo</div>
+      <div class="result-status ${globalCls}">${globalCls === 'ok' ? '✓ Normale' : globalCls === 'warn' ? '⚠ Lieve / Moderata' : '✕ Severa'}</div>
+      <div class="result-main">${globalResult}</div>
+      <ul class="action-list">
+        ${globalActions.map(a => `<li>${a}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="result-block">
+      <div class="section-label">PMA &amp; soglie VI</div>
+      <div class="vi-threshold-row">
+        <span class="th-label">PMA calcolata</span>
+        <span class="th-value">${pma.weeks} sett + ${pma.days} gg</span>
+      </div>
+      <div class="vi-threshold-row">
+        <span class="th-label">VI 97° centile</span>
+        <span class="th-value">${vi97.toFixed(1)} mm</span>
+      </div>
+      <div class="vi-threshold-row">
+        <span class="th-label">VI 97° + 4 mm</span>
+        <span class="th-value">${vi97plus4.toFixed(1)} mm</span>
+      </div>
+      <div class="ref-note">
+        Centili da: Brouwer MJ et al., <em>Radiology</em> 2012;262:224–33.<br>
+        Algoritmo da: Acun C et al., <em>Semin Fetal Neonatal Med</em> 2026 (Fig. 4); El-Dib M et al., <em>J Pediatr</em> 2020.
+      </div>
+    </div>
+
+    <div class="result-block">
+      <div class="section-label">Misure per lato</div>
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th>Misura</th>
+            <th>Destro</th>
+            <th>Stato</th>
+            <th>Sinistro</th>
+            <th>Stato</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>VI</strong></td>
+            <td>${fmtMm(viR)}${viExtra(viR)}</td>
+            <td>${badgeHtml(viRcls, badgeText(viRcls))}</td>
+            <td>${fmtMm(viL)}${viExtra(viL)}</td>
+            <td>${badgeHtml(viLcls, badgeText(viLcls))}</td>
+          </tr>
+          <tr>
+            <td><strong>AHW</strong></td>
+            <td>${fmtMm(ahwR)}</td>
+            <td>${badgeHtml(ahwRcls, badgeText(ahwRcls))}</td>
+            <td>${fmtMm(ahwL)}</td>
+            <td>${badgeHtml(ahwLcls, badgeText(ahwLcls))}</td>
+          </tr>
+          <tr>
+            <td><strong>TOD</strong></td>
+            <td>${fmtMm(todR)}</td>
+            <td>${badgeHtml(todRcls, todRcls === 'danger' ? '>25mm' : todRcls === 'ok' ? 'Normale' : 'n.d.')}</td>
+            <td>${fmtMm(todL)}</td>
+            <td>${badgeHtml(todLcls, todLcls === 'danger' ? '>25mm' : todLcls === 'ok' ? 'Normale' : 'n.d.')}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:.8rem;padding:.6rem .8rem;background:var(--paper);border-radius:6px;font-size:0.74rem;color:#7a7870;font-family:var(--mono);">
+        Soglie: VI &gt; P97 = lieve/mod. &nbsp;|&nbsp; VI &gt; P97+4mm = severo<br>
+        AHW &gt; 6 mm = lieve/mod. &nbsp;|&nbsp; AHW &gt; 10 mm = severo<br>
+        TOD &gt; 25 mm = severo
+      </div>
+    </div>
+  `;
+
+  document.getElementById('placeholder-msg') && (document.getElementById('placeholder-msg').remove());
+  document.getElementById('output-panel').innerHTML = html;
+}
+
+function resetAll() {
+  ['dob','eco-date','ga-weeks','ga-days','vi-r','vi-l','ahw-r','ahw-l','tod-r','tod-l'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('pma-display').style.display = 'none';
+  document.getElementById('output-panel').innerHTML =
+    '<div class="placeholder" id="placeholder-msg">Inserisci i dati del paziente e le misure ecografiche, poi premi <strong>Calcola</strong>.</div>';
+}
+</script>
+</body>
+</html>

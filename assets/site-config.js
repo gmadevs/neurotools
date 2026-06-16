@@ -29,7 +29,7 @@ window.SITE_TOOLS = [
     title: "Suture craniche",
     description: "Referto ecografico per la valutazione delle suture craniche",
     url: "tools/suture-craniche.html",
-    category: "Pediatrica",
+    category: "Neuroradiologia Pediatrica",
     subcategory: "Ecografia"
   }
 
@@ -38,7 +38,7 @@ window.SITE_TOOLS = [
     title: "Doppler neonatale",
     description: "Valori doppler (ACA e MCA) nel prematuro, con centili per GA e età postnatale",
     url: "tools/doppler-cerebrale-neonatale.html",
-    category: "Pediatrica",
+    category: "Neuroradiologia Pediatrica",
     subcategory: "Ecografia"
   }
 
@@ -47,8 +47,17 @@ window.SITE_TOOLS = [
     title: "Biometria ipofisi",
     description: "Centili per le misure RM dell'ipofisi (altezza, larghezza, volume, rapporto PS/BA) dal neonato all'adolescente",
     url: "tools/ipofisi-rm-pediatrica.html",
-    category: "Pediatrica",
+    category: "Neuroradiologia Pediatrica",
     subcategory: "Risonanza Magnetica"
+  }
+
+  ,{
+    id: "phvd",
+    title: "PHVD Monitor",
+    description: "Monitoraggio della dilatazione ventricolare post-emorragica (PHVD) nel prematuro",
+    url: "tools/phvd.html",
+    category: "Neuroradiologia Pediatrica",
+    subcategory: "Ecografia"
   }
 
   ,{
