@@ -34,7 +34,7 @@
   header {
     background: var(--accent); color: #fff;
     padding: 1.5rem 2rem 1.25rem;
-    display: flex; align-items: baseline; gap: 1.2rem;
+    display: flex; align-items: center; gap: 1.2rem;
   }
   header h1 { font-family: var(--mono); font-size: 1rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
   header span { font-size: 0.78rem; opacity: .7; font-style: italic; }
@@ -205,11 +205,104 @@
     padding: .3rem .5rem; background: #f8f8f5; border-radius: 3px; border-left: 2px solid #ccc;
   }
 
+  /* ── INFO BUTTON ── */
+  .btn-info {
+    margin-left: auto;
+    display: flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.5);
+    background: rgba(255,255,255,.12); color: #fff;
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; flex-shrink: 0;
+    transition: background .15s, border-color .15s; line-height: 1;
+  }
+  .btn-info:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.8); }
+
+  /* ── TUTORIAL MODAL ── */
+  .tutorial-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.55); z-index: 1000;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .tutorial-overlay.open { display: flex; }
+
+  .tutorial-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 520px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.25); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .tutorial-header {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  }
+  .tutorial-header h2 {
+    font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+  .tutorial-close {
+    background: none; border: none; color: rgba(255,255,255,.7);
+    font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+  }
+  .tutorial-close:hover { color: #fff; }
+
+  .tutorial-steps-bar {
+    display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
+    background: #f8f7f4; border-bottom: 1px solid var(--rule);
+  }
+  .step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+  .step-dot.active { background: var(--accent); }
+  .step-dot.done { background: var(--ok); }
+
+  .tutorial-body { padding: 1.6rem 1.8rem 1.2rem; min-height: 200px; flex: 1; }
+
+  .step-number {
+    font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
+  }
+  .tutorial-body h3 {
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+  }
+  .tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
+  .tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
+  .tut-tip {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--accent); margin-top: .8rem;
+  }
+  .tut-warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--warn); margin-top: .8rem;
+  }
+
+  .tutorial-footer {
+    padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
+    justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
+  }
+  .tutorial-skip {
+    font-size: 0.75rem; color: #aaa; cursor: pointer;
+    background: none; border: none; padding: 0; transition: color .15s;
+  }
+  .tutorial-skip:hover { color: #666; }
+  .tutorial-nav { display: flex; gap: .6rem; }
+  .btn-tut-prev, .btn-tut-next {
+    font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+    letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
+  }
+  .btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
+  .btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+  .btn-tut-next:hover { background: #143d57; }
+  .btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+  .btn-tut-next.finish:hover { background: #145a38; }
+
   @media print {
     header, .input-panel, .report-actions { display: none !important; }
     .workspace { display: block; }
     .report-panel { padding: 0; }
     .report-card { border: none; box-shadow: none; }
+    .tutorial-overlay { display: none !important; }
   }
 
   @media (max-width: 860px) {
@@ -227,7 +320,27 @@
       <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
     </a>
   </span>
+  <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
 </header>
+
+<!-- ── TUTORIAL MODAL ── -->
+<div class="tutorial-overlay" id="tutorialOverlay" onclick="handleOverlayClick(event)">
+  <div class="tutorial-modal">
+    <div class="tutorial-header">
+      <h2>Come usare il tool</h2>
+      <button class="tutorial-close" onclick="closeTutorial()">&#10005;</button>
+    </div>
+    <div class="tutorial-steps-bar" id="stepBar"></div>
+    <div class="tutorial-body" id="tutorialBody"></div>
+    <div class="tutorial-footer">
+      <button class="tutorial-skip" onclick="closeTutorial()">Chiudi</button>
+      <div class="tutorial-nav">
+        <button class="btn-tut-prev" id="btnPrev" onclick="tutStep(-1)">&#8592; Indietro</button>
+        <button class="btn-tut-next" id="btnNext" onclick="tutStep(1)">Avanti &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="workspace">
 
@@ -757,6 +870,106 @@ function copyReport() {
     btn.textContent = '✓ Copiato!'; btn.classList.add('copied');
     setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
   });
+}
+
+// ── TUTORIAL ──
+const TUTORIAL_STEPS = [
+  {
+    title: 'Benvenuto nel tool',
+    body: `<p>Questo strumento genera il <strong>referto Doppler cerebrale neonatale</strong> confrontando i valori misurati di ACA e MCA con i <strong>centili di riferimento di Romagnoli et al. 2006</strong>.</p>
+    <p>Il tutorial ti guida in 4 passi rapidi.</p>
+    <div class="tut-tip">Validato per prematuri da 25 a 35 settimane EG, nel primo mese di vita postnatale.</div>`
+  },
+  {
+    title: 'Inserisci i dati del paziente',
+    body: `<p>Nel pannello a sinistra:</p>
+    <ul>
+      <li>Seleziona il <strong>gruppo di età gestazionale</strong> (25–28, 29–30, 31–32, 33–35 settimane)</li>
+      <li>Inserisci la <strong>data di nascita</strong> e la <strong>data dell'esame</strong> (o premi <em>Oggi</em>)</li>
+    </ul>
+    <p>L'età postnatale in giorni viene calcolata automaticamente — determina quale colonna di centili viene usata per il confronto.</p>
+    <div class="tut-tip">I centili vengono interpolati tra i giorni di riferimento più vicini (1, 3, 7, 14, 21, 28).</div>`
+  },
+  {
+    title: 'Inserisci i valori Doppler',
+    body: `<p>Per ciascuna arteria (ACA e MCA) inserisci i parametri misurati:</p>
+    <ul>
+      <li><strong>PSV</strong> – velocità sistolica di picco (cm/s)</li>
+      <li><strong>EDV</strong> – velocità telediastolica (cm/s)</li>
+      <li><strong>RI</strong> – indice di resistenza (adimensionale)</li>
+      <li><strong>MV</strong> – velocità media (cm/s)</li>
+      <li><strong>PI</strong> – indice di pulsatilità (adimensionale)</li>
+    </ul>
+    <p>Lascia vuoto qualsiasi campo non misurato: non comparirà nel referto.</p>
+    <div class="tut-warn">I valori di riferimento coprono solo i giorni 1–28 di vita postnatale. Oltre questo intervallo apparirà un avviso.</div>`
+  },
+  {
+    title: 'Genera e usa il referto',
+    body: `<p>Premi <strong>▶ Genera Referto</strong> per visualizzare il referto nel pannello di destra.</p>
+    <p>Il referto include:</p>
+    <ul>
+      <li>Tabella con P10, P50, P90 per ogni parametro misurato</li>
+      <li>Badge colorato per ogni valore (normale / &lt;P10 / &gt;P90)</li>
+      <li>Box conclusioni con codice colore (verde = normale, giallo = attenzione, rosso = anomalo)</li>
+    </ul>
+    <p>Usa <strong>Copia Testo per PACS</strong> per copiare il referto in plain-text, oppure <strong>Stampa / Salva PDF</strong> per esportarlo.</p>
+    <div class="tut-tip">Il testo copiato include tutte le sezioni: tecnica, tabella centili e conclusioni.</div>`
+  }
+];
+
+let tutCurrentStep = 0;
+
+function openTutorial() {
+  tutCurrentStep = 0;
+  renderTutorial();
+  document.getElementById('tutorialOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTutorial() {
+  document.getElementById('tutorialOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('tutorialOverlay')) closeTutorial();
+}
+
+function tutStep(dir) {
+  const next = tutCurrentStep + dir;
+  if (next < 0 || next >= TUTORIAL_STEPS.length) return;
+  tutCurrentStep = next;
+  renderTutorial();
+}
+
+function renderTutorial() {
+  const total = TUTORIAL_STEPS.length;
+  const i = tutCurrentStep;
+  const step = TUTORIAL_STEPS[i];
+
+  document.getElementById('stepBar').innerHTML = TUTORIAL_STEPS.map((_, idx) => {
+    const cls = idx < i ? 'done' : idx === i ? 'active' : '';
+    return `<div class="step-dot ${cls}"></div>`;
+  }).join('');
+
+  document.getElementById('tutorialBody').innerHTML = `
+    <div class="step-number">Passo ${i + 1} di ${total}</div>
+    <h3>${step.title}</h3>
+    ${step.body}
+  `;
+
+  document.getElementById('btnPrev').style.visibility = i === 0 ? 'hidden' : 'visible';
+
+  const btnNext = document.getElementById('btnNext');
+  if (i === total - 1) {
+    btnNext.textContent = '✓ Ho capito';
+    btnNext.className = 'btn-tut-next finish';
+    btnNext.onclick = closeTutorial;
+  } else {
+    btnNext.innerHTML = 'Avanti &#8594;';
+    btnNext.className = 'btn-tut-next';
+    btnNext.onclick = () => tutStep(1);
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => { setToday(); });
