@@ -34,7 +34,7 @@
   header {
     background: var(--accent); color: #fff;
     padding: 1.5rem 2rem 1.25rem;
-    display: flex; align-items: baseline; gap: 1.2rem;
+    display: flex; align-items: center; gap: 1.2rem;
   }
   header h1 { font-family: var(--mono); font-size: 1rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
   header span { font-size: 0.78rem; opacity: .7; font-style: italic; }
@@ -170,11 +170,104 @@
     padding: .3rem .5rem; background: #f8f8f5; border-radius: 3px; border-left: 2px solid #ccc;
   }
 
+  /* ── INFO BUTTON ── */
+  .btn-info {
+    margin-left: auto;
+    display: flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.5);
+    background: rgba(255,255,255,.12); color: #fff;
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; flex-shrink: 0;
+    transition: background .15s, border-color .15s; line-height: 1;
+  }
+  .btn-info:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.8); }
+
+  /* ── TUTORIAL MODAL ── */
+  .tutorial-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.55); z-index: 1000;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .tutorial-overlay.open { display: flex; }
+
+  .tutorial-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 520px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.25); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .tutorial-header {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  }
+  .tutorial-header h2 {
+    font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+  .tutorial-close {
+    background: none; border: none; color: rgba(255,255,255,.7);
+    font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+  }
+  .tutorial-close:hover { color: #fff; }
+
+  .tutorial-steps-bar {
+    display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
+    background: #f8f7f4; border-bottom: 1px solid var(--rule);
+  }
+  .step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+  .step-dot.active { background: var(--accent); }
+  .step-dot.done { background: var(--ok); }
+
+  .tutorial-body { padding: 1.6rem 1.8rem 1.2rem; min-height: 200px; flex: 1; }
+
+  .step-number {
+    font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
+  }
+  .tutorial-body h3 {
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+  }
+  .tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
+  .tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
+  .tut-tip {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--accent); margin-top: .8rem;
+  }
+  .tut-warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--warn); margin-top: .8rem;
+  }
+
+  .tutorial-footer {
+    padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
+    justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
+  }
+  .tutorial-skip {
+    font-size: 0.75rem; color: #aaa; cursor: pointer;
+    background: none; border: none; padding: 0; transition: color .15s;
+  }
+  .tutorial-skip:hover { color: #666; }
+  .tutorial-nav { display: flex; gap: .6rem; }
+  .btn-tut-prev, .btn-tut-next {
+    font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+    letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
+  }
+  .btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
+  .btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+  .btn-tut-next:hover { background: #143d57; }
+  .btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+  .btn-tut-next.finish:hover { background: #145a38; }
+
   @media print {
     header, .input-panel, .report-actions { display: none !important; }
     .workspace { display: block; }
     .report-panel { padding: 0; }
     .report-card { border: none; box-shadow: none; }
+    .tutorial-overlay { display: none !important; }
   }
 
   @media (max-width: 860px) {
@@ -192,7 +285,27 @@
       <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
     </a>
   </span>
+  <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
 </header>
+
+<!-- ── TUTORIAL MODAL ── -->
+<div class="tutorial-overlay" id="tutorialOverlay" onclick="handleOverlayClick(event)">
+  <div class="tutorial-modal">
+    <div class="tutorial-header">
+      <h2>Come usare il tool</h2>
+      <button class="tutorial-close" onclick="closeTutorial()">&#10005;</button>
+    </div>
+    <div class="tutorial-steps-bar" id="stepBar"></div>
+    <div class="tutorial-body" id="tutorialBody"></div>
+    <div class="tutorial-footer">
+      <button class="tutorial-skip" onclick="closeTutorial()">Chiudi</button>
+      <div class="tutorial-nav">
+        <button class="btn-tut-prev" id="btnPrev" onclick="tutStep(-1)">&#8592; Indietro</button>
+        <button class="btn-tut-next" id="btnNext" onclick="tutStep(1)">Avanti &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="workspace">
 
@@ -293,6 +406,103 @@
 </div>
 
 <script>
+// ── TUTORIAL ──
+const TUTORIAL_STEPS = [
+  {
+    title: 'Benvenuto nel tool',
+    body: `<p>Questo strumento confronta le <strong>misure RM dell'ipofisi</strong> di un paziente pediatrico con i <strong>centili di riferimento di Sari et al. 2014</strong>, stratificati per sesso ed età.</p>
+    <p>Il tutorial ti guida in 4 passi rapidi.</p>
+    <div class="tut-tip">Validato per pazienti da meno di 1 anno fino a 18 anni, con dati separati per maschi e femmine.</div>`
+  },
+  {
+    title: 'Inserisci i dati del paziente',
+    body: `<p>Nel pannello a sinistra seleziona:</p>
+    <ul>
+      <li><strong>Sesso</strong> – Femmina o Maschio: i valori di riferimento differiscono, specialmente in età puberale</li>
+      <li><strong>Età</strong> – in anni interi; scegli la fascia più vicina all'età del paziente</li>
+    </ul>
+    <div class="tut-tip">Nelle femmine l'ipofisi tende ad essere più alta rispetto ai maschi a partire dai 13 anni, per l'effetto degli estrogeni.</div>`
+  },
+  {
+    title: 'Inserisci le misure RM',
+    body: `<p>Inserisci le misure disponibili (lascia vuoto ciò che non è stato misurato):</p>
+    <ul>
+      <li><strong>Altezza</strong> – dimensione craniocaudale, piano sagittale (mm)</li>
+      <li><strong>Larghezza coronale</strong> – dimensione trasversale, piano coronale (mm)</li>
+      <li><strong>Larghezza sagittale (AP)</strong> – dimensione antero-posteriore, piano sagittale (mm)</li>
+      <li><strong>Volume</strong> – altezza × larghezza coronale × larghezza AP × 0.5 (mm³)</li>
+      <li><strong>Rapporto PS/BA</strong> – diametro peduncolo / diametro arteria basilare su assiale (normale &lt; 1)</li>
+    </ul>
+    <div class="tut-warn">Il volume può essere calcolato automaticamente dal software RM oppure inserito manualmente con la formula ellissoidale.</div>`
+  },
+  {
+    title: 'Genera e interpreta il referto',
+    body: `<p>Premi <strong>▶ Genera Referto</strong> per visualizzare la tabella dei centili nel pannello di destra.</p>
+    <p>Per ogni misura inserita il tool mostra:</p>
+    <ul>
+      <li>P5, P50 e P95 di riferimento per sesso ed età</li>
+      <li>Il <strong>centile calcolato</strong> – in verde se nella norma (5°–95°), in rosso se fuori range</li>
+    </ul>
+    <p>Il box conclusioni riassume se le misure sono nella norma o richiedono correlazione clinico-ormonale.</p>
+    <div class="tut-tip">Usa <em>Copia Testo per PACS</em> per esportare il referto completo in plain-text.</div>`
+  }
+];
+
+let tutCurrentStep = 0;
+
+function openTutorial() {
+  tutCurrentStep = 0;
+  renderTutorial();
+  document.getElementById('tutorialOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTutorial() {
+  document.getElementById('tutorialOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('tutorialOverlay')) closeTutorial();
+}
+
+function tutStep(dir) {
+  const next = tutCurrentStep + dir;
+  if (next < 0 || next >= TUTORIAL_STEPS.length) return;
+  tutCurrentStep = next;
+  renderTutorial();
+}
+
+function renderTutorial() {
+  const total = TUTORIAL_STEPS.length;
+  const i = tutCurrentStep;
+  const step = TUTORIAL_STEPS[i];
+
+  document.getElementById('stepBar').innerHTML = TUTORIAL_STEPS.map((_, idx) => {
+    const cls = idx < i ? 'done' : idx === i ? 'active' : '';
+    return `<div class="step-dot ${cls}"></div>`;
+  }).join('');
+
+  document.getElementById('tutorialBody').innerHTML = `
+    <div class="step-number">Passo ${i + 1} di ${total}</div>
+    <h3>${step.title}</h3>
+    ${step.body}
+  `;
+
+  document.getElementById('btnPrev').style.visibility = i === 0 ? 'hidden' : 'visible';
+
+  const btnNext = document.getElementById('btnNext');
+  if (i === total - 1) {
+    btnNext.textContent = '✓ Ho capito';
+    btnNext.className = 'btn-tut-next finish';
+    btnNext.onclick = closeTutorial;
+  } else {
+    btnNext.innerHTML = 'Avanti &#8594;';
+    btnNext.className = 'btn-tut-next';
+    btnNext.onclick = () => tutStep(1);
+  }
+}
+
 // ══════════════════════════════════════════════════════════════
 // DATI DA SARI et al. 2014  (Table 1 femmine, Table 2 maschi)
 // Formato: [mean, sd] per ciascuna misura per fascia d'età
