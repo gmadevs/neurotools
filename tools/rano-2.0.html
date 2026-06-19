@@ -45,7 +45,7 @@
     color: #fff;
     padding: 1.5rem 2rem 1.25rem;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 1.2rem;
   }
   header h1 {
@@ -401,6 +401,98 @@
     .field-grid { grid-template-columns: 1fr; }
     .metrics-row { grid-template-columns: 1fr; }
   }
+
+  /* ── INFO BUTTON ── */
+  .btn-info {
+    margin-left: auto;
+    display: flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.5);
+    background: rgba(255,255,255,.12); color: #fff;
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; flex-shrink: 0;
+    transition: background .15s, border-color .15s; line-height: 1;
+  }
+  .btn-info:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.8); }
+
+  /* ── TUTORIAL MODAL ── */
+  .tutorial-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.55); z-index: 1000;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .tutorial-overlay.open { display: flex; }
+
+  .tutorial-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 520px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.25); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .tutorial-header {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  }
+  .tutorial-header h2 {
+    font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+  .tutorial-close {
+    background: none; border: none; color: rgba(255,255,255,.7);
+    font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+  }
+  .tutorial-close:hover { color: #fff; }
+
+  .tutorial-steps-bar {
+    display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
+    background: #f8f7f4; border-bottom: 1px solid var(--rule);
+  }
+  .step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+  .step-dot.active { background: var(--accent); }
+  .step-dot.done { background: var(--ok); }
+
+  .tutorial-body { padding: 1.6rem 1.8rem 1.2rem; min-height: 200px; flex: 1; }
+
+  .step-number {
+    font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
+  }
+  .tutorial-body h3 {
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+  }
+  .tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
+  .tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
+  .tut-tip {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--accent); margin-top: .8rem;
+  }
+  .tut-warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--warn); margin-top: .8rem;
+  }
+
+  .tutorial-footer {
+    padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
+    justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
+  }
+  .tutorial-skip {
+    font-size: 0.75rem; color: #aaa; cursor: pointer;
+    background: none; border: none; padding: 0; transition: color .15s;
+  }
+  .tutorial-skip:hover { color: #666; }
+  .tutorial-nav { display: flex; gap: .6rem; }
+  .btn-tut-prev, .btn-tut-next {
+    font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+    letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
+  }
+  .btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
+  .btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+  .btn-tut-next:hover { background: #143d57; }
+  .btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+  .btn-tut-next.finish:hover { background: #145a38; }
 </style>
 </head>
 <body>
@@ -412,7 +504,27 @@
       <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
     </a>
   </span>
+  <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
 </header>
+
+<!-- ── TUTORIAL MODAL ── -->
+<div class="tutorial-overlay" id="tutorialOverlay" onclick="handleOverlayClick(event)">
+  <div class="tutorial-modal">
+    <div class="tutorial-header">
+      <h2>Come usare il tool</h2>
+      <button class="tutorial-close" onclick="closeTutorial()">&#10005;</button>
+    </div>
+    <div class="tutorial-steps-bar" id="stepBar"></div>
+    <div class="tutorial-body" id="tutorialBody"></div>
+    <div class="tutorial-footer">
+      <button class="tutorial-skip" onclick="closeTutorial()">Chiudi</button>
+      <div class="tutorial-nav">
+        <button class="btn-tut-prev" id="btnPrev" onclick="tutStep(-1)">&#8592; Indietro</button>
+        <button class="btn-tut-next" id="btnNext" onclick="tutStep(1)">Avanti &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="workspace">
 
@@ -584,6 +696,103 @@
 </div>
 
 <script>
+  // ── TUTORIAL ──
+  const TUTORIAL_STEPS = [
+    {
+      title: 'Benvenuto nel calcolatore RANO 2.0',
+      body: `<p>Questo tool calcola la <strong>risposta radiologica</strong> nei tumori cerebrali secondo i criteri <strong>RANO 2.0</strong>, supportando la classificazione in CR, PR, SD o PD a partire dalle misure RM.</p>
+      <p>Il tutorial ti guida in 4 passi rapidi.</p>
+      <div class="tut-tip">RANO 2.0 supporta sia la misurazione bidimensionale (2D – prodotto dei diametri) sia volumetrica (3D), con soglie diverse per ciascun metodo.</div>`
+    },
+    {
+      title: 'Scegli la modalità di misura',
+      body: `<p>In alto nel pannello sinistra, seleziona la modalità:</p>
+      <ul>
+        <li><strong>2D – Diametri</strong>: inserisci il diametro massimo e il diametro perpendicolare massimo della lesione. Il tool calcola il loro prodotto (metodo standard).</li>
+        <li><strong>3D – Volume</strong>: inserisci il volume tumorale calcolato dal software RM (es. metodo ellissoidale o segmentazione). Le soglie cambiano: PD ≥ 40%, PR ≥ 65%.</li>
+      </ul>
+      <div class="tut-tip">Usa sempre la stessa modalità tra baseline e follow-up per confronti coerenti.</div>`
+    },
+    {
+      title: 'Inserisci le misure e i fattori integrativi',
+      body: `<p>Compila i campi <strong>Baseline</strong> (misure di riferimento) e <strong>Follow-up</strong> (esame attuale).</p>
+      <p>Indica anche le settimane trascorse dalla fine della radioterapia — serve per segnalare la finestra di <strong>pseudoprogressione</strong> (≤ 12 settimane).</p>
+      <p>Spunta i <strong>fattori integrativi</strong> se presenti:</p>
+      <ul>
+        <li><strong>Nuova lesione</strong> → orienta verso PD indipendentemente dalle misure</li>
+        <li><strong>Deterioramento neurologico</strong> → può configurare progressione clinica</li>
+        <li><strong>Steroidi in aumento</strong> → invalida una risposta favorevole come PR</li>
+      </ul>
+      <div class="tut-warn">La baseline corretta dopo chemio-RT è la RM post-trattamento, non quella pre-trattamento.</div>`
+    },
+    {
+      title: 'Interpreta il risultato',
+      body: `<p>Premi <strong>Calcola classificazione</strong> per ottenere:</p>
+      <ul>
+        <li>La <strong>variazione percentuale</strong> rispetto alla baseline</li>
+        <li>La <strong>classificazione RANO 2.0</strong>: PD (rosso), PR (verde), SD (neutro), o avviso PsP (giallo)</li>
+        <li>I fattori integrativi che hanno influenzato il risultato</li>
+      </ul>
+      <p>Il pannello destro mostra anche un riepilogo dei criteri RANO 2.0 e le note su pseudoprogressione e baseline post-RT.</p>
+      <div class="tut-tip">Il risultato è un supporto decisionale — non sostituisce il giudizio integrato neuroradiologico e clinico.</div>`
+    }
+  ];
+
+  let tutCurrentStep = 0;
+
+  function openTutorial() {
+    tutCurrentStep = 0;
+    renderTutorial();
+    document.getElementById('tutorialOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeTutorial() {
+    document.getElementById('tutorialOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('tutorialOverlay')) closeTutorial();
+  }
+
+  function tutStep(dir) {
+    const next = tutCurrentStep + dir;
+    if (next < 0 || next >= TUTORIAL_STEPS.length) return;
+    tutCurrentStep = next;
+    renderTutorial();
+  }
+
+  function renderTutorial() {
+    const total = TUTORIAL_STEPS.length;
+    const i = tutCurrentStep;
+    const step = TUTORIAL_STEPS[i];
+
+    document.getElementById('stepBar').innerHTML = TUTORIAL_STEPS.map((_, idx) => {
+      const cls = idx < i ? 'done' : idx === i ? 'active' : '';
+      return `<div class="step-dot ${cls}"></div>`;
+    }).join('');
+
+    document.getElementById('tutorialBody').innerHTML = `
+      <div class="step-number">Passo ${i + 1} di ${total}</div>
+      <h3>${step.title}</h3>
+      ${step.body}
+    `;
+
+    document.getElementById('btnPrev').style.visibility = i === 0 ? 'hidden' : 'visible';
+
+    const btnNext = document.getElementById('btnNext');
+    if (i === total - 1) {
+      btnNext.textContent = '✓ Ho capito';
+      btnNext.className = 'btn-tut-next finish';
+      btnNext.onclick = closeTutorial;
+    } else {
+      btnNext.innerHTML = 'Avanti &#8594;';
+      btnNext.className = 'btn-tut-next';
+      btnNext.onclick = () => tutStep(1);
+    }
+  }
+
   let currentMode = '2D';
 
   const btn2D = document.getElementById('btn2D');
