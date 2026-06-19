@@ -44,7 +44,7 @@
     color: #fff;
     padding: 1.5rem 2rem 1.25rem;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 1.2rem;
   }
   header h1 {
@@ -407,6 +407,98 @@
     align-items: center;
   }
 
+  /* ── INFO BUTTON ── */
+  .btn-info {
+    margin-left: auto;
+    display: flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.5);
+    background: rgba(255,255,255,.12); color: #fff;
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; flex-shrink: 0;
+    transition: background .15s, border-color .15s; line-height: 1;
+  }
+  .btn-info:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.8); }
+
+  /* ── TUTORIAL MODAL ── */
+  .tutorial-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.55); z-index: 1000;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .tutorial-overlay.open { display: flex; }
+
+  .tutorial-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 520px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.25); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .tutorial-header {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  }
+  .tutorial-header h2 {
+    font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+  .tutorial-close {
+    background: none; border: none; color: rgba(255,255,255,.7);
+    font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+  }
+  .tutorial-close:hover { color: #fff; }
+
+  .tutorial-steps-bar {
+    display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
+    background: #f8f7f4; border-bottom: 1px solid var(--rule);
+  }
+  .step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+  .step-dot.active { background: var(--accent); }
+  .step-dot.done { background: var(--ok); }
+
+  .tutorial-body { padding: 1.6rem 1.8rem 1.2rem; min-height: 200px; flex: 1; }
+
+  .step-number {
+    font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
+  }
+  .tutorial-body h3 {
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+  }
+  .tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
+  .tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
+  .tut-tip {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--accent); margin-top: .8rem;
+  }
+  .tut-warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--warn); margin-top: .8rem;
+  }
+
+  .tutorial-footer {
+    padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
+    justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
+  }
+  .tutorial-skip {
+    font-size: 0.75rem; color: #aaa; cursor: pointer;
+    background: none; border: none; padding: 0; transition: color .15s;
+  }
+  .tutorial-skip:hover { color: #666; }
+  .tutorial-nav { display: flex; gap: .6rem; }
+  .btn-tut-prev, .btn-tut-next {
+    font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+    letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
+  }
+  .btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
+  .btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+  .btn-tut-next:hover { background: #143d57; }
+  .btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+  .btn-tut-next.finish:hover { background: #145a38; }
+
   @media (max-width: 800px) {
     .workspace { grid-template-columns: 1fr; }
     .output-panel { border-top: 1px solid var(--rule); }
@@ -414,6 +506,7 @@
 
   @media print {
     header, .input-panel, .report-actions { display: none !important; }
+    .tutorial-overlay { display: none !important; }
   }
 </style>
 </head>
@@ -425,7 +518,27 @@
       <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
     </a>
   </span>
+  <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
 </header>
+
+<!-- ── TUTORIAL MODAL ── -->
+<div class="tutorial-overlay" id="tutorialOverlay" onclick="handleOverlayClick(event)">
+  <div class="tutorial-modal">
+    <div class="tutorial-header">
+      <h2>Come usare il tool</h2>
+      <button class="tutorial-close" onclick="closeTutorial()">&#10005;</button>
+    </div>
+    <div class="tutorial-steps-bar" id="stepBar"></div>
+    <div class="tutorial-body" id="tutorialBody"></div>
+    <div class="tutorial-footer">
+      <button class="tutorial-skip" onclick="closeTutorial()">Chiudi</button>
+      <div class="tutorial-nav">
+        <button class="btn-tut-prev" id="btnPrev" onclick="tutStep(-1)">&#8592; Indietro</button>
+        <button class="btn-tut-next" id="btnNext" onclick="tutStep(1)">Avanti &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="workspace">
   <!-- ── INPUT PANEL ── -->
@@ -859,6 +972,104 @@ function copyReport() {
     btn.textContent = '✓ Copiato!';
     btn.classList.add('copied');
     setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
+  }
+}
+
+// ── TUTORIAL ──
+const TUTORIAL_STEPS = [
+  {
+    title: 'Benvenuto nel PHVD Monitor',
+    body: `<p>Questo tool calcola e classifica la <strong>dilatazione ventricolare post-emorragica (PHVD)</strong> nel neonato prematuro, applicando i criteri di Brouwer e l'algoritmo ELVIS.</p>
+    <p>Il tutorial ti guida in 4 passi rapidi.</p>
+    <div class="tut-tip">Basato sui centili VI di Brouwer et al. 2012 e l'algoritmo gestionale di Acun et al. 2026 / El-Dib et al. 2020.</div>`
+  },
+  {
+    title: 'Inserisci i dati del paziente',
+    body: `<p>Nel pannello a sinistra:</p>
+    <ul>
+      <li>Inserisci la <strong>data di nascita</strong></li>
+      <li>Inserisci l'<strong>età gestazionale alla nascita</strong> (settimane + giorni)</li>
+      <li>Inserisci la <strong>data dell'ecografia</strong> (o premi <em>Oggi</em>)</li>
+    </ul>
+    <p>L'<strong>età post-mestruale (PMA)</strong> viene calcolata automaticamente — è quella che determina la soglia del 97° centile del Ventricular Index.</p>
+    <div class="tut-tip">PMA = EG alla nascita + giorni di vita postnatali, espressa in settimane + giorni.</div>`
+  },
+  {
+    title: 'Inserisci le misure ecografiche',
+    body: `<p>Per ciascuna misura, inserisci il valore destro e sinistro in mm:</p>
+    <ul>
+      <li><strong>VI</strong> – Ventricular Index: larghezza del ventricolo laterale al forame di Monro (piano coronale)</li>
+      <li><strong>AHW</strong> – Anterior Horn Width: larghezza del corno anteriore (piano coronale caudotalamica)</li>
+      <li><strong>TOD</strong> – Thalamo-Occipital Distance: distanza talamo-occipitale (piano parasagittale)</li>
+    </ul>
+    <div class="tut-warn">Il tool usa il valore peggiore tra i due lati per la classificazione. Lascia vuoto ciò che non è stato misurato.</div>`
+  },
+  {
+    title: 'Interpreta il risultato',
+    body: `<p>Premi <strong>Calcola</strong> per vedere la classificazione nel pannello di destra.</p>
+    <p>Il risultato include:</p>
+    <ul>
+      <li><strong>Normale</strong> (verde) – tutte le misure entro i limiti</li>
+      <li><strong>Lieve/Moderata</strong> (giallo) – VI &gt; P97, o AHW &gt; 6 mm</li>
+      <li><strong>Severa</strong> (rosso) – VI &gt; P97+4 mm, o AHW &gt; 10 mm, o TOD &gt; 25 mm</li>
+    </ul>
+    <p>Per ogni livello sono indicati gli <strong>accorgimenti clinici</strong> raccomandati dall'algoritmo ELVIS.</p>
+    <div class="tut-tip">Usa <em>Copia Testo per PACS</em> per esportare il report completo con soglie, misure e classificazione.</div>`
+  }
+];
+
+let tutCurrentStep = 0;
+
+function openTutorial() {
+  tutCurrentStep = 0;
+  renderTutorial();
+  document.getElementById('tutorialOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTutorial() {
+  document.getElementById('tutorialOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('tutorialOverlay')) closeTutorial();
+}
+
+function tutStep(dir) {
+  const next = tutCurrentStep + dir;
+  if (next < 0 || next >= TUTORIAL_STEPS.length) return;
+  tutCurrentStep = next;
+  renderTutorial();
+}
+
+function renderTutorial() {
+  const total = TUTORIAL_STEPS.length;
+  const i = tutCurrentStep;
+  const step = TUTORIAL_STEPS[i];
+
+  document.getElementById('stepBar').innerHTML = TUTORIAL_STEPS.map((_, idx) => {
+    const cls = idx < i ? 'done' : idx === i ? 'active' : '';
+    return `<div class="step-dot ${cls}"></div>`;
+  }).join('');
+
+  document.getElementById('tutorialBody').innerHTML = `
+    <div class="step-number">Passo ${i + 1} di ${total}</div>
+    <h3>${step.title}</h3>
+    ${step.body}
+  `;
+
+  document.getElementById('btnPrev').style.visibility = i === 0 ? 'hidden' : 'visible';
+
+  const btnNext = document.getElementById('btnNext');
+  if (i === total - 1) {
+    btnNext.textContent = '✓ Ho capito';
+    btnNext.className = 'btn-tut-next finish';
+    btnNext.onclick = closeTutorial;
+  } else {
+    btnNext.innerHTML = 'Avanti &#8594;';
+    btnNext.className = 'btn-tut-next';
+    btnNext.onclick = () => tutStep(1);
   }
 }
 
