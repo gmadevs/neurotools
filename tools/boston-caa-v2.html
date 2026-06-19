@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="it" data-root="..">
+<head>
+<link rel="stylesheet" href="../assets/nav.css">
+<script src="../assets/site-config.js"></script>
+<script src="../assets/nav.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boston Criteria v2.0 – Angiopatia Amiloide Cerebrale</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1c22;
+    --paper: #f5f4f0;
+    --card: #ffffff;
+    --rule: #d0cfc8;
+    --accent: #1b4f72;
+    --accent-light: #d6e8f5;
+    --warn: #8b2500;
+    --warn-bg: #fdecea;
+    --ok: #1a4731;
+    --ok-bg: #e8f5ee;
+    --mid: #4a3800;
+    --mid-bg: #fdf8e1;
+    --neutral-bg: #eef3f8;
+    --neutral: #1b4f72;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 1.5rem 2rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+  header h1 {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  header span {
+    font-size: 0.78rem;
+    opacity: .7;
+    font-style: italic;
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    min-height: calc(100vh - 68px);
+  }
+
+  .input-panel {
+    background: var(--card);
+    border-right: 1px solid var(--rule);
+    padding: 1.8rem 1.5rem 2rem;
+    overflow-y: auto;
+  }
+
+  .output-panel {
+    background: var(--paper);
+    padding: 1.8rem 1.5rem 2rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: .6rem;
+    padding-bottom: .35rem;
+    border-bottom: 1.5px solid var(--accent-light);
+  }
+
+  .section-block {
+    margin-bottom: 1.6rem;
+  }
+
+  .check {
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+    padding: .75rem;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--paper);
+    margin-bottom: .55rem;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+
+  .check:hover {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .check input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin-top: 2px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .check-label {
+    font-size: 0.8rem;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+
+  .check-label strong { font-weight: 600; }
+  .check-label .sub {
+    display: block;
+    font-size: 0.72rem;
+    color: #7a7870;
+    margin-top: .15rem;
+  }
+
+  .subsection-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: var(--mono);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: #5a5c65;
+    margin: .9rem 0 .45rem;
+  }
+
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    margin: .5rem 0;
+  }
+  .or-divider::before, .or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+  .or-divider span {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    color: #9a9890;
+  }
+
+  .actions {
+    display: flex;
+    gap: .75rem;
+    margin-top: 1.2rem;
+  }
+
+  .btn {
+    padding: .55rem 1.2rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    cursor: pointer;
+    border: none;
+    transition: opacity .15s;
+  }
+
+  .btn:hover { opacity: .85; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-secondary {
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+  }
+
+  /* ── OUTPUT ── */
+  .result-block {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+  }
+
+  .result-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: .3rem .9rem;
+    border-radius: 99px;
+    margin-bottom: .8rem;
+    background: var(--neutral-bg);
+    color: var(--neutral);
+  }
+
+  .result-badge.definita  { background: #1a1c22; color: #fff; }
+  .result-badge.probabile { background: var(--warn-bg); color: var(--warn); }
+  .result-badge.possibile { background: var(--mid-bg); color: var(--mid); }
+  .result-badge.non-caa   { background: var(--ok-bg); color: var(--ok); }
+
+  .result-main {
+    font-family: var(--mono);
+    font-size: 1.7rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -.01em;
+    margin-bottom: .5rem;
+    color: var(--ink);
+  }
+
+  .result-copy {
+    font-size: 0.82rem;
+    color: #5a5c65;
+    line-height: 1.55;
+    margin-bottom: 1rem;
+  }
+
+  .criteria-met {
+    margin-top: .8rem;
+    padding: .7rem .9rem;
+    background: var(--paper);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    color: #5a5c65;
+    line-height: 1.55;
+  }
+
+  .criteria-met strong {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #7a7870;
+    margin-bottom: .35rem;
+  }
+
+  .criteria-met ul {
+    margin-left: 1.1rem;
+  }
+
+  .criteria-met li {
+    margin-bottom: .15rem;
+  }
+
+  .footer-note {
+    margin-top: .8rem;
+    padding: .6rem .8rem;
+    background: var(--paper);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #7a7870;
+    border-left: 3px solid var(--rule);
+  }
+
+  .note {
+    border-radius: 6px;
+    padding: .8rem 1rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    border: 1px solid;
+  }
+
+  .note.info    { background: var(--neutral-bg); color: var(--neutral); border-color: var(--accent-light); }
+  .note.warning { background: var(--mid-bg);     color: var(--mid);     border-color: #e0c96a; }
+  .note.danger  { background: var(--warn-bg);    color: var(--warn);    border-color: #f5b8ae; }
+
+  .note strong { font-weight: 600; display: block; margin-bottom: .25rem; }
+
+  .rule-block {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+  }
+
+  .rule-item {
+    font-size: 0.8rem;
+    color: #5a5c65;
+    padding: .55rem 0;
+    border-bottom: 1px solid var(--rule);
+    line-height: 1.5;
+  }
+
+  .rule-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .rule-item:first-child { padding-top: 0; }
+  .rule-item strong { color: var(--ink); }
+
+  .age-warning {
+    background: var(--warn-bg);
+    border: 1px solid #f5b8ae;
+    border-radius: 6px;
+    padding: .7rem .9rem;
+    font-size: 0.78rem;
+    color: var(--warn);
+    margin-bottom: 1rem;
+    display: none;
+  }
+
+  .age-warning.visible { display: block; }
+
+  /* ── INFO BUTTON ── */
+  .btn-info {
+    margin-left: auto;
+    display: flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.5);
+    background: rgba(255,255,255,.12); color: #fff;
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; flex-shrink: 0;
+    transition: background .15s, border-color .15s; line-height: 1;
+  }
+  .btn-info:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.8); }
+
+  /* ── TUTORIAL MODAL ── */
+  .tutorial-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.55); z-index: 1000;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .tutorial-overlay.open { display: flex; }
+
+  .tutorial-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 520px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.25); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .tutorial-header {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  }
+  .tutorial-header h2 {
+    font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+  .tutorial-close {
+    background: none; border: none; color: rgba(255,255,255,.7);
+    font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+  }
+  .tutorial-close:hover { color: #fff; }
+
+  .tutorial-steps-bar {
+    display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
+    background: #f8f7f4; border-bottom: 1px solid var(--rule);
+  }
+  .step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+  .step-dot.active { background: var(--accent); }
+  .step-dot.done { background: var(--ok); }
+
+  .tutorial-body { padding: 1.6rem 1.8rem 1.2rem; min-height: 200px; flex: 1; }
+
+  .step-number {
+    font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
+  }
+  .tutorial-body h3 {
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+  }
+  .tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
+  .tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
+  .tut-tip {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--accent); margin-top: .8rem;
+  }
+  .tut-warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--warn); margin-top: .8rem;
+  }
+
+  .tutorial-footer {
+    padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
+    justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
+  }
+  .tutorial-skip {
+    font-size: 0.75rem; color: #aaa; cursor: pointer;
+    background: none; border: none; padding: 0; transition: color .15s;
+  }
+  .tutorial-skip:hover { color: #666; }
+  .tutorial-nav { display: flex; gap: .6rem; }
+  .btn-tut-prev, .btn-tut-next {
+    font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+    letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
+  }
+  .btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
+  .btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+  .btn-tut-next:hover { background: #143d57; }
+  .btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+  .btn-tut-next.finish:hover { background: #145a38; }
+
+  @media (max-width: 780px) {
+    .workspace { grid-template-columns: 1fr; }
+    .output-panel { border-top: 1px solid var(--rule); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Boston Criteria v2.0</h1>
+  <span>Angiopatia Amiloide Cerebrale – Diagnosi clinico-radiologica
+    <a href="https://pubmed.ncbi.nlm.nih.gov/35841910/" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin-left:.4rem">
+      <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
+    </a>
+  </span>
+  <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
+</header>
+
+<!-- ── TUTORIAL MODAL ── -->
+<div class="tutorial-overlay" id="tutorialOverlay" onclick="handleOverlayClick(event)">
+  <div class="tutorial-modal">
+    <div class="tutorial-header">
+      <h2>Come usare il tool</h2>
+      <button class="tutorial-close" onclick="closeTutorial()">&#10005;</button>
+    </div>
+    <div class="tutorial-steps-bar" id="stepBar"></div>
+    <div class="tutorial-body" id="tutorialBody"></div>
+    <div class="tutorial-footer">
+      <button class="tutorial-skip" onclick="closeTutorial()">Chiudi</button>
+      <div class="tutorial-nav">
+        <button class="btn-tut-prev" id="btnPrev" onclick="tutStep(-1)">&#8592; Indietro</button>
+        <button class="btn-tut-next" id="btnNext" onclick="tutStep(1)">Avanti &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="workspace">
+
+  <!-- ── PANEL SINISTRA ── -->
+  <div class="input-panel">
+
+    <!-- Età -->
+    <div class="section-block">
+      <div class="section-label">Prerequisito clinico</div>
+      <div id="ageWarning" class="age-warning">
+        &#9888; I criteri di Boston v2.0 per CAA Probabile e Possibile si applicano a pazienti di <strong>età ≥ 50 anni</strong>.
+      </div>
+      <label class="check">
+        <input type="checkbox" id="ageOk" onchange="onAgeChange()">
+        <span class="check-label">
+          <strong>Età ≥ 50 anni</strong>
+          <span class="sub">Requisito necessario per le categorie Probabile e Possibile basate su MRI.</span>
+        </span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="clinPres">
+        <span class="check-label">
+          <strong>Presentazione clinica compatibile</strong>
+          <span class="sub">Emorragia intracerebrale spontanea, episodi neurologici focali transitori (TFNE), deterioramento cognitivo o demenza.</span>
+        </span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="noOtherCause">
+        <span class="check-label">
+          <strong>Assenza di altra causa di emorragia</strong>
+          <span class="sub">Escludi: trauma, trasformazione emorragica ischemica, MAV, tumore, vasculite del SNC, emorragia iatrogena.</span>
+        </span>
+      </label>
+    </div>
+
+    <!-- Marker emorragici lobari -->
+    <div class="section-block">
+      <div class="section-label">Marker MRI emorragici lobari (T2*)</div>
+      <p style="font-size:.74rem;color:#7a7870;margin-bottom:.8rem">Valutabili su GRE T2* o sequenze SWI. Le lesioni lobari sono strettamente corticali/sottocorticali o subaracnoidee convessitali.</p>
+
+      <label class="check">
+        <input type="checkbox" id="ich" onchange="calc()">
+        <span class="check-label">
+          <strong>Emorragia intracerebrale lobare</strong>
+          <span class="sub">Singola o multipla, strettamente lobare (corteccia/sostanza bianca sottocorticale).</span>
+        </span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="cmb" onchange="calc()">
+        <span class="check-label">
+          <strong>Microbleeds lobari (≥ 1)</strong>
+          <span class="sub">Ipointensità puntiformi lobari su T2*. Contano solo quelli strettamente lobari.</span>
+        </span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="css" onchange="calc()">
+        <span class="check-label">
+          <strong>Siderosi corticale superficiale</strong>
+          <span class="sub">Focale o multifocale. La forma multifocale (≥ 2 giri separati da aree indenni, o ≥ 3 giri adiacenti) da sola conta come 2 lesioni emorragiche lobari.</span>
+        </span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="cSAH" onchange="calc()">
+        <span class="check-label">
+          <strong>Emorragia subaracnoidea convessitale acuta</strong>
+          <span class="sub">Equivalente acuto della siderosi corticale (stessa lesione di base). Se in prossimità di CSS conta come 2 marker emorragici.</span>
+        </span>
+      </label>
+
+      <div class="subsection-title">Multifocalità della CSS/cSAH</div>
+      <label class="check">
+        <input type="checkbox" id="cssMultifocal" onchange="calc()">
+        <span class="check-label">
+          <strong>CSS/cSAH multifocale o estesa</strong>
+          <span class="sub">Presenza di CSS multifocale/estesa (≥ 2 foci separati o ≥ 3 giri) oppure cSAH in prossimità di CSS preesistente → vale come 2 lesioni emorragiche lobari.</span>
+        </span>
+      </label>
+    </div>
+
+    <!-- Marker non-emorragici (WHITE MATTER) -->
+    <div class="section-block">
+      <div class="section-label">Marker MRI non-emorragici (sostanza bianca)</div>
+      <p style="font-size:.74rem;color:#7a7870;margin-bottom:.8rem">Novità della v2.0. Uno di questi, in presenza di almeno 1 lesione emorragica lobare, è sufficiente per CAA Probabile. Senza lesioni emorragiche, contribuiscono alla categoria Possibile.</p>
+
+      <label class="check">
+        <input type="checkbox" id="pvs" onchange="calc()">
+        <span class="check-label">
+          <strong>Spazi perivascolari severi nel centrum semiovale</strong>
+          <span class="sub">&gt; 20 spazi perivascolari visibili in un emisfero su T2-pesata. Correlato al trafficking perivascolare di β-amiloide.</span>
+        </span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="wmh" onchange="calc()">
+        <span class="check-label">
+          <strong>Pattern WMH multispot</strong>
+          <span class="sub">&gt; 10 lesioni iperintense piccole e ovalari in FLAIR sottocorticale, bilateralmente. Distinte dalle WMH periventricolare confluente.</span>
+        </span>
+      </label>
+    </div>
+
+    <!-- Lesioni non-lobari (esclusione) -->
+    <div class="section-block">
+      <div class="section-label">Distribuzione non-lobare (attenzione)</div>
+      <label class="check">
+        <input type="checkbox" id="deepHaem" onchange="calc()">
+        <span class="check-label">
+          <strong>Lesioni emorragiche profonde o cerebellari presenti</strong>
+          <span class="sub">Microbleeds o ICH in strutture profonde (gangli basali, talamo, tronco) o cervelletto. Non contano come marker CAA e orientano verso altra small vessel disease.</span>
+        </span>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="calc()">Valuta criteri</button>
+      <button class="btn btn-secondary" onclick="resetAll()">Azzera</button>
+    </div>
+
+  </div>
+
+  <!-- ── PANEL DESTRA ── -->
+  <div class="output-panel">
+
+    <div>
+      <div class="section-label">Classificazione diagnostica</div>
+      <div class="result-block" aria-live="polite">
+        <div id="resultBadge" class="result-badge">In attesa di dati</div>
+        <div id="resultMain" class="result-main">—</div>
+        <p id="resultCopy" class="result-copy">Compila i criteri nel pannello sinistro e premi "Valuta criteri" per ottenere la classificazione secondo Boston v2.0.</p>
+        <div id="criteriaMet" class="criteria-met" style="display:none">
+          <strong>Criteri soddisfatti</strong>
+          <ul id="criteriaList"></ul>
+        </div>
+        <div id="footerNote" class="footer-note">Il risultato è un supporto al ragionamento clinico-radiologico e non sostituisce il giudizio integrato del clinico.</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Schema criteri Boston v2.0</div>
+      <div class="rule-block">
+        <div class="rule-item">
+          <strong>CAA Definita</strong> – autopsia: emorragia spontanea/TFNE/demenza + CAA severa con vasculopatia (Vonsattel ≥ 2). Non richiede MRI.
+        </div>
+        <div class="rule-item">
+          <strong>CAA Probabile con patologia</strong> – tessuto bioptico (ematoma evacuato o biopsia corticale): presentazione compatibile + qualsiasi grado di CAA nel campione.
+        </div>
+        <div class="rule-item">
+          <strong>CAA Probabile</strong> (≥ 50 anni, solo MRI) – presentazione clinica compatibile + assenza di altra causa + [≥ 2 lesioni emorragiche lobari <em>oppure</em> 1 lesione lobare + 1 white matter feature].
+        </div>
+        <div class="rule-item">
+          <strong>CAA Possibile</strong> (≥ 50 anni, solo MRI) – presentazione clinica compatibile + assenza di altra causa + [1 sola lesione emorragica lobare <em>oppure</em> 1 white matter feature senza lesioni emorragiche].
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;gap:.6rem">
+      <div class="note info">
+        <strong>Lesioni emorragiche lobari conteggiabili (v2.0)</strong>
+        ICH lobare · Microbleed lobare · Siderosi corticale superficiale focale · cSAH convessitale · CSS multifocale/estesa (conta come 2) · cSAH adiacente a CSS (conta come 2).
+      </div>
+      <div class="note warning">
+        <strong>Marker non-emorragici (novità v2.0)</strong>
+        Spazi perivascolari severi nel centrum semiovale (&gt;20/emisfero) e pattern WMH multispot (&gt;10 lesioni ovalari sottocorticali bilaterali in FLAIR). Consentono di diagnosticare CAA Probabile anche senza emorragia parenchimale, in combinazione con 1 lesione emorragica lobare.
+      </div>
+      <div class="note danger">
+        <strong>Limiti della v2.0</strong>
+        Validata quasi esclusivamente in pazienti bianchi di origine europea. Non applicabile a CAA iatrogena, ereditaria, o in pazienti asintomatici. Richiede sequenze T2*-GRE o SWI per i marker emorragici e T2 per gli spazi perivascolari.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── TUTORIAL ──
+  const TUTORIAL_STEPS = [
+    {
+      title: 'Benvenuto nel tool Boston CAA v2.0',
+      body: `<p>Questo strumento classifica la probabilità diagnostica di <strong>Angiopatia Amiloide Cerebrale (CAA)</strong> secondo i <strong>Boston Criteria versione 2.0</strong> (Lancet Neurology, 2022).</p>
+      <p>I criteri combinano dati clinici e marker MRI per distinguere CAA Probabile da CAA Possibile (e da presentazioni non compatibili).</p>
+      <div class="tut-tip">La v2.0 include, per la prima volta, marker MRI <em>non-emorragici</em> della sostanza bianca che migliorano la sensibilità senza ridurre la specificità.</div>`
+    },
+    {
+      title: 'Prerequisiti clinici',
+      body: `<p>Prima di applicare i criteri MRI, verifica i tre requisiti clinici di base:</p>
+      <ul>
+        <li><strong>Età ≥ 50 anni</strong> – le categorie Probabile e Possibile si applicano solo a questa fascia</li>
+        <li><strong>Presentazione clinica compatibile</strong> – emorragia intracerebrale spontanea, TFNE (episodi neurologici focali transitori), deterioramento cognitivo o demenza</li>
+        <li><strong>Assenza di altra causa di emorragia</strong> – escludi trauma, MAV, tumore, vasculite, emorragia iatrogena</li>
+      </ul>
+      <div class="tut-warn">Se l'età è &lt; 50 anni, i criteri per Probabile e Possibile non si applicano: considera CAA ereditaria o iatrogena.</div>`
+    },
+    {
+      title: 'Marker MRI emorragici lobari',
+      body: `<p>Spunta i marker rilevabili su sequenze T2*-GRE o SWI:</p>
+      <ul>
+        <li><strong>ICH lobare</strong> – emorragia corticale/sottocorticale</li>
+        <li><strong>Microbleed lobare (≥ 1)</strong> – solo strettamente lobari</li>
+        <li><strong>CSS focale</strong> – siderosi corticale superficiale</li>
+        <li><strong>cSAH convessitale</strong> – forma acuta della CSS</li>
+        <li><strong>CSS multifocale/estesa o cSAH + CSS</strong> – conta come <em>2 lesioni emorragiche</em>, non una</li>
+      </ul>
+      <div class="tut-tip">Le lesioni profonde (gangli basali, talamo, tronco) o cerebellari <em>non</em> contano come marker CAA. Spunta l'apposita casella se presenti per un reminder.</div>`
+    },
+    {
+      title: 'Marker non-emorragici (novità v2.0)',
+      body: `<p>Questi marker della sostanza bianca sono stati aggiunti nella v2.0:</p>
+      <ul>
+        <li><strong>Spazi perivascolari severi nel centrum semiovale</strong> – &gt;20 spazi visibili in un emisfero su T2. Riflettono il trafficking perivascolare di β-amiloide.</li>
+        <li><strong>Pattern WMH multispot</strong> – &gt;10 piccole lesioni ovalari in FLAIR sottocorticale, bilateralmente (distinte dalle WMH periventricolare confluente).</li>
+      </ul>
+      <p>Combinati con <em>almeno 1 lesione emorragica lobare</em>, permettono di classificare il caso come <strong>CAA Probabile</strong> anche senza ICH parenchimale.</p>
+      <div class="tut-tip">Senza nessuna lesione emorragica lobare, un solo white matter marker orienta verso CAA <strong>Possibile</strong>.</div>`
+    },
+    {
+      title: 'Interpreta il risultato',
+      body: `<p>Premi <strong>"Valuta criteri"</strong> per ottenere:</p>
+      <ul>
+        <li>La <strong>categoria diagnostica</strong>: CAA Probabile, Possibile, o Non classificabile</li>
+        <li>I <strong>criteri specifici soddisfatti</strong> che hanno determinato la classificazione</li>
+        <li>Note cliniche integrative</li>
+      </ul>
+      <p><strong>CAA Probabile</strong> è la categoria rule-in (alta specificità ~85%). <strong>CAA Possibile</strong> è la categoria rule-out (alta sensibilità ~92%).</p>
+      <div class="tut-warn">Questo tool si applica alle categorie diagnostiche in-vivo (MRI). La CAA Definita e la CAA Probabile con patologia richiedono rispettivamente autopsia o tessuto istologico.</div>`
+    }
+  ];
+
+  let tutCurrentStep = 0;
+
+  function openTutorial() {
+    tutCurrentStep = 0;
+    renderTutorial();
+    document.getElementById('tutorialOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeTutorial() {
+    document.getElementById('tutorialOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('tutorialOverlay')) closeTutorial();
+  }
+
+  function tutStep(dir) {
+    const next = tutCurrentStep + dir;
+    if (next < 0 || next >= TUTORIAL_STEPS.length) return;
+    tutCurrentStep = next;
+    renderTutorial();
+  }
+
+  function renderTutorial() {
+    const total = TUTORIAL_STEPS.length;
+    const i = tutCurrentStep;
+    const step = TUTORIAL_STEPS[i];
+
+    document.getElementById('stepBar').innerHTML = TUTORIAL_STEPS.map((_, idx) => {
+      const cls = idx < i ? 'done' : idx === i ? 'active' : '';
+      return `<div class="step-dot ${cls}"></div>`;
+    }).join('');
+
+    document.getElementById('tutorialBody').innerHTML = `
+      <div class="step-number">Passo ${i + 1} di ${total}</div>
+      <h3>${step.title}</h3>
+      ${step.body}
+    `;
+
+    document.getElementById('btnPrev').style.visibility = i === 0 ? 'hidden' : 'visible';
+
+    const btnNext = document.getElementById('btnNext');
+    if (i === total - 1) {
+      btnNext.textContent = '✓ Ho capito';
+      btnNext.className = 'btn-tut-next finish';
+      btnNext.onclick = closeTutorial;
+    } else {
+      btnNext.innerHTML = 'Avanti &#8594;';
+      btnNext.className = 'btn-tut-next';
+      btnNext.onclick = () => tutStep(1);
+    }
+  }
+
+  function onAgeChange() {
+    const ok = document.getElementById('ageOk').checked;
+    document.getElementById('ageWarning').classList.toggle('visible', !ok && document.getElementById('ageOk').dataset.touched === 'true');
+    document.getElementById('ageOk').dataset.touched = 'true';
+    calc();
+  }
+
+  function countLobularHaemorrhagicMarkers() {
+    let count = 0;
+    const markers = [];
+
+    if (document.getElementById('ich').checked) {
+      count++;
+      markers.push('Emorragia intracerebrale lobare');
+    }
+    if (document.getElementById('cmb').checked) {
+      count++;
+      markers.push('Microbleed lobare');
+    }
+    if (document.getElementById('css').checked) {
+      count++;
+      markers.push('Siderosi corticale superficiale (focale)');
+    }
+    if (document.getElementById('cSAH').checked) {
+      count++;
+      markers.push('Emorragia subaracnoidea convessitale acuta');
+    }
+    if (document.getElementById('cssMultifocal').checked) {
+      count += 2;
+      markers.push('CSS multifocale/estesa o cSAH + CSS (conta come 2 lesioni)');
+    }
+
+    return { count, markers };
+  }
+
+  function getWhiteMatterMarkers() {
+    const markers = [];
+    if (document.getElementById('pvs').checked) markers.push('Spazi perivascolari severi nel centrum semiovale');
+    if (document.getElementById('wmh').checked) markers.push('Pattern WMH multispot');
+    return markers;
+  }
+
+  function calc() {
+    const ageOk        = document.getElementById('ageOk').checked;
+    const clinPres     = document.getElementById('clinPres').checked;
+    const noOtherCause = document.getElementById('noOtherCause').checked;
+    const deepHaem     = document.getElementById('deepHaem').checked;
+
+    const { count: lobCount, markers: lobMarkers } = countLobularHaemorrhagicMarkers();
+    const wmMarkers = getWhiteMatterMarkers();
+    const hasWM = wmMarkers.length > 0;
+
+    const badge   = document.getElementById('resultBadge');
+    const main    = document.getElementById('resultMain');
+    const copy    = document.getElementById('resultCopy');
+    const cMet    = document.getElementById('criteriaMet');
+    const cList   = document.getElementById('criteriaList');
+    const footer  = document.getElementById('footerNote');
+
+    // Nessun input significativo ancora
+    if (!ageOk && !clinPres && !noOtherCause && lobCount === 0 && !hasWM) {
+      badge.className = 'result-badge';
+      badge.textContent = 'In attesa di dati';
+      main.textContent = '—';
+      copy.textContent = 'Compila i criteri nel pannello sinistro e premi "Valuta criteri" per ottenere la classificazione secondo Boston v2.0.';
+      cMet.style.display = 'none';
+      footer.textContent = 'Il risultato è un supporto al ragionamento clinico-radiologico e non sostituisce il giudizio integrato del clinico.';
+      return;
+    }
+
+    // Prerequisiti clinici non soddisfatti
+    if (!ageOk || !clinPres || !noOtherCause) {
+      badge.className = 'result-badge';
+      badge.textContent = 'Prerequisiti incompleti';
+      main.textContent = 'Non classificabile';
+      const missing = [];
+      if (!ageOk) missing.push('età ≥ 50 anni');
+      if (!clinPres) missing.push('presentazione clinica compatibile');
+      if (!noOtherCause) missing.push('esclusione di altra causa emorragica');
+      copy.textContent = `Prerequisiti mancanti: ${missing.join('; ')}. I criteri MRI non possono essere applicati fino al completamento dei prerequisiti clinici.`;
+      cMet.style.display = 'none';
+      footer.textContent = 'Verifica i prerequisiti clinici prima di procedere con la classificazione MRI.';
+      return;
+    }
+
+    // Tutti i prerequisiti OK → applica logica diagnostica
+    const metItems = [];
+
+    // CAA PROBABILE
+    // Percorso A: ≥ 2 lesioni emorragiche lobari
+    // Percorso B: 1 lesione emorragica lobare + ≥ 1 WM marker
+
+    let isProbabile = false;
+    let isPossibile = false;
+    let probabileReason = '';
+
+    if (lobCount >= 2) {
+      isProbabile = true;
+      probabileReason = `≥ 2 lesioni emorragiche lobari (${lobCount} rilevate)`;
+      metItems.push(...lobMarkers);
+      if (hasWM) metItems.push(...wmMarkers);
+    } else if (lobCount === 1 && hasWM) {
+      isProbabile = true;
+      probabileReason = '1 lesione emorragica lobare + ≥ 1 marker non-emorragico della sostanza bianca';
+      metItems.push(...lobMarkers);
+      metItems.push(...wmMarkers);
+    } else if (lobCount === 1) {
+      isPossibile = true;
+      metItems.push(...lobMarkers);
+    } else if (lobCount === 0 && hasWM) {
+      isPossibile = true;
+      metItems.push(...wmMarkers);
+    }
+
+    let deepNote = '';
+    if (deepHaem) {
+      deepNote = ' Nota: sono presenti lesioni emorragiche profonde o cerebellari che non contano come marker CAA e possono indicare coesistenza di ipertensive small vessel disease.';
+    }
+
+    if (isProbabile) {
+      badge.className = 'result-badge probabile';
+      badge.textContent = 'CAA Probabile';
+      main.textContent = 'CAA Probabile';
+      copy.textContent = `Soddisfatti i criteri MRI per CAA Probabile (Boston v2.0): ${probabileReason}.${deepNote}`;
+    } else if (isPossibile) {
+      badge.className = 'result-badge possibile';
+      badge.textContent = 'CAA Possibile';
+      main.textContent = 'CAA Possibile';
+      const possReason = lobCount === 1
+        ? '1 sola lesione emorragica lobare (senza marker aggiuntivi della sostanza bianca)'
+        : 'marker non-emorragico della sostanza bianca isolato (senza lesioni emorragiche lobari)';
+      copy.textContent = `Soddisfatti i criteri per CAA Possibile (Boston v2.0): ${possReason}. Categoria rule-out: sensibilità elevata, include possibili falsi positivi.${deepNote}`;
+    } else {
+      badge.className = 'result-badge non-caa';
+      badge.textContent = 'Non classificabile come CAA';
+      main.textContent = 'Criteri non soddisfatti';
+      copy.textContent = `Nessun marker MRI lobare rilevato. In assenza di lesioni emorragiche lobari o marker non-emorragici, il caso non soddisfa i criteri Boston v2.0 per CAA Probabile o Possibile.${deepNote}`;
+    }
+
+    if (metItems.length > 0) {
+      cMet.style.display = 'block';
+      cList.innerHTML = metItems.map(m => `<li>${m}</li>`).join('');
+    } else {
+      cMet.style.display = 'none';
+    }
+
+    footer.textContent = 'Classificazione orientativa secondo Boston Criteria v2.0 (Charidimou et al., Lancet Neurology 2022). Non sostituisce il giudizio neuroradiologico e clinico integrato.';
+  }
+
+  function resetAll() {
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.getElementById('ageWarning').classList.remove('visible');
+    document.getElementById('resultBadge').className = 'result-badge';
+    document.getElementById('resultBadge').textContent = 'In attesa di dati';
+    document.getElementById('resultMain').textContent = '—';
+    document.getElementById('resultCopy').textContent = 'Compila i criteri nel pannello sinistro e premi "Valuta criteri" per ottenere la classificazione secondo Boston v2.0.';
+    document.getElementById('criteriaMet').style.display = 'none';
+    document.getElementById('footerNote').textContent = 'Il risultato è un supporto al ragionamento clinico-radiologico e non sostituisce il giudizio integrato del clinico.';
+  }
+</script>
+</body>
+</html>
