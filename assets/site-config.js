@@ -71,7 +71,7 @@ window.SITE_TOOLS = [
   ,{
     id: "boston-caa-v2",
     title: "Boston CAA v2.0",
-    description: "Classificazione diagnostica dell'angiopatia amiloide cerebrale (CAA) secondo i Boston Criteria versione 2.0, con marker MRI emorragici e non-emorragici.",
+    description: "Classificazione dell'angiopatia amiloide cerebrale (CAA) secondo i Boston Criteria 2.0",
     url: "tools/boston-caa-v2.html",
     category: "Vascolare"
   }
