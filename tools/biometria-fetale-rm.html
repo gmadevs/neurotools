@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="it" data-root="..">
+<head>
+<link rel="stylesheet" href="../assets/nav.css">
+<script src="../assets/site-config.js"></script>
+<script src="../assets/nav.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biometria Fetale RM – Centili</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1c22;
+    --paper: #f5f4f0;
+    --card: #ffffff;
+    --rule: #d0cfc8;
+    --accent: #1b4f72;
+    --accent-light: #d6e8f5;
+    --warn: #8b2500;
+    --warn-bg: #fdecea;
+    --ok: #1a4731;
+    --ok-bg: #e8f5ee;
+    --mid: #4a3800;
+    --mid-bg: #fdf8e1;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body { font-family: var(--sans); background: var(--paper); color: var(--ink); min-height: 100vh; padding: 0; }
+
+  header {
+    background: var(--accent); color: #fff;
+    padding: 1.5rem 2rem 1.25rem;
+    display: flex; align-items: center; gap: 1.2rem;
+  }
+  header h1 { font-family: var(--mono); font-size: 1rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  header span { font-size: 0.78rem; opacity: .7; font-style: italic; }
+
+  .workspace { display: grid; grid-template-columns: 380px 1fr; min-height: calc(100vh - 68px); }
+
+  .input-panel {
+    background: var(--card); border-right: 1px solid var(--rule);
+    padding: 1.8rem 1.5rem 2rem; overflow-y: auto;
+  }
+
+  .section-label {
+    font-family: var(--mono); font-size: 0.68rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: .6rem; padding-bottom: .35rem;
+    border-bottom: 1.5px solid var(--accent-light);
+  }
+
+  .form-group { margin-bottom: 1.1rem; }
+
+  label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: .3rem; color: #3a3c45; }
+
+  input[type="number"], input[type="text"], input[type="date"], select {
+    font-family: var(--sans); font-size: 0.83rem;
+    border: 1px solid var(--rule); border-radius: 4px;
+    padding: .42rem .6rem; background: var(--paper); color: var(--ink);
+    transition: border-color .15s;
+  }
+  input:focus, select:focus {
+    outline: none; border-color: var(--accent); background: #fff;
+  }
+  select, input[type="text"], input[type="date"] { width: 100%; }
+
+  .param-grid { display: grid; gap: .45rem; }
+  .param-row {
+    display: grid; grid-template-columns: 1fr auto 3rem;
+    gap: .4rem; align-items: center;
+  }
+  .param-row label { margin: 0; font-size: 0.75rem; }
+  .param-row input { width: 90px; text-align: right; }
+  .unit { font-size: 0.7rem; color: #888; font-family: var(--mono); }
+
+  .ga-display {
+    font-family: var(--mono); font-size: 0.8rem; font-weight: 600;
+    color: var(--accent); background: var(--accent-light);
+    padding: .4rem .6rem; border-radius: 4px; margin-top: .4rem;
+  }
+  .ga-display.out-of-range { color: var(--warn); background: var(--warn-bg); }
+
+  .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+  .date-grid label { font-size: 0.72rem; }
+
+  .btn-generate {
+    width: 100%; margin-top: 1.2rem; padding: .75rem 1rem;
+    background: var(--accent); color: #fff; border: none; border-radius: 6px;
+    font-family: var(--mono); font-size: 0.85rem; font-weight: 600;
+    letter-spacing: .06em; text-transform: uppercase; cursor: pointer; transition: background .15s;
+  }
+  .btn-generate:hover { background: #143d57; }
+
+  .report-panel { padding: 2rem 2.5rem; overflow-y: auto; background: var(--paper); }
+  .report-container { max-width: 780px; margin: 0 auto; }
+
+  .report-placeholder {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; height: 60vh; gap: 1rem; color: #aaa; text-align: center;
+  }
+  .report-placeholder svg { opacity: .3; }
+  .report-placeholder p { font-size: 0.85rem; font-style: italic; max-width: 300px; }
+
+  .report-card {
+    background: #fff; border: 1px solid var(--rule); border-radius: 6px;
+    padding: 2.2rem 2.4rem 1.8rem; font-size: 0.87rem; line-height: 1.65;
+  }
+
+  .report-header { border-bottom: 2px solid var(--ink); padding-bottom: 1rem; margin-bottom: 1.4rem; }
+  .report-header h2 {
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .08em; color: var(--accent);
+  }
+  .report-meta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: .2rem .8rem;
+    margin-top: .7rem; font-size: 0.8rem; color: #555;
+  }
+  .report-meta span { font-weight: 600; color: var(--ink); }
+
+  .report-section-title {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+    margin: 1.4rem 0 .7rem;
+  }
+
+  .centile-table { width: 100%; border-collapse: collapse; font-size: 0.79rem; margin-bottom: .6rem; }
+  .centile-table th {
+    font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
+    letter-spacing: .06em; text-align: left; padding: .35rem .5rem;
+    border-bottom: 1.5px solid var(--rule); color: #666; text-transform: uppercase;
+  }
+  .centile-table td { padding: .38rem .5rem; border-bottom: 1px solid #eee; }
+  .centile-table tr:last-child td { border-bottom: none; }
+  .centile-table .val { font-family: var(--mono); font-size: 0.8rem; }
+  .centile-table td.derived { color: #666; font-style: italic; }
+
+  .centile-value { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; }
+  .centile-normal { color: var(--ok); }
+  .centile-abnormal { color: var(--warn); }
+
+  .diagnosis-box {
+    margin-top: 1.4rem; padding: 1rem 1.2rem; border-radius: 5px; border-left: 4px solid;
+  }
+  .diagnosis-box.normal { background: var(--ok-bg); border-color: #2e7d52; }
+  .diagnosis-box.abnormal { background: var(--warn-bg); border-color: var(--warn); }
+  .diagnosis-box.attention { background: var(--mid-bg); border-color: #b08000; }
+  .diagnosis-box h3 {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .08em; margin-bottom: .4rem;
+  }
+  .diagnosis-box p { font-size: 0.84rem; line-height: 1.6; }
+
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: .5rem; }
+  .chart-cell { border: 1px solid #eee; border-radius: 4px; padding: .5rem .4rem .2rem; background: #fdfdfc; }
+  .chart-cell h4 {
+    font-family: var(--mono); font-size: 0.63rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .05em; color: #555; text-align: center; margin-bottom: .2rem;
+  }
+  .chart-cell svg { display: block; width: 100%; height: auto; }
+  .chart-legend {
+    font-size: 0.7rem; color: #888; margin-top: .5rem; display: flex;
+    gap: 1rem; flex-wrap: wrap; align-items: center;
+  }
+  .chart-legend i { display: inline-block; width: 1.4rem; height: 0; vertical-align: middle; margin-right: .3rem; }
+
+  .report-citation {
+    margin-top: 1.8rem; padding-top: 1rem; border-top: 1px solid var(--rule);
+    font-size: 0.72rem; color: #888; font-style: italic; line-height: 1.5;
+  }
+
+  .btn-copy {
+    padding: .55rem 1.2rem; background: var(--ok); border: none; color: #fff;
+    border-radius: 5px; font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+    letter-spacing: .05em; text-transform: uppercase; cursor: pointer; transition: background .2s;
+  }
+  .btn-copy:hover { background: #145a38; }
+  .btn-copy.copied { background: #555; }
+
+  .btn-print {
+    padding: .55rem 1.1rem; background: transparent; border: 1px solid var(--accent);
+    color: var(--accent); border-radius: 5px; font-family: var(--mono); font-size: 0.75rem;
+    font-weight: 600; letter-spacing: .05em; text-transform: uppercase; cursor: pointer; transition: all .15s;
+  }
+  .btn-print:hover { background: var(--accent); color: #fff; }
+
+  .report-actions { display: flex; gap: .7rem; margin-top: 1.4rem; align-items: center; }
+
+  .info-note {
+    font-size: 0.72rem; color: #888; margin-top: .3rem; line-height: 1.4;
+    padding: .3rem .5rem; background: #f8f8f5; border-radius: 3px; border-left: 2px solid #ccc;
+  }
+
+  /* ── GUIDA ALLE MISURE ── */
+  .section-label.with-action {
+    display: flex; align-items: baseline; justify-content: space-between; gap: .5rem;
+  }
+  .btn-guide {
+    font-family: var(--mono); font-size: 0.6rem; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent); background: var(--accent-light);
+    border: 1px solid #b9d8ee; border-radius: 3px; padding: .18rem .45rem;
+    cursor: pointer; transition: background .15s; flex-shrink: 0;
+  }
+  .btn-guide:hover { background: #c2e0f5; }
+
+  .guide-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.6); z-index: 1100;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .guide-overlay.open { display: flex; }
+
+  .guide-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 980px;
+    max-height: 92vh; display: flex; flex-direction: column;
+    box-shadow: 0 16px 48px rgba(0,0,0,.3); overflow: hidden;
+  }
+  .guide-head {
+    background: var(--accent); color: #fff; padding: 1.1rem 1.4rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+  .guide-head h2 {
+    font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+  .guide-body { padding: 1.4rem 1.6rem 1.6rem; overflow-y: auto; }
+  .guide-fig {
+    width: 100%; height: auto; display: block;
+    border: 1px solid var(--rule); border-radius: 5px; background: #000;
+  }
+  .guide-legend {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 1.6rem; margin-top: 1.2rem;
+  }
+  .guide-legend div {
+    display: flex; gap: .55rem; align-items: baseline;
+    padding: .38rem 0; border-bottom: 1px solid #f0efeb; font-size: 0.8rem; line-height: 1.45;
+  }
+  .guide-legend b {
+    font-family: var(--mono); color: var(--accent); font-size: 0.78rem;
+    min-width: 1.1rem; flex-shrink: 0;
+  }
+  .guide-legend em { color: #777; font-size: 0.74rem; font-style: italic; }
+  .guide-credit {
+    margin-top: 1.2rem; padding-top: .9rem; border-top: 1px solid var(--rule);
+    font-size: 0.7rem; color: #999; font-style: italic; line-height: 1.55;
+  }
+  .guide-credit a { color: #999; }
+
+  .tut-figure {
+    width: 100%; height: auto; display: block; margin-top: .7rem;
+    border: 1px solid var(--rule); border-radius: 4px; background: #000; cursor: zoom-in;
+  }
+  .tut-figcaption {
+    font-size: 0.72rem; color: #999; font-style: italic; margin-top: .35rem; text-align: center;
+  }
+
+  /* ── INFO BUTTON ── */
+  .btn-info {
+    margin-left: auto;
+    display: flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.5);
+    background: rgba(255,255,255,.12); color: #fff;
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; flex-shrink: 0;
+    transition: background .15s, border-color .15s; line-height: 1;
+  }
+  .btn-info:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.8); }
+
+  /* ── TUTORIAL MODAL ── */
+  .tutorial-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.55); z-index: 1000;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .tutorial-overlay.open { display: flex; }
+
+  .tutorial-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 520px;
+    max-height: 92vh;
+    box-shadow: 0 16px 48px rgba(0,0,0,.25); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .tutorial-header {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  }
+  .tutorial-header h2 {
+    font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+  .tutorial-close {
+    background: none; border: none; color: rgba(255,255,255,.7);
+    font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+  }
+  .tutorial-close:hover { color: #fff; }
+
+  .tutorial-steps-bar {
+    display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
+    background: #f8f7f4; border-bottom: 1px solid var(--rule);
+  }
+  .step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+  .step-dot.active { background: var(--accent); }
+  .step-dot.done { background: var(--ok); }
+
+  .tutorial-body { padding: 1.6rem 1.8rem 1.2rem; min-height: 200px; flex: 1; overflow-y: auto; }
+  .tutorial-steps-bar, .tutorial-header, .tutorial-footer { flex-shrink: 0; }
+
+  .step-number {
+    font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
+  }
+  .tutorial-body h3 {
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+  }
+  .tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
+  .tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
+  .tut-tip {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--accent); margin-top: .8rem;
+  }
+  .tut-warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: 0.78rem; color: var(--warn); margin-top: .8rem;
+  }
+
+  .tutorial-footer {
+    padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
+    justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
+  }
+  .tutorial-skip {
+    font-size: 0.75rem; color: #aaa; cursor: pointer;
+    background: none; border: none; padding: 0; transition: color .15s;
+  }
+  .tutorial-skip:hover { color: #666; }
+  .tutorial-nav { display: flex; gap: .6rem; }
+  .btn-tut-prev, .btn-tut-next {
+    font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+    letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
+  }
+  .btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
+  .btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+  .btn-tut-next:hover { background: #143d57; }
+  .btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+  .btn-tut-next.finish:hover { background: #145a38; }
+
+  @media print {
+    header, .input-panel, .report-actions { display: none !important; }
+    .workspace { display: block; }
+    .report-panel { padding: 0; }
+    .report-card { border: none; box-shadow: none; }
+    .tutorial-overlay, .guide-overlay { display: none !important; }
+  }
+
+  @media (max-width: 860px) {
+    .workspace { grid-template-columns: 1fr; }
+    .input-panel { border-right: none; border-bottom: 1px solid var(--rule); }
+    .chart-grid { grid-template-columns: 1fr; }
+    .guide-legend { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Biometria Fetale RM</h1>
+  <span>Centili 2D e 3D dell'encefalo fetale – Kyriakopoulou et al. 2017
+    <a href="https://pubmed.ncbi.nlm.nih.gov/?term=10.1007%2Fs00429-016-1342-6" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin-left:.4rem">
+      <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
+    </a>
+  </span>
+  <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
+</header>
+
+<!-- ── TUTORIAL MODAL ── -->
+<div class="tutorial-overlay" id="tutorialOverlay" onclick="handleOverlayClick(event)">
+  <div class="tutorial-modal">
+    <div class="tutorial-header">
+      <h2>Come usare il tool</h2>
+      <button class="tutorial-close" onclick="closeTutorial()">&#10005;</button>
+    </div>
+    <div class="tutorial-steps-bar" id="stepBar"></div>
+    <div class="tutorial-body" id="tutorialBody"></div>
+    <div class="tutorial-footer">
+      <button class="tutorial-skip" onclick="closeTutorial()">Chiudi</button>
+      <div class="tutorial-nav">
+        <button class="btn-tut-prev" id="btnPrev" onclick="tutStep(-1)">&#8592; Indietro</button>
+        <button class="btn-tut-next" id="btnNext" onclick="tutStep(1)">Avanti &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── GUIDA ALLE MISURE (Fig. 3 del lavoro originale) ── -->
+<div class="guide-overlay" id="guideOverlay" onclick="handleGuideOverlayClick(event)">
+  <div class="guide-modal">
+    <div class="guide-head">
+      <h2>Guida alle misure 2D</h2>
+      <button class="tutorial-close" onclick="closeGuide()">&#10005;</button>
+    </div>
+    <div class="guide-body">
+      <img class="guide-fig" src="../assets/img/biometria-fetale-misure-2d.jpg"
+           alt="Schema delle misure biometriche 2D dell'encefalo fetale su RM, pannelli da a a i">
+      <div class="guide-legend">
+        <div><b>a</b><span>Diametro biparietale encefalico — massima larghezza dell'encefalo, piano assiale</span></div>
+        <div><b>b</b><span>Lunghezza fronto-occipitale encefalica — piano sagittale, distanza tra i punti estremi del lobo frontale e occipitale</span></div>
+        <div><b>c1</b><span>Diametro occipitofrontale cranico — massima distanza tra osso frontale e occipitale, cursori a metà dell'ipointensità ossea</span></div>
+        <div><b>c2</b><span>Diametro biparietale cranico — massimo diametro della teca, tecnica <em>outer edge to inner edge</em></span></div>
+        <div><b>d</b><span>Circonferenza cranica con ellisse. <em>Nel tool è calcolata come 1.62 × (BPD cranico + OFD cranico), il metodo su cui sono costruiti i centili</em></span></div>
+        <div><b>e</b><span>Diametro cerebellare trasverso — massima distanza latero-laterale del cervelletto, piano assiale</span></div>
+        <div><b>f</b><span>Diametro atriale — a livello dell'atrio, cursori sul margine interno della parete ventricolare, perpendicolari all'asse lungo del ventricolo</span></div>
+        <div><b>g</b><span>Altezza del verme — massima lunghezza supero-inferiore, piano sagittale mediano</span></div>
+        <div><b>h</b><span>Larghezza del verme — massima distanza tra fastigio e porzione posteriore del verme</span></div>
+        <div><b>i</b><span>Area del verme — tracciamento a mano libera del contorno</span></div>
+      </div>
+      <div class="info-note" style="margin-top:1rem">
+        Il <strong>CSF extracerebrale 2D</strong> non si misura direttamente: è calcolato come
+        BPD cranico − BPD encefalico (pannelli c2 − a).
+      </div>
+      <div class="guide-credit">
+        Figura 3 da Kyriakopoulou V et al., <em>Normative biometry of the fetal brain using magnetic resonance imaging</em>,
+        Brain Struct Funct 2017;222(5):2295–2307, doi:10.1007/s00429-016-1342-6.
+        Riprodotta senza modifiche in quanto pubblicata Open Access con licenza
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">Creative Commons Attribution 4.0 International (CC BY 4.0)</a>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="workspace">
+
+  <aside class="input-panel">
+
+    <div class="section-label">Dati Esame</div>
+
+    <div class="form-group">
+      <label>Nome / ID paziente <span style="font-weight:400;color:#999">(opzionale)</span></label>
+      <input type="text" id="patientName" placeholder="—">
+    </div>
+
+    <div class="form-group">
+      <label>Età gestazionale</label>
+      <div class="param-row" style="grid-template-columns:1fr auto 3rem">
+        <label>EG al momento dell'esame</label>
+        <input type="number" id="ga" min="18" max="42" step="0.01" placeholder="—" oninput="onGaInput()">
+        <span class="unit">sett</span>
+      </div>
+      <div class="info-note" style="margin-top:.5rem">Oppure calcolala dalle date:</div>
+      <div class="date-grid" style="margin-top:.5rem">
+        <div>
+          <label>EDD da datazione</label>
+          <input type="date" id="edd" onchange="computeGaFromDates()">
+        </div>
+        <div>
+          <label>Data esame RM</label>
+          <input type="date" id="scanDate" onchange="computeGaFromDates()">
+        </div>
+      </div>
+      <div class="ga-display" id="gaDisplay" style="display:none"></div>
+    </div>
+
+    <div class="section-label with-action" style="margin-top:1rem">
+      <span>Misure 2D (mm)</span>
+      <button class="btn-guide" onclick="openGuide()" title="Schema delle misure 2D">▣ Guida misure</button>
+    </div>
+    <div class="param-grid">
+      <div class="param-row">
+        <label>Diametro biparietale encefalico</label>
+        <input type="number" id="bpd_brain" min="0" max="200" step="0.1" placeholder="—" oninput="updateDerived()">
+        <span class="unit">mm</span>
+      </div>
+      <div class="param-row">
+        <label>Lunghezza fronto-occipitale encefalica</label>
+        <input type="number" id="fol" min="0" max="250" step="0.1" placeholder="—">
+        <span class="unit">mm</span>
+      </div>
+      <div class="param-row">
+        <label>Diametro biparietale cranico</label>
+        <input type="number" id="bpd_skull" min="0" max="200" step="0.1" placeholder="—" oninput="updateDerived()">
+        <span class="unit">mm</span>
+      </div>
+      <div class="param-row">
+        <label>Diametro occipitofrontale cranico</label>
+        <input type="number" id="ofd_skull" min="0" max="250" step="0.1" placeholder="—" oninput="updateDerived()">
+        <span class="unit">mm</span>
+      </div>
+      <div class="param-row">
+        <label>Diametro cerebellare trasverso</label>
+        <input type="number" id="tcd" min="0" max="150" step="0.1" placeholder="—">
+        <span class="unit">mm</span>
+      </div>
+      <div class="param-row">
+        <label>Diametro atriale</label>
+        <input type="number" id="atrial" min="0" max="50" step="0.1" placeholder="—">
+        <span class="unit">mm</span>
+      </div>
+      <div class="param-row">
+        <label>Altezza del verme</label>
+        <input type="number" id="vermis_h" min="0" max="60" step="0.1" placeholder="—">
+        <span class="unit">mm</span>
+      </div>
+      <div class="param-row">
+        <label>Larghezza del verme</label>
+        <input type="number" id="vermis_w" min="0" max="60" step="0.1" placeholder="—">
+        <span class="unit">mm</span>
+      </div>
+      <div class="param-row">
+        <label>Area del verme</label>
+        <input type="number" id="vermis_a" min="0" max="1500" step="1" placeholder="—">
+        <span class="unit">mm²</span>
+      </div>
+    </div>
+    <div class="info-note" id="derivedNote" style="margin-top:.5rem">
+      <strong>Calcolati automaticamente:</strong><br>
+      Circonferenza cranica = 1.62 × (BPD cranico + OFD cranico)<br>
+      CSF extracerebrale 2D = BPD cranico − BPD encefalico
+    </div>
+
+    <div class="section-label" style="margin-top:1rem">Misure 3D (cm³)</div>
+    <div class="param-grid">
+      <div class="param-row">
+        <label>Tessuto cerebrale sovratentoriale</label>
+        <input type="number" id="sbt" min="0" max="800" step="0.01" placeholder="—">
+        <span class="unit">cm³</span>
+      </div>
+      <div class="param-row">
+        <label>Ventricoli laterali (totale)</label>
+        <input type="number" id="vent_tot" min="0" max="200" step="0.01" placeholder="—">
+        <span class="unit">cm³</span>
+      </div>
+      <div class="param-row">
+        <label>Ventricolo laterale destro</label>
+        <input type="number" id="vent_r" min="0" max="100" step="0.01" placeholder="—">
+        <span class="unit">cm³</span>
+      </div>
+      <div class="param-row">
+        <label>Ventricolo laterale sinistro</label>
+        <input type="number" id="vent_l" min="0" max="100" step="0.01" placeholder="—">
+        <span class="unit">cm³</span>
+      </div>
+      <div class="param-row">
+        <label>Corteccia</label>
+        <input type="number" id="cortex" min="0" max="400" step="0.01" placeholder="—">
+        <span class="unit">cm³</span>
+      </div>
+      <div class="param-row">
+        <label>Cervelletto</label>
+        <input type="number" id="cerebellum" min="0" max="120" step="0.01" placeholder="—">
+        <span class="unit">cm³</span>
+      </div>
+      <div class="param-row">
+        <label>CSF extracerebrale</label>
+        <input type="number" id="ecsf3d" min="0" max="400" step="0.01" placeholder="—">
+        <span class="unit">cm³</span>
+      </div>
+    </div>
+    <div class="info-note" style="margin-top:.4rem">Le misure 3D richiedono segmentazione volumetrica su ricostruzione SVR. Lascia vuoto ciò che non è stato misurato.</div>
+
+    <button class="btn-generate" onclick="generateReport()">▶ Genera Referto</button>
+
+  </aside>
+
+  <main class="report-panel">
+    <div class="report-container">
+      <div id="reportOutput">
+        <div class="report-placeholder">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="8" width="44" height="48" rx="4" stroke="#1b4f72" stroke-width="2"/>
+            <line x1="18" y1="22" x2="46" y2="22" stroke="#1b4f72" stroke-width="1.5"/>
+            <line x1="18" y1="30" x2="46" y2="30" stroke="#1b4f72" stroke-width="1.5"/>
+            <line x1="18" y1="38" x2="36" y2="38" stroke="#1b4f72" stroke-width="1.5"/>
+          </svg>
+          <p>Inserire l'età gestazionale (o le date), almeno una misura biometrica e premere <strong>Genera Referto</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ── TUTORIAL ──
+const TUTORIAL_STEPS = [
+  {
+    title: 'Benvenuto nel tool',
+    body: `<p>Questo strumento calcola i <strong>centili delle misure biometriche encefaliche fetali su RM</strong> confrontandole con i dati normativi di <strong>Kyriakopoulou et al. 2017</strong> (127 esami RM 1.5&nbsp;T, feti normali di 21–39 settimane).</p>
+    <p>Riproduce esattamente il calcolatore Excel allegato alla pubblicazione.</p>
+    <div class="tut-tip">Il tutorial ti guida in 4 passi rapidi.</div>`
+  },
+  {
+    title: 'Inserisci l\'età gestazionale',
+    body: `<p>L'EG è il parametro chiave: media e deviazione standard di ogni misura sono funzioni dell'età gestazionale.</p>
+    <ul>
+      <li>Inserisci direttamente l'<strong>EG in settimane decimali</strong> (es. 29.43), oppure</li>
+      <li>inserisci <strong>EDD da datazione</strong> e <strong>data dell'esame RM</strong>: l'EG viene calcolata come (280 − giorni all'EDD) / 7</li>
+    </ul>
+    <div class="tut-warn">I dati normativi coprono <strong>21.29–38.86 settimane</strong>. Fuori da questo intervallo il calcolo è un'estrapolazione e viene segnalato.</div>`
+  },
+  {
+    title: 'Inserisci le misure',
+    body: `<p>Compila solo le misure effettivamente eseguite; le righe vuote vengono ignorate.</p>
+    <ul>
+      <li><strong>Misure 2D (mm)</strong> – diametri, verme cerebellare, diametro atriale. Eseguibili anche su immagini ssTSE non ricostruite</li>
+      <li><strong>Misure 3D (cm³)</strong> – volumi da segmentazione su ricostruzione SVR</li>
+    </ul>
+    <p>Due parametri sono <strong>derivati automaticamente</strong>: la circonferenza cranica [1.62 × (BPD cranico + OFD cranico)] e il CSF extracerebrale 2D (BPD cranico − BPD encefalico).</p>
+    <p style="margin-top:.8rem"><strong>Come si eseguono le misure 2D</strong> (clicca per ingrandire):</p>
+    <img class="tut-figure" src="../assets/img/biometria-fetale-misure-2d.jpg" onclick="openGuide()"
+         alt="Schema delle misure biometriche 2D dell'encefalo fetale su RM">
+    <div class="tut-figcaption">a BPD encefalico · b lunghezza fronto-occipitale · c1 OFD cranico · c2 BPD cranico · d circonferenza cranica · e diametro cerebellare trasverso · f diametro atriale · g–i verme</div>
+    <div class="tut-tip">Gli autori riportano una differenza percentuale &lt; 2.4% tra misure 2D eseguite prima e dopo ricostruzione SVR.</div>`
+  },
+  {
+    title: 'Genera e interpreta il referto',
+    body: `<p>Premi <strong>▶ Genera Referto</strong>: per ogni misura inserita il tool mostra P5, P50, P95 per quell'EG e il <strong>centile calcolato</strong> (verde se 5°–95°, rosso se fuori range).</p>
+    <p>Sotto le tabelle vengono disegnate le <strong>curve di crescita</strong> con la posizione del paziente.</p>
+    <div class="tut-warn">Il diametro atriale non correla significativamente con l'EG (r = 0.118, p = 0.091): interpretarlo con la soglia clinica abituale di 10 mm.</div>
+    <div class="tut-tip">Usa <em>Copia Testo per PACS</em> per esportare il referto in plain-text.</div>`
+  }
+];
+
+let tutCurrentStep = 0;
+
+function openTutorial() {
+  tutCurrentStep = 0;
+  renderTutorial();
+  document.getElementById('tutorialOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTutorial() {
+  document.getElementById('tutorialOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('tutorialOverlay')) closeTutorial();
+}
+
+// ── GUIDA ALLE MISURE ──
+function openGuide() {
+  document.getElementById('guideOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGuide() {
+  document.getElementById('guideOverlay').classList.remove('open');
+  // ripristina lo scroll solo se non è aperto anche il tutorial sottostante
+  if (!document.getElementById('tutorialOverlay').classList.contains('open')) {
+    document.body.style.overflow = '';
+  }
+}
+
+function handleGuideOverlayClick(e) {
+  if (e.target === document.getElementById('guideOverlay')) closeGuide();
+}
+
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('guideOverlay').classList.contains('open')) closeGuide();
+  else if (document.getElementById('tutorialOverlay').classList.contains('open')) closeTutorial();
+});
+
+function tutStep(dir) {
+  const next = tutCurrentStep + dir;
+  if (next < 0 || next >= TUTORIAL_STEPS.length) return;
+  tutCurrentStep = next;
+  renderTutorial();
+}
+
+function renderTutorial() {
+  const total = TUTORIAL_STEPS.length;
+  const i = tutCurrentStep;
+  const step = TUTORIAL_STEPS[i];
+
+  document.getElementById('stepBar').innerHTML = TUTORIAL_STEPS.map((_, idx) => {
+    const cls = idx < i ? 'done' : idx === i ? 'active' : '';
+    return `<div class="step-dot ${cls}"></div>`;
+  }).join('');
+
+  document.getElementById('tutorialBody').innerHTML = `
+    <div class="step-number">Passo ${i + 1} di ${total}</div>
+    <h3>${step.title}</h3>
+    ${step.body}
+  `;
+
+  document.getElementById('btnPrev').style.visibility = i === 0 ? 'hidden' : 'visible';
+
+  const btnNext = document.getElementById('btnNext');
+  if (i === total - 1) {
+    btnNext.textContent = '✓ Ho capito';
+    btnNext.className = 'btn-tut-next finish';
+    btnNext.onclick = closeTutorial;
+  } else {
+    btnNext.innerHTML = 'Avanti &#8594;';
+    btnNext.className = 'btn-tut-next';
+    btnNext.onclick = () => tutStep(1);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// MODELLO NORMATIVO – Kyriakopoulou et al. 2017
+// Estratto dal foglio "Centile Calculator" del calcolatore Excel
+// allegato alla pubblicazione (celle J13:K32).
+//
+// media(EG) = a + b·EG + c·EG²        (tutte le misure tranne la corteccia)
+// media(EG) = a · exp(b·EG)           (corteccia)
+// DS(EG)    = m·EG + q                (tutte le misure tranne la corteccia)
+// DS(EG)    = a + b·EG + c·EG²        (corteccia)
+//
+// centile = 100 · Φ((valore − media) / DS)
+// P5 / P95 = media ∓ 1.645 · DS
+// ══════════════════════════════════════════════════════════════
+const MODEL = {
+  // ── 2D (mm) ──
+  bpd_brain:  { mean: ['quad', -4.10103070034808,   2.15796641214556,   0.00745288371870462],
+                sd:   ['lin',   0.0964247812880832, -0.00860905658350885] },
+  fol:        { mean: ['quad', -70.0314528061519,   7.35388404172975,  -0.0713232019035459],
+                sd:   ['lin',   0.0476950051407897,  1.70886156273044] },
+  bpd_skull:  { mean: ['quad', -49.8911774130114,   5.91791531313345,  -0.0552269320569366],
+                sd:   ['lin',  -0.00409764631804949, 3.08061696569922] },
+  ofd_skull:  { mean: ['quad', -73.3779606807346,   8.1347192926378,   -0.0859071318267954],
+                sd:   ['lin',   0.0398861924065703,  2.46167202070241] },
+  hc:         { mean: ['quad', -199.669282952826,  22.7627207331827,   -0.228581143692389],
+                sd:   ['lin',   0.0404355183151735,  8.36311919198417] },
+  tcd:        { mean: ['quad', -11.4734382575368,   1.27358107306175,   0.00975811928717771],
+                sd:   ['lin',   0.058239782764265,  -0.137234091662908] },
+  ecsf2d:     { mean: ['quad', -44.5543682103265,   3.650533392397,    -0.0604400737108953],
+                sd:   ['lin',   0.0736569049728816, -0.34287991257886] },
+  atrial:     { mean: ['quad',  16.6003369575988,  -0.747101287972887,  0.0132196766715267],
+                sd:   ['lin',  -0.0315023655133491,  2.12569968616966] },
+  vermis_h:   { mean: ['quad', -19.6738459053175,   1.70362413748618,  -0.0160406858650251],
+                sd:   ['lin',   0.060046327244326,  -0.642983978573238] },
+  vermis_w:   { mean: ['quad', -10.7794551772162,   0.908493085558297, -0.00576665571345983],
+                sd:   ['lin',   0.040820000507973,  -0.372909132540246] },
+  vermis_a:   { mean: ['quad', -170.091016026814,   7.83323147409762,   0.122690731451513],
+                sd:   ['lin',   1.44062594311489,  -24.262868382227] },
+  // ── 3D (cm³) ──
+  sbt:        { mean: ['quad', -11.0802233484726,  -5.80680632639801,   0.376215489076761],
+                sd:   ['lin',   1.5899820908334,   -32.1690253720697] },
+  vent_tot:   { mean: ['quad', -3.19774442794664,   0.315008831713989, -0.00251705589675576],
+                sd:   ['lin',   0.0561927976539942, -0.232363823902233] },
+  vent_r:     { mean: ['quad', -0.594724131733361,  0.0841544006825157, -0.000152699400164022],
+                sd:   ['lin',   0.0255241000886103, -0.0342775547729187] },
+  vent_l:     { mean: ['quad', -2.63382121709741,   0.233145106917103, -0.00240549484960633],
+                sd:   ['lin',   0.0291264741709436,  0.0321225846397668] },
+  cortex:     { mean: ['exp',   0.541788275527616,  0.133383731877526],
+                sd:   ['quad', 16.0966133186727,   -1.39236178721901,   0.0337056985108805] },
+  cerebellum: { mean: ['quad', 14.4587689411841,   -1.54794683456734,   0.0437300289862001],
+                sd:   ['lin',   0.0902416757671127, -1.80285014454613] },
+  ecsf3d:     { mean: ['quad', -345.253236215304,  24.0483929931938,   -0.324191732021763],
+                sd:   ['lin',   0.773037063345668, -10.5251023563965] }
+};
+
+const PARAMS_2D = ['bpd_brain','fol','bpd_skull','ofd_skull','hc','tcd','ecsf2d','atrial','vermis_h','vermis_w','vermis_a'];
+const PARAMS_3D = ['sbt','vent_tot','vent_r','vent_l','cortex','cerebellum','ecsf3d'];
+const DERIVED   = ['hc','ecsf2d'];
+
+const PARAM_LABELS = {
+  bpd_brain:  'Diametro biparietale encefalico',
+  fol:        'Lunghezza fronto-occipitale encefalica',
+  bpd_skull:  'Diametro biparietale cranico',
+  ofd_skull:  'Diametro occipitofrontale cranico',
+  hc:         'Circonferenza cranica',
+  tcd:        'Diametro cerebellare trasverso',
+  ecsf2d:     'CSF extracerebrale (2D)',
+  atrial:     'Diametro atriale',
+  vermis_h:   'Altezza del verme',
+  vermis_w:   'Larghezza del verme',
+  vermis_a:   'Area del verme',
+  sbt:        'Tessuto cerebrale sovratentoriale',
+  vent_tot:   'Ventricoli laterali (totale)',
+  vent_r:     'Ventricolo laterale destro',
+  vent_l:     'Ventricolo laterale sinistro',
+  cortex:     'Corteccia',
+  cerebellum: 'Cervelletto',
+  ecsf3d:     'CSF extracerebrale (3D)'
+};
+
+const PARAM_SHORT = {
+  bpd_brain:'BPD encefalico', fol:'Fronto-occipitale', bpd_skull:'BPD cranico',
+  ofd_skull:'OFD cranico', hc:'Circonf. cranica', tcd:'Diam. cerebellare',
+  ecsf2d:'CSF extracer. 2D', atrial:'Diam. atriale', vermis_h:'Altezza verme',
+  vermis_w:'Larghezza verme', vermis_a:'Area verme', sbt:'Tess. sovratentoriale',
+  vent_tot:'Ventricoli tot.', vent_r:'Ventricolo dx', vent_l:'Ventricolo sn',
+  cortex:'Corteccia', cerebellum:'Cervelletto', ecsf3d:'CSF extracer. 3D'
+};
+
+const PARAM_UNITS = {
+  bpd_brain:'mm', fol:'mm', bpd_skull:'mm', ofd_skull:'mm', hc:'mm', tcd:'mm',
+  ecsf2d:'mm', atrial:'mm', vermis_h:'mm', vermis_w:'mm', vermis_a:'mm²',
+  sbt:'cm³', vent_tot:'cm³', vent_r:'cm³', vent_l:'cm³', cortex:'cm³',
+  cerebellum:'cm³', ecsf3d:'cm³'
+};
+
+const PARAM_DEC = {
+  bpd_brain:1, fol:1, bpd_skull:1, ofd_skull:1, hc:1, tcd:1, ecsf2d:1,
+  atrial:1, vermis_h:1, vermis_w:1, vermis_a:0,
+  sbt:2, vent_tot:2, vent_r:2, vent_l:2, cortex:2, cerebellum:2, ecsf3d:2
+};
+
+// Intervallo di età gestazionale della coorte normativa
+const GA_MIN = 21.29, GA_MAX = 38.86;
+
+// ── Motore di calcolo ──
+function evalCurve(spec, ga) {
+  if (spec[0] === 'quad') return spec[1] + spec[2] * ga + spec[3] * ga * ga;
+  if (spec[0] === 'lin')  return spec[1] * ga + spec[2];
+  if (spec[0] === 'exp')  return spec[1] * Math.exp(spec[2] * ga);
+  return NaN;
+}
+
+function refFor(param, ga) {
+  const m = MODEL[param];
+  const mean = evalCurve(m.mean, ga);
+  const sd   = evalCurve(m.sd, ga);
+  return { mean, sd, p5: mean - 1.645 * sd, p50: mean, p95: mean + 1.645 * sd };
+}
+
+// Approssimazione CDF della normale standard (algoritmo Abramowitz & Stegun)
+function normCDF(z) {
+  const sign = z < 0 ? -1 : 1;
+  const x = Math.abs(z) / Math.sqrt(2);
+  const t = 1 / (1 + 0.3275911 * x);
+  const poly = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))));
+  const erf = 1 - poly * Math.exp(-x * x);
+  return 0.5 * (1 + sign * erf);
+}
+
+function getCentile(value, mean, sd) {
+  return normCDF((value - mean) / sd) * 100;
+}
+
+// Etichetta del centile secondo la convenzione del calcolatore originale:
+// < 1° e > 99° non vengono quantificati
+function centileLabel(c) {
+  if (c < 1)  return 'Sotto il 1° centile';
+  if (c > 99) return 'Sopra il 99° centile';
+  return (Math.round(c * 10) / 10).toFixed(1) + '°';
+}
+
+function centileHTML(c) {
+  const cls = (c < 5 || c > 95) ? 'centile-abnormal' : 'centile-normal';
+  return `<span class="centile-value ${cls}">${centileLabel(c)}</span>`;
+}
+
+// ── Gestione EG ──
+function computeGaFromDates() {
+  const edd = document.getElementById('edd').value;
+  const scan = document.getElementById('scanDate').value;
+  if (!edd || !scan) return;
+  const msDay = 24 * 3600 * 1000;
+  const daysToEdd = Math.round((new Date(edd + 'T00:00:00') - new Date(scan + 'T00:00:00')) / msDay);
+  const ga = (280 - daysToEdd) / 7;
+  document.getElementById('ga').value = ga.toFixed(2);
+  onGaInput();
+}
+
+function onGaInput() {
+  const ga = parseFloat(document.getElementById('ga').value);
+  const box = document.getElementById('gaDisplay');
+  if (isNaN(ga)) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  const w = Math.floor(ga), d = Math.round((ga - w) * 7);
+  let txt = `EG = ${ga.toFixed(2)} settimane (${w}w ${d}d)`;
+  if (ga < GA_MIN || ga > GA_MAX) {
+    txt += ` — fuori dall'intervallo normativo ${GA_MIN}–${GA_MAX} sett.`;
+    box.classList.add('out-of-range');
+  } else {
+    box.classList.remove('out-of-range');
+  }
+  box.textContent = txt;
+}
+
+function updateDerived() {
+  const bpdBrain = parseFloat(document.getElementById('bpd_brain').value);
+  const bpdSkull = parseFloat(document.getElementById('bpd_skull').value);
+  const ofdSkull = parseFloat(document.getElementById('ofd_skull').value);
+  const note = document.getElementById('derivedNote');
+  const hc = (!isNaN(bpdSkull) && !isNaN(ofdSkull)) ? 1.62 * (bpdSkull + ofdSkull) : null;
+  const ecsf = (!isNaN(bpdSkull) && !isNaN(bpdBrain)) ? bpdSkull - bpdBrain : null;
+  note.innerHTML = `<strong>Calcolati automaticamente:</strong><br>
+    Circonferenza cranica = 1.62 × (BPD cranico + OFD cranico)${hc !== null ? ` = <strong>${hc.toFixed(1)} mm</strong>` : ''}<br>
+    CSF extracerebrale 2D = BPD cranico − BPD encefalico${ecsf !== null ? ` = <strong>${ecsf.toFixed(1)} mm</strong>` : ''}`;
+}
+
+// Raccoglie i valori inseriti + i due parametri derivati
+function collectValues() {
+  const v = {};
+  for (const p of PARAMS_2D.concat(PARAMS_3D)) {
+    if (DERIVED.includes(p)) continue;
+    const raw = document.getElementById(p).value;
+    v[p] = raw === '' ? null : parseFloat(raw);
+    if (v[p] !== null && isNaN(v[p])) v[p] = null;
+  }
+  v.hc     = (v.bpd_skull !== null && v.ofd_skull !== null) ? 1.62 * (v.bpd_skull + v.ofd_skull) : null;
+  v.ecsf2d = (v.bpd_skull !== null && v.bpd_brain !== null) ? v.bpd_skull - v.bpd_brain : null;
+  return v;
+}
+
+function fmt(x, dec) { return x.toFixed(dec); }
+
+// ── Grafici centili ──
+function buildChart(param, ga, value) {
+  const W = 320, H = 200, ML = 42, MR = 10, MT = 10, MB = 38;
+  const x0 = GA_MIN, x1 = GA_MAX;
+  const n = 40;
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const g = x0 + (x1 - x0) * i / n;
+    pts.push({ g, ...refFor(param, g) });
+  }
+  let yMin = Math.min(...pts.map(p => p.p5), value);
+  let yMax = Math.max(...pts.map(p => p.p95), value);
+  const pad = (yMax - yMin) * 0.08 || 1;
+  yMin -= pad; yMax += pad;
+  if (yMin < 0 && Math.min(...pts.map(p => p.p5)) >= 0) yMin = 0;
+
+  const sx = g => ML + (g - x0) / (x1 - x0) * (W - ML - MR);
+  const sy = y => MT + (yMax - y) / (yMax - yMin) * (H - MT - MB);
+
+  const path = key => pts.map((p, i) => `${i ? 'L' : 'M'}${sx(p.g).toFixed(1)},${sy(p[key]).toFixed(1)}`).join('');
+
+  // griglia
+  let grid = '';
+  for (let g = 22; g <= 38; g += 4) {
+    grid += `<line x1="${sx(g).toFixed(1)}" y1="${MT}" x2="${sx(g).toFixed(1)}" y2="${H - MB}" stroke="#eee" stroke-width="1"/>`;
+    grid += `<text x="${sx(g).toFixed(1)}" y="${H - MB + 14}" text-anchor="middle" font-size="9" fill="#999" font-family="IBM Plex Mono, monospace">${g}</text>`;
+  }
+  const nTicks = 4;
+  for (let i = 0; i <= nTicks; i++) {
+    const y = yMin + (yMax - yMin) * i / nTicks;
+    grid += `<line x1="${ML}" y1="${sy(y).toFixed(1)}" x2="${W - MR}" y2="${sy(y).toFixed(1)}" stroke="#eee" stroke-width="1"/>`;
+    grid += `<text x="${ML - 5}" y="${(sy(y) + 3).toFixed(1)}" text-anchor="end" font-size="9" fill="#999" font-family="IBM Plex Mono, monospace">${y >= 100 ? y.toFixed(0) : y.toFixed(1)}</text>`;
+  }
+
+  const inRange = ga >= x0 && ga <= x1;
+  const px = sx(Math.min(Math.max(ga, x0), x1));
+  const py = sy(Math.min(Math.max(value, yMin), yMax));
+  const ref = refFor(param, ga);
+  const c = getCentile(value, ref.mean, ref.sd);
+  const ptColor = (c < 5 || c > 95) ? '#8b2500' : '#1a4731';
+
+  return `<div class="chart-cell">
+    <h4>${PARAM_SHORT[param]} (${PARAM_UNITS[param]})</h4>
+    <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Curva di crescita ${PARAM_LABELS[param]}">
+      ${grid}
+      <line x1="${ML}" y1="${MT}" x2="${ML}" y2="${H - MB}" stroke="#ccc" stroke-width="1"/>
+      <line x1="${ML}" y1="${H - MB}" x2="${W - MR}" y2="${H - MB}" stroke="#ccc" stroke-width="1"/>
+      <path d="${path('p95')}" fill="none" stroke="#1b4f72" stroke-width="1" stroke-dasharray="4 3" opacity=".7"/>
+      <path d="${path('p5')}"  fill="none" stroke="#1b4f72" stroke-width="1" stroke-dasharray="4 3" opacity=".7"/>
+      <path d="${path('p50')}" fill="none" stroke="#1b4f72" stroke-width="1.8"/>
+      <circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="4" fill="${ptColor}" stroke="#fff" stroke-width="1.5"${inRange ? '' : ' opacity=".5"'}/>
+      <text x="${(ML + W - MR) / 2}" y="${H - 6}" text-anchor="middle" font-size="9" fill="#aaa" font-family="IBM Plex Sans, sans-serif">età gestazionale (settimane)</text>
+    </svg>
+  </div>`;
+}
+
+// ── Referto ──
+function generateReport() {
+  const ga = parseFloat(document.getElementById('ga').value);
+  if (isNaN(ga)) { alert('Inserire l\'età gestazionale (direttamente o tramite EDD e data dell\'esame).'); return; }
+  if (ga < 16 || ga > 45) { alert('Età gestazionale non plausibile.'); return; }
+
+  const vals = collectValues();
+  const all = PARAMS_2D.concat(PARAMS_3D);
+  if (!all.some(p => vals[p] !== null)) { alert('Inserire almeno una misura.'); return; }
+
+  const name = document.getElementById('patientName').value.trim();
+  const scan = document.getElementById('scanDate').value;
+  const w = Math.floor(ga), d = Math.round((ga - w) * 7);
+  const gaLabel = `${ga.toFixed(2)} sett (${w}w ${d}d)`;
+  const outOfRange = ga < GA_MIN || ga > GA_MAX;
+
+  const low = [], high = [];
+  const charts = [];
+
+  function buildRows(list) {
+    let rows = '';
+    for (const p of list) {
+      if (vals[p] === null) continue;
+      const ref = refFor(p, ga);
+      if (!(ref.sd > 0)) continue;   // DS non definita a questa EG
+      const c = getCentile(vals[p], ref.mean, ref.sd);
+      const dec = PARAM_DEC[p], u = PARAM_UNITS[p];
+      if (c < 5)  low.push(PARAM_LABELS[p]);
+      if (c > 95) high.push(PARAM_LABELS[p]);
+      charts.push(buildChart(p, ga, vals[p]));
+      rows += `
+        <tr>
+          <td${DERIVED.includes(p) ? ' class="derived"' : ''}>${PARAM_LABELS[p]}${DERIVED.includes(p) ? ' *' : ''}</td>
+          <td class="val">${fmt(vals[p], dec)} ${u}</td>
+          <td class="val">${fmt(ref.p5, dec)}</td>
+          <td class="val">${fmt(ref.p50, dec)}</td>
+          <td class="val">${fmt(ref.p95, dec)}</td>
+          <td>${centileHTML(c)}</td>
+        </tr>`;
+    }
+    return rows;
+  }
+
+  const rows2D = buildRows(PARAMS_2D);
+  const rows3D = buildRows(PARAMS_3D);
+
+  function tableHTML(rows, unitLabel) {
+    return `<table class="centile-table">
+      <thead>
+        <tr>
+          <th>Parametro</th><th>Valore</th>
+          <th>P5 (${unitLabel})</th><th>P50 (${unitLabel})</th><th>P95 (${unitLabel})</th>
+          <th>Centile</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+
+  let diagClass, diagText;
+  if (low.length || high.length) {
+    diagClass = 'abnormal';
+    const parts = [];
+    if (low.length)  parts.push(`al di sotto del 5° centile: ${low.join(', ')}`);
+    if (high.length) parts.push(`al di sopra del 95° centile: ${high.join(', ')}`);
+    diagText = `Misure al di fuori dell'intervallo di normalità (5°–95° centile) per l'età gestazionale — ${parts.join('; ')}. Il reperto richiede correlazione con il quadro clinico-anamnestico e con il restante studio morfologico dell'encefalo fetale.`;
+  } else {
+    diagClass = 'normal';
+    diagText = 'Tutte le misure biometriche esaminate rientrano nei limiti di norma (5°–95° centile) per l\'età gestazionale.';
+  }
+
+  const rangeWarn = outOfRange
+    ? `<div class="diagnosis-box attention" style="margin-top:1rem">
+         <h3>Attenzione – EG fuori intervallo</h3>
+         <p>L'età gestazionale inserita (${ga.toFixed(2)} sett) è al di fuori dell'intervallo della coorte normativa
+         (${GA_MIN}–${GA_MAX} settimane). I centili riportati derivano da un'estrapolazione delle curve di regressione
+         e non sono validati.</p>
+       </div>` : '';
+
+  const html = `
+    <div class="report-card">
+      <div class="report-header">
+        <h2>Biometria Encefalica Fetale – RM</h2>
+        <div class="report-meta">
+          ${name ? `<div>Paziente: <span>${escapeHTML(name)}</span></div>` : '<div></div>'}
+          <div>Età gestazionale: <span>${gaLabel}</span></div>
+          ${scan ? `<div>Data esame: <span>${new Date(scan + 'T00:00:00').toLocaleDateString('it-IT')}</span></div>` : ''}
+        </div>
+      </div>
+
+      <div class="report-section-title">Tecnica</div>
+      <p>Studio RM dell'encefalo fetale. Le misure sono confrontate con i dati normativi di Kyriakopoulou et al. (2017),
+      ottenuti su 127 esami RM 1.5 T di feti con encefalo morfologicamente normale tra 21.29 e 38.86 settimane di età gestazionale.
+      Per ciascun parametro media e deviazione standard sono modellate come funzione dell'età gestazionale;
+      il centile è calcolato come 100 × Φ[(valore − media) / DS], con P5 e P95 pari a media ∓ 1.645 DS.</p>
+
+      ${rows2D ? `<div class="report-section-title">Misure 2D (mm)</div>${tableHTML(rows2D, 'mm')}
+        <p style="font-size:.72rem;color:#999;margin-top:.4rem">
+          * Parametri derivati: circonferenza cranica = 1.62 × (BPD cranico + OFD cranico);
+          CSF extracerebrale 2D = BPD cranico − BPD encefalico.
+        </p>` : ''}
+
+      ${rows3D ? `<div class="report-section-title">Misure 3D volumetriche (cm³)</div>${tableHTML(rows3D, 'cm³')}` : ''}
+
+      <p style="font-size:.72rem;color:#999;margin-top:.4rem">
+        I valori in <span style="color:var(--warn);font-weight:600">rosso</span> sono al di fuori dell'intervallo
+        5°–95° centile per l'età gestazionale.
+      </p>
+
+      <div class="report-section-title">Curve di Crescita</div>
+      <div class="chart-grid">${charts.join('')}</div>
+      <div class="chart-legend">
+        <span><i style="border-top:1.8px solid #1b4f72"></i>50° centile</span>
+        <span><i style="border-top:1px dashed #1b4f72"></i>5° e 95° centile</span>
+        <span><svg width="10" height="10" style="vertical-align:middle;margin-right:.3rem"><circle cx="5" cy="5" r="4" fill="#1a4731"/></svg>paziente</span>
+      </div>
+
+      ${rangeWarn}
+
+      <div class="diagnosis-box ${diagClass}">
+        <h3>Conclusioni</h3>
+        <p>${diagText}</p>
+      </div>
+
+      ${vals.atrial !== null ? `<div class="info-note" style="margin-top:1rem">
+        Nota: nella coorte di riferimento il diametro atriale non mostra correlazione significativa con l'età gestazionale
+        (r = 0.118, p = 0.091; media 5.97 ± 1.42 mm). Il centile va quindi interpretato con cautela, affiancandolo
+        alla soglia clinica convenzionale di 10 mm.</div>` : ''}
+
+      <div class="report-citation">
+        <strong>Riferimento:</strong> Kyriakopoulou V, Vatansever D, Davidson A, Patkee P, Elkommos S, Chew A, et al.
+        Normative biometry of the fetal brain using magnetic resonance imaging.
+        <em>Brain Struct Funct.</em> 2017;222(5):2295–2307. doi:10.1007/s00429-016-1342-6.
+        Coefficienti estratti dal calcolatore Excel allegato alla pubblicazione.
+      </div>
+
+      <div class="report-actions">
+        <button class="btn-copy" id="btnCopy" onclick="copyReport()">&#10003; Copia Testo per PACS</button>
+        <button class="btn-print" onclick="window.print()">Stampa / Salva PDF</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('reportOutput').innerHTML = html;
+  document.getElementById('reportOutput').scrollIntoView({ behavior: 'smooth' });
+}
+
+function escapeHTML(s) {
+  return s.replace(/[&<>"']/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch]));
+}
+
+function copyReport() {
+  const ga = parseFloat(document.getElementById('ga').value);
+  if (isNaN(ga)) return;
+  const vals = collectValues();
+  const name = document.getElementById('patientName').value.trim();
+  const scan = document.getElementById('scanDate').value;
+  const w = Math.floor(ga), d = Math.round((ga - w) * 7);
+
+  const pad = (s, n) => String(s).padEnd(n);
+  const COL = [40, 14, 10, 10, 10];
+  const low = [], high = [];
+
+  function block(list, title) {
+    const lines = [];
+    for (const p of list) {
+      if (vals[p] === null) continue;
+      const ref = refFor(p, ga);
+      if (!(ref.sd > 0)) continue;
+      const c = getCentile(vals[p], ref.mean, ref.sd);
+      const dec = PARAM_DEC[p], u = PARAM_UNITS[p];
+      if (c < 5)  low.push(PARAM_LABELS[p]);
+      if (c > 95) high.push(PARAM_LABELS[p]);
+      const flag = (c < 5 || c > 95) ? ' (FUORI NORMA)' : '';
+      lines.push(
+        pad(PARAM_LABELS[p] + (DERIVED.includes(p) ? ' *' : ''), COL[0]) +
+        pad(fmt(vals[p], dec) + ' ' + u, COL[1]) +
+        pad(fmt(ref.p5, dec), COL[2]) +
+        pad(fmt(ref.p50, dec), COL[3]) +
+        pad(fmt(ref.p95, dec), COL[4]) +
+        centileLabel(c) + flag
+      );
+    }
+    if (!lines.length) return [];
+    const hdr = pad('Parametro', COL[0]) + pad('Valore', COL[1]) + pad('P5', COL[2]) + pad('P50', COL[3]) + pad('P95', COL[4]) + 'Centile';
+    return ['', title, hdr, '-'.repeat(COL.reduce((a, b) => a + b, 0) + 14), ...lines];
+  }
+
+  const b2d = block(PARAMS_2D, 'MISURE 2D (mm)');
+  const b3d = block(PARAMS_3D, 'MISURE 3D VOLUMETRICHE (cm3)');
+
+  let diagText;
+  if (low.length || high.length) {
+    const parts = [];
+    if (low.length)  parts.push(`< 5 centile: ${low.join(', ')}`);
+    if (high.length) parts.push(`> 95 centile: ${high.join(', ')}`);
+    diagText = `Misure al di fuori dell'intervallo di normalita (5-95 centile) per l'eta gestazionale - ${parts.join('; ')}. Correlare con il quadro clinico-anamnestico e con il restante studio morfologico.`;
+  } else {
+    diagText = 'Tutte le misure biometriche esaminate rientrano nei limiti di norma (5-95 centile) per l\'eta gestazionale.';
+  }
+
+  const text = [
+    'BIOMETRIA ENCEFALICA FETALE - RM',
+    '',
+    (name ? `Paziente: ${name}   ` : '') + `Eta gestazionale: ${ga.toFixed(2)} sett (${w}w ${d}d)` +
+      (scan ? `   Data esame: ${new Date(scan + 'T00:00:00').toLocaleDateString('it-IT')}` : ''),
+    '',
+    'TECNICA',
+    'Studio RM dell\'encefalo fetale. Misure confrontate con i dati normativi di Kyriakopoulou et al. 2017 (127 esami RM 1.5 T, feti normali 21.29-38.86 settimane). Centile = 100 x Fi[(valore - media)/DS]; P5/P95 = media -/+ 1.645 DS.',
+    ...b2d,
+    ...(b2d.length ? ['* Parametri derivati: circonferenza cranica = 1.62 x (BPD cranico + OFD cranico); CSF extracerebrale 2D = BPD cranico - BPD encefalico.'] : []),
+    ...b3d,
+    ...(ga < GA_MIN || ga > GA_MAX
+        ? ['', `ATTENZIONE: eta gestazionale fuori dall'intervallo normativo (${GA_MIN}-${GA_MAX} sett); centili estrapolati e non validati.`]
+        : []),
+    '',
+    'CONCLUSIONI',
+    diagText,
+    '',
+    'Rif.: Kyriakopoulou V et al. Normative biometry of the fetal brain using magnetic resonance imaging. Brain Struct Funct. 2017;222(5):2295-2307. doi:10.1007/s00429-016-1342-6.'
+  ].join('\n');
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '✓ Copiato!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '✓ Copiato!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
+  });
+}
+</script>
+</body>
+</html>

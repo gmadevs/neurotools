@@ -52,6 +52,15 @@ window.SITE_TOOLS = [
   }
 
   ,{
+    id: "biometria-fetale-rm",
+    title: "Biometria fetale RM",
+    description: "Centili delle misure 2D e 3D dell'encefalo fetale in RM (21–39 settimane)",
+    url: "tools/biometria-fetale-rm.html",
+    category: "Neuroradiologia Pediatrica",
+    subcategory: "Risonanza Magnetica"
+  }
+
+  ,{
     id: "phvd",
     title: "PHVD Monitor",
     description: "Monitoraggio della dilatazione ventricolare post-emorragica (PHVD) nel prematuro",
