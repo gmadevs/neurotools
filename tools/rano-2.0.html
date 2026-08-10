@@ -2,155 +2,20 @@
 <html lang="it" data-root="..">
 <head>
 <link rel="stylesheet" href="../assets/nav.css">
+<link rel="stylesheet" href="../assets/base.css">
 <script src="../assets/site-config.js"></script>
 <script src="../assets/nav.js"></script>
+<script src="../assets/mobile-result.js" defer></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RANO 2.0 – Calcolatore Risposta Radiologica</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --ink: #1a1c22;
-    --paper: #f5f4f0;
-    --card: #ffffff;
-    --rule: #d0cfc8;
-    --accent: #1b4f72;
-    --accent-light: #d6e8f5;
-    --warn: #8b2500;
-    --warn-bg: #fdecea;
-    --ok: #1a4731;
-    --ok-bg: #e8f5ee;
-    --mid: #4a3800;
-    --mid-bg: #fdf8e1;
-    --neutral-bg: #eef3f8;
-    --neutral: #1b4f72;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
-  }
-
-  body {
-    font-family: var(--sans);
-    background: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-    padding: 0;
-  }
-
-  /* ── HEADER ── */
-  header {
-    background: var(--accent);
-    color: #fff;
-    padding: 1.5rem 2rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-  }
-  header h1 {
-    font-family: var(--mono);
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-  }
-  header span {
-    font-size: 0.78rem;
-    opacity: .7;
-    font-style: italic;
-  }
-
-  /* ── LAYOUT ── */
-  .workspace {
-    display: grid;
-    grid-template-columns: 400px 1fr;
-    min-height: calc(100vh - 68px);
-  }
-
-  /* ── PANEL SINISTRA ── */
-  .input-panel {
-    background: var(--card);
-    border-right: 1px solid var(--rule);
-    padding: 1.8rem 1.5rem 2rem;
-    overflow-y: auto;
-  }
-
-  /* ── PANEL DESTRA ── */
-  .output-panel {
-    background: var(--paper);
-    padding: 1.8rem 1.5rem 2rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1.4rem;
-  }
-
-  .section-label {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: .6rem;
-    padding-bottom: .35rem;
-    border-bottom: 1.5px solid var(--accent-light);
-  }
-
-  .section-block {
-    margin-bottom: 1.6rem;
-  }
-
-  .form-group {
-    margin-bottom: 1rem;
-  }
-
-  label {
-    display: block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    margin-bottom: .3rem;
-    color: #3a3c45;
-  }
-
-  .hint {
-    font-size: 0.72rem;
-    color: #7a7870;
-    margin-top: .2rem;
-  }
-
-  input[type="number"],
-  select {
-    width: 100%;
-    padding: .45rem .7rem;
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    font-family: var(--mono);
-    font-size: 0.9rem;
-    background: #fff;
-    color: var(--ink);
-    transition: border-color .15s;
-  }
-
-  input[type="number"]:focus,
-  select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-light);
-  }
-
-  .field-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: .75rem;
-  }
-
-  .field-grid.full { grid-template-columns: 1fr; }
-  .hidden { display: none !important; }
-
-  /* ── MODE SELECTOR ── */
-  .mode-selector {
+/* ── HEADER ── */
+/* ── LAYOUT ── */
+/* ── PANEL SINISTRA ── */
+/* ── PANEL DESTRA ── */
+/* ── MODE SELECTOR ── */
+.mode-selector {
     display: flex;
     background: var(--paper);
     border: 1px solid var(--rule);
@@ -159,14 +24,13 @@
     margin-bottom: 1.4rem;
     gap: 3px;
   }
-
-  .mode-btn {
+.mode-btn {
     flex: 1;
     padding: .45rem .8rem;
     border: none;
     border-radius: 6px;
     background: transparent;
-    color: #7a7870;
+    color: var(--muted);
     font-family: var(--mono);
     font-size: 0.78rem;
     font-weight: 600;
@@ -174,14 +38,12 @@
     cursor: pointer;
     transition: background .15s, color .15s;
   }
-
-  .mode-btn.active {
+.mode-btn.active {
     background: var(--accent);
     color: #fff;
   }
-
-  /* ── CHECKBOXES ── */
-  .check {
+/* ── CHECKBOXES ── */
+.check {
     display: flex;
     align-items: flex-start;
     gap: .7rem;
@@ -191,31 +53,26 @@
     background: var(--paper);
     margin-bottom: .6rem;
   }
-
-  .check input[type="checkbox"] {
-    width: 15px;
-    height: 15px;
+.check input[type="checkbox"] {
+    width: 1.15rem;
+    height: 1.15rem;
     margin-top: 2px;
     accent-color: var(--accent);
     flex-shrink: 0;
   }
-
-  .check-label {
+.check-label {
     font-size: 0.8rem;
     color: var(--ink);
     line-height: 1.4;
   }
-
-  .check-label strong { font-weight: 600; }
-
-  /* ── ACTIONS ── */
-  .actions {
+.check-label strong { font-weight: 600; }
+/* ── ACTIONS ── */
+.actions {
     display: flex;
     gap: .75rem;
     margin-top: 1.2rem;
   }
-
-  .btn {
+.btn {
     padding: .55rem 1.2rem;
     border-radius: 6px;
     font-family: var(--mono);
@@ -226,29 +83,24 @@
     border: none;
     transition: opacity .15s;
   }
-
-  .btn:hover { opacity: .85; }
-
-  .btn-primary {
+.btn:hover { opacity: .85; }
+.btn-primary {
     background: var(--accent);
     color: #fff;
   }
-
-  .btn-secondary {
+.btn-secondary {
     background: var(--paper);
     color: var(--ink);
     border: 1px solid var(--rule);
   }
-
-  /* ── OUTPUT ── */
-  .result-block {
+/* ── OUTPUT ── */
+.result-block {
     background: var(--card);
     border: 1px solid var(--rule);
     border-radius: 8px;
     padding: 1.2rem 1.4rem;
   }
-
-  .result-status {
+.result-status {
     display: inline-block;
     font-family: var(--mono);
     font-size: 1rem;
@@ -261,12 +113,10 @@
     background: var(--neutral-bg);
     color: var(--neutral);
   }
-
-  .result-status.ok   { background: var(--ok-bg);   color: var(--ok); }
-  .result-status.warn { background: var(--mid-bg);  color: var(--mid); }
-  .result-status.danger { background: var(--warn-bg); color: var(--warn); }
-
-  .result-main {
+.result-status.ok { background: var(--ok-bg);   color: var(--ok); }
+.result-status.warn { background: var(--mid-bg);  color: var(--mid); }
+.result-status.danger { background: var(--warn-bg); color: var(--warn); }
+.result-main {
     font-family: var(--mono);
     font-size: 2.4rem;
     font-weight: 600;
@@ -275,224 +125,172 @@
     margin-bottom: .5rem;
     color: var(--ink);
   }
-
-  .result-copy {
+.result-copy {
     font-size: 0.82rem;
     color: #5a5c65;
     line-height: 1.5;
     margin-bottom: 1rem;
   }
-
-  .stats-grid {
+.stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: .6rem;
   }
-
-  .stat {
+.stat {
     background: var(--paper);
     border: 1px solid var(--rule);
     border-radius: 6px;
     padding: .6rem .8rem;
   }
-
-  .stat small {
+.stat small {
     display: block;
     font-family: var(--mono);
     font-size: 0.64rem;
     font-weight: 600;
     letter-spacing: .06em;
     text-transform: uppercase;
-    color: #7a7870;
+    color: var(--muted);
     margin-bottom: .25rem;
   }
-
-  .stat strong {
+.stat strong {
     font-family: var(--mono);
     font-size: 0.9rem;
   }
-
-  .footer-note {
+.footer-note {
     margin-top: .8rem;
     padding: .6rem .8rem;
     background: var(--paper);
     border-radius: 6px;
     font-size: 0.75rem;
-    color: #7a7870;
+    color: var(--muted);
     border-left: 3px solid var(--rule);
   }
-
-  /* ── NOTE INFO ── */
-  .note {
+/* ── NOTE INFO ── */
+.note {
     border-radius: 6px;
     padding: .8rem 1rem;
     font-size: 0.8rem;
     line-height: 1.5;
     border: 1px solid;
   }
-
-  .note.info    { background: var(--neutral-bg); color: var(--neutral); border-color: var(--accent-light); }
-  .note.warning { background: var(--mid-bg);     color: var(--mid);     border-color: #e0c96a; }
-
-  .note strong { font-weight: 600; display: block; margin-bottom: .25rem; }
-
-  /* ── RULE CARD ── */
-  .rule-block {
+.note.info { background: var(--neutral-bg); color: var(--neutral); border-color: var(--accent-light); }
+.note.warning { background: var(--mid-bg);     color: var(--mid);     border-color: #e0c96a; }
+.note strong { font-weight: 600; display: block; margin-bottom: .25rem; }
+/* ── RULE CARD ── */
+.rule-block {
     background: var(--card);
     border: 1px solid var(--rule);
     border-radius: 8px;
     padding: 1.2rem 1.4rem;
   }
-
-  .rule-item {
+.rule-item {
     font-size: 0.82rem;
     color: #5a5c65;
     padding: .55rem 0;
     border-bottom: 1px solid var(--rule);
     line-height: 1.5;
   }
-
-  .rule-item:last-child { border-bottom: none; padding-bottom: 0; }
-  .rule-item:first-child { padding-top: 0; }
-  .rule-item strong { color: var(--ink); }
-
-  /* ── METRIC PILLS (info header) ── */
-  .metrics-row {
+.rule-item:last-child { border-bottom: none; padding-bottom: 0; }
+.rule-item:first-child { padding-top: 0; }
+.rule-item strong { color: var(--ink); }
+/* ── METRIC PILLS (info header) ── */
+.metrics-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: .6rem;
     margin-bottom: 1.4rem;
   }
-
-  .metric-pill {
+.metric-pill {
     background: var(--paper);
     border: 1px solid var(--rule);
     border-radius: 6px;
     padding: .6rem .8rem;
   }
-
-  .metric-pill small {
+.metric-pill small {
     display: block;
     font-family: var(--mono);
     font-size: 0.62rem;
     font-weight: 600;
     letter-spacing: .06em;
     text-transform: uppercase;
-    color: #7a7870;
+    color: var(--muted);
     margin-bottom: .25rem;
   }
-
-  .metric-pill strong {
+.metric-pill strong {
     display: block;
     font-family: var(--mono);
     font-size: 0.82rem;
     color: var(--ink);
     margin-bottom: .15rem;
   }
-
-  .metric-pill span {
+.metric-pill span {
     font-size: 0.72rem;
-    color: #7a7870;
+    color: var(--muted);
   }
-
-  @media (max-width: 780px) {
-    .workspace { grid-template-columns: 1fr; }
-    .output-panel { border-top: 1px solid var(--rule); }
-    .field-grid { grid-template-columns: 1fr; }
-    .metrics-row { grid-template-columns: 1fr; }
-  }
-
-  /* ── INFO BUTTON ── */
-  .btn-info {
-    margin-left: auto;
-    display: flex; align-items: center; justify-content: center;
-    width: 2rem; height: 2rem; border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,.5);
-    background: rgba(255,255,255,.12); color: #fff;
-    font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
-    cursor: pointer; flex-shrink: 0;
-    transition: background .15s, border-color .15s; line-height: 1;
-  }
-  .btn-info:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.8); }
-
-  /* ── TUTORIAL MODAL ── */
-  .tutorial-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(10,20,35,.55); z-index: 1000;
-    align-items: center; justify-content: center; padding: 1rem;
-  }
-  .tutorial-overlay.open { display: flex; }
-
-  .tutorial-modal {
-    background: var(--card); border-radius: 10px; width: 100%; max-width: 520px;
-    box-shadow: 0 16px 48px rgba(0,0,0,.25); overflow: hidden;
-    display: flex; flex-direction: column;
-  }
-
-  .tutorial-header {
+@media (max-width: 900px) {
+  .metrics-row { grid-template-columns: 1fr; }
+}
+/* ── INFO BUTTON ── */
+/* ── TUTORIAL MODAL ── */
+.tutorial-header {
     background: var(--accent); color: #fff;
     padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
   }
-  .tutorial-header h2 {
+.tutorial-header h2 {
     font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
     letter-spacing: .07em; text-transform: uppercase;
   }
-  .tutorial-close {
+.tutorial-close {
     background: none; border: none; color: rgba(255,255,255,.7);
     font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
   }
-  .tutorial-close:hover { color: #fff; }
-
-  .tutorial-steps-bar {
+.tutorial-close:hover { color: #fff; }
+.tutorial-steps-bar {
     display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
     background: #f8f7f4; border-bottom: 1px solid var(--rule);
   }
-  .step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
-  .step-dot.active { background: var(--accent); }
-  .step-dot.done { background: var(--ok); }
-
-  .tutorial-body { padding: 1.6rem 1.8rem 1.2rem; min-height: 200px; flex: 1; }
-
-  .step-number {
+.step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+.step-dot.active { background: var(--accent); }
+.step-dot.done { background: var(--ok); }
+.step-number {
     font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
     letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
   }
-  .tutorial-body h3 {
+.tutorial-body h3 {
     font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: .7rem;
   }
-  .tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
-  .tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
-  .tut-tip {
+.tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
+.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
+.tut-tip {
     background: var(--accent-light); border-left: 3px solid var(--accent);
     padding: .6rem .9rem; border-radius: 0 4px 4px 0;
     font-size: 0.78rem; color: var(--accent); margin-top: .8rem;
   }
-  .tut-warn {
+.tut-warn {
     background: var(--warn-bg); border-left: 3px solid var(--warn);
     padding: .6rem .9rem; border-radius: 0 4px 4px 0;
     font-size: 0.78rem; color: var(--warn); margin-top: .8rem;
   }
-
-  .tutorial-footer {
+.tutorial-footer {
     padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
     justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
   }
-  .tutorial-skip {
-    font-size: 0.75rem; color: #aaa; cursor: pointer;
+.tutorial-skip {
+    font-size: 0.75rem; color: var(--muted); cursor: pointer;
     background: none; border: none; padding: 0; transition: color .15s;
   }
-  .tutorial-skip:hover { color: #666; }
-  .tutorial-nav { display: flex; gap: .6rem; }
-  .btn-tut-prev, .btn-tut-next {
+.tutorial-skip:hover { color: #666; }
+.tutorial-nav { display: flex; gap: .6rem; }
+.btn-tut-prev, .btn-tut-next {
     font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
     letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
   }
-  .btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
-  .btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
-  .btn-tut-next:hover { background: #143d57; }
-  .btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
-  .btn-tut-next.finish:hover { background: #145a38; }
+.btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
+.btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+.btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+.btn-tut-next:hover { background: #143d57; }
+.btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+.btn-tut-next.finish:hover { background: #145a38; }
 </style>
 </head>
 <body>
@@ -500,9 +298,7 @@
 <header>
   <h1>RANO 2.0</h1>
   <span>Calcolatore della risposta radiologica – Neuro-oncologia
-    <a href="https://pubmed.ncbi.nlm.nih.gov/37774317/" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin-left:.4rem">
-      <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
-    </a>
+    <a class="badge-link" href="https://pubmed.ncbi.nlm.nih.gov/37774317/" target="_blank" rel="noopener">PubMed</a>
   </span>
   <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
 </header>
@@ -561,7 +357,7 @@
 
       <div class="section-block">
         <div class="section-label">Baseline</div>
-        <p id="baselineSubtle" style="font-size:.75rem;color:#7a7870;margin-bottom:.8rem">Prodotto bidimensionale di riferimento.</p>
+        <p id="baselineSubtle" style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Prodotto bidimensionale di riferimento.</p>
 
         <div class="field-grid" id="grid2DBaseline">
           <div class="form-group">
@@ -584,7 +380,7 @@
 
       <div class="section-block">
         <div class="section-label">Follow-up</div>
-        <p id="currentSubtle" style="font-size:.75rem;color:#7a7870;margin-bottom:.8rem">Misure dell'esame attuale.</p>
+        <p id="currentSubtle" style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Misure dell'esame attuale.</p>
 
         <div class="field-grid" id="grid2DCurrent">
           <div class="form-group">

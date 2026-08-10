@@ -2,155 +2,26 @@
 <html lang="it" data-root="..">
 <head>
 <link rel="stylesheet" href="../assets/nav.css">
+<link rel="stylesheet" href="../assets/base.css">
 <script src="../assets/site-config.js"></script>
 <script src="../assets/nav.js"></script>
+<script src="../assets/mobile-result.js" defer></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PHVD – Monitoraggio Dilatazione Ventricolare</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --ink: #1a1c22;
-    --paper: #f5f4f0;
-    --card: #ffffff;
-    --rule: #d0cfc8;
-    --accent: #1b4f72;
-    --accent-light: #d6e8f5;
-    --warn: #8b2500;
-    --warn-bg: #fdecea;
-    --ok: #1a4731;
-    --ok-bg: #e8f5ee;
-    --mid: #4a3800;
-    --mid-bg: #fdf8e1;
-    --neutral-bg: #eef3f8;
-    --neutral: #1b4f72;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
-  }
-
-  body {
-    font-family: var(--sans);
-    background: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-    padding: 0;
-  }
-
-  header {
-    background: var(--accent);
-    color: #fff;
-    padding: 1.5rem 2rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-  }
-  header h1 {
-    font-family: var(--mono);
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-  }
-  header span {
-    font-size: 0.78rem;
-    opacity: .7;
-    font-style: italic;
-  }
-
-  .workspace {
-    display: grid;
-    grid-template-columns: 400px 1fr;
-    min-height: calc(100vh - 68px);
-  }
-
-  .input-panel {
-    background: var(--card);
-    border-right: 1px solid var(--rule);
-    padding: 1.8rem 1.5rem 2rem;
-    overflow-y: auto;
-  }
-
-  .output-panel {
-    background: var(--paper);
-    padding: 1.8rem 1.5rem 2rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1.4rem;
-  }
-
-  .section-label {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: .6rem;
-    padding-bottom: .35rem;
-    border-bottom: 1.5px solid var(--accent-light);
-  }
-
-  .section-block { margin-bottom: 1.6rem; }
-  .form-group { margin-bottom: 1rem; }
-
-  label {
-    display: block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    margin-bottom: .3rem;
-    color: #3a3c45;
-  }
-
-  .hint {
-    font-size: 0.72rem;
-    color: #7a7870;
-    margin-top: .2rem;
-  }
-
-  input[type="number"],
-  input[type="date"],
-  select {
-    width: 100%;
-    padding: .45rem .7rem;
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    font-family: var(--mono);
-    font-size: 0.9rem;
-    background: #fff;
-    color: var(--ink);
-    transition: border-color .15s;
-  }
-
-  input:focus, select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-light);
-  }
-
-  .field-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: .75rem;
-  }
-
-  .field-grid-3 {
+.field-grid-3 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: .75rem;
   }
-
-  .date-with-btn {
+.date-with-btn {
     display: flex;
     gap: .5rem;
     align-items: flex-end;
   }
-  .date-with-btn input { flex: 1; }
-
-  .btn-today {
+.date-with-btn input { flex: 1; }
+.btn-today {
     padding: .45rem .75rem;
     border-radius: 6px;
     font-family: var(--mono);
@@ -163,9 +34,8 @@
     white-space: nowrap;
     transition: background .15s;
   }
-  .btn-today:hover { background: var(--accent-light); }
-
-  .pma-display {
+.btn-today:hover { background: var(--accent-light); }
+.pma-display {
     display: flex;
     align-items: center;
     gap: .5rem;
@@ -175,7 +45,7 @@
     border-radius: 6px;
     margin-top: .75rem;
   }
-  .pma-display .pma-label {
+.pma-display .pma-label {
     font-size: 0.72rem;
     color: var(--accent);
     font-weight: 600;
@@ -183,34 +53,31 @@
     text-transform: uppercase;
     letter-spacing: .06em;
   }
-  .pma-display .pma-value {
+.pma-display .pma-value {
     font-family: var(--mono);
     font-size: 1rem;
     font-weight: 600;
     color: var(--ink);
   }
-
-  .measure-row {
+.measure-row {
     display: grid;
     grid-template-columns: 90px 1fr 1fr;
     gap: .5rem;
     align-items: center;
     margin-bottom: .55rem;
   }
-  .measure-row .meas-label {
+.measure-row .meas-label {
     font-size: 0.78rem;
     font-weight: 600;
     color: #3a3c45;
     font-family: var(--mono);
   }
-
-  .actions {
+.actions {
     display: flex;
     gap: .75rem;
     margin-top: 1.2rem;
   }
-
-  .btn {
+.btn {
     padding: .55rem 1.2rem;
     border-radius: 6px;
     font-family: var(--mono);
@@ -221,19 +88,17 @@
     border: none;
     transition: opacity .15s;
   }
-  .btn:hover { opacity: .85; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-secondary { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
-
-  /* OUTPUT */
-  .result-block {
+.btn:hover { opacity: .85; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
+/* OUTPUT */
+.result-block {
     background: var(--card);
     border: 1px solid var(--rule);
     border-radius: 8px;
     padding: 1.2rem 1.4rem;
   }
-
-  .result-status {
+.result-status {
     display: inline-block;
     font-family: var(--mono);
     font-size: 0.85rem;
@@ -246,11 +111,10 @@
     background: var(--neutral-bg);
     color: var(--neutral);
   }
-  .result-status.ok      { background: var(--ok-bg);   color: var(--ok); }
-  .result-status.warn    { background: var(--mid-bg);  color: var(--mid); }
-  .result-status.danger  { background: var(--warn-bg); color: var(--warn); }
-
-  .result-main {
+.result-status.ok { background: var(--ok-bg);   color: var(--ok); }
+.result-status.warn { background: var(--mid-bg);  color: var(--mid); }
+.result-status.danger { background: var(--warn-bg); color: var(--warn); }
+.result-main {
     font-family: var(--mono);
     font-size: 1.5rem;
     font-weight: 600;
@@ -259,40 +123,37 @@
     margin-bottom: .5rem;
     color: var(--ink);
   }
-
-  .result-copy {
+.result-copy {
     font-size: 0.82rem;
     color: #5a5c65;
     line-height: 1.5;
     margin-bottom: 1rem;
   }
-
-  /* METRICS TABLE */
-  .metrics-table {
+/* METRICS TABLE */
+.metrics-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.8rem;
   }
-  .metrics-table th {
+.metrics-table th {
     font-family: var(--mono);
     font-size: 0.68rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .06em;
-    color: #7a7870;
+    color: var(--muted);
     padding: .4rem .6rem;
     text-align: left;
     border-bottom: 1px solid var(--rule);
   }
-  .metrics-table td {
+.metrics-table td {
     padding: .5rem .6rem;
     border-bottom: 1px solid #ebebeb;
     font-family: var(--mono);
     font-size: 0.82rem;
   }
-  .metrics-table tr:last-child td { border-bottom: none; }
-
-  .badge {
+.metrics-table tr:last-child td { border-bottom: none; }
+.badge {
     display: inline-block;
     padding: .15rem .5rem;
     border-radius: 4px;
@@ -302,17 +163,16 @@
     text-transform: uppercase;
     letter-spacing: .04em;
   }
-  .badge-ok     { background: var(--ok-bg);   color: var(--ok); }
-  .badge-warn   { background: var(--mid-bg);  color: var(--mid); }
-  .badge-danger { background: var(--warn-bg); color: var(--warn); }
-  .badge-na     { background: #f0f0ee; color: #9a9890; }
-
-  .action-list {
+.badge-ok { background: var(--ok-bg);   color: var(--ok); }
+.badge-warn { background: var(--mid-bg);  color: var(--mid); }
+.badge-danger { background: var(--warn-bg); color: var(--warn); }
+.badge-na { background: #f0f0ee; color: var(--muted); }
+.action-list {
     list-style: none;
     padding: 0;
     margin: .6rem 0 0;
   }
-  .action-list li {
+.action-list li {
     display: flex;
     gap: .6rem;
     align-items: flex-start;
@@ -321,30 +181,27 @@
     margin-bottom: .45rem;
     line-height: 1.4;
   }
-  .action-list li::before {
+.action-list li::before {
     content: "→";
     font-family: var(--mono);
     font-weight: 600;
     color: var(--accent);
     flex-shrink: 0;
   }
-
-  .ref-note {
+.ref-note {
     font-size: 0.7rem;
-    color: #9a9890;
+    color: var(--muted);
     margin-top: .8rem;
     line-height: 1.4;
   }
-
-  .placeholder {
+.placeholder {
     text-align: center;
-    color: #9a9890;
+    color: var(--muted);
     font-size: 0.85rem;
     padding: 3rem 1rem;
     font-style: italic;
   }
-
-  .vi-threshold-row {
+.vi-threshold-row {
     display: flex;
     gap: .6rem;
     align-items: center;
@@ -355,19 +212,18 @@
     margin-bottom: .5rem;
     font-size: 0.8rem;
   }
-  .vi-threshold-row .th-label {
+.vi-threshold-row .th-label {
     font-family: var(--mono);
     font-size: 0.72rem;
-    color: #7a7870;
+    color: var(--muted);
     min-width: 120px;
   }
-  .vi-threshold-row .th-value {
+.vi-threshold-row .th-value {
     font-family: var(--mono);
     font-weight: 600;
     color: var(--ink);
   }
-
-  .btn-copy {
+.btn-copy {
     padding: .55rem 1.2rem;
     background: var(--ok);
     border: none;
@@ -381,10 +237,9 @@
     cursor: pointer;
     transition: background .2s;
   }
-  .btn-copy:hover { background: #145a38; }
-  .btn-copy.copied { background: #555; }
-
-  .btn-print {
+.btn-copy:hover { background: #145a38; }
+.btn-copy.copied { background: #555; }
+.btn-print {
     padding: .55rem 1.1rem;
     background: transparent;
     border: 1px solid var(--accent);
@@ -398,125 +253,81 @@
     cursor: pointer;
     transition: all .15s;
   }
-  .btn-print:hover { background: var(--accent); color: #fff; }
-
-  .report-actions {
+.btn-print:hover { background: var(--accent); color: #fff; }
+.report-actions {
     display: flex;
     gap: .7rem;
     margin-top: 1.4rem;
     align-items: center;
   }
-
-  /* ── INFO BUTTON ── */
-  .btn-info {
-    margin-left: auto;
-    display: flex; align-items: center; justify-content: center;
-    width: 2rem; height: 2rem; border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,.5);
-    background: rgba(255,255,255,.12); color: #fff;
-    font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
-    cursor: pointer; flex-shrink: 0;
-    transition: background .15s, border-color .15s; line-height: 1;
-  }
-  .btn-info:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.8); }
-
-  /* ── TUTORIAL MODAL ── */
-  .tutorial-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(10,20,35,.55); z-index: 1000;
-    align-items: center; justify-content: center; padding: 1rem;
-  }
-  .tutorial-overlay.open { display: flex; }
-
-  .tutorial-modal {
-    background: var(--card); border-radius: 10px; width: 100%; max-width: 520px;
-    box-shadow: 0 16px 48px rgba(0,0,0,.25); overflow: hidden;
-    display: flex; flex-direction: column;
-  }
-
-  .tutorial-header {
+/* ── INFO BUTTON ── */
+/* ── TUTORIAL MODAL ── */
+.tutorial-header {
     background: var(--accent); color: #fff;
     padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
   }
-  .tutorial-header h2 {
+.tutorial-header h2 {
     font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
     letter-spacing: .07em; text-transform: uppercase;
   }
-  .tutorial-close {
+.tutorial-close {
     background: none; border: none; color: rgba(255,255,255,.7);
     font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
   }
-  .tutorial-close:hover { color: #fff; }
-
-  .tutorial-steps-bar {
+.tutorial-close:hover { color: #fff; }
+.tutorial-steps-bar {
     display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
     background: #f8f7f4; border-bottom: 1px solid var(--rule);
   }
-  .step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
-  .step-dot.active { background: var(--accent); }
-  .step-dot.done { background: var(--ok); }
-
-  .tutorial-body { padding: 1.6rem 1.8rem 1.2rem; min-height: 200px; flex: 1; }
-
-  .step-number {
+.step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+.step-dot.active { background: var(--accent); }
+.step-dot.done { background: var(--ok); }
+.step-number {
     font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
     letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
   }
-  .tutorial-body h3 {
+.tutorial-body h3 {
     font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: .7rem;
   }
-  .tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
-  .tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
-  .tut-tip {
+.tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
+.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
+.tut-tip {
     background: var(--accent-light); border-left: 3px solid var(--accent);
     padding: .6rem .9rem; border-radius: 0 4px 4px 0;
     font-size: 0.78rem; color: var(--accent); margin-top: .8rem;
   }
-  .tut-warn {
+.tut-warn {
     background: var(--warn-bg); border-left: 3px solid var(--warn);
     padding: .6rem .9rem; border-radius: 0 4px 4px 0;
     font-size: 0.78rem; color: var(--warn); margin-top: .8rem;
   }
-
-  .tutorial-footer {
+.tutorial-footer {
     padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
     justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
   }
-  .tutorial-skip {
-    font-size: 0.75rem; color: #aaa; cursor: pointer;
+.tutorial-skip {
+    font-size: 0.75rem; color: var(--muted); cursor: pointer;
     background: none; border: none; padding: 0; transition: color .15s;
   }
-  .tutorial-skip:hover { color: #666; }
-  .tutorial-nav { display: flex; gap: .6rem; }
-  .btn-tut-prev, .btn-tut-next {
+.tutorial-skip:hover { color: #666; }
+.tutorial-nav { display: flex; gap: .6rem; }
+.btn-tut-prev, .btn-tut-next {
     font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
     letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
   }
-  .btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
-  .btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
-  .btn-tut-next:hover { background: #143d57; }
-  .btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
-  .btn-tut-next.finish:hover { background: #145a38; }
-
-  @media (max-width: 800px) {
-    .workspace { grid-template-columns: 1fr; }
-    .output-panel { border-top: 1px solid var(--rule); }
-  }
-
-  @media print {
-    header, .input-panel, .report-actions { display: none !important; }
-    .tutorial-overlay { display: none !important; }
-  }
+.btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
+.btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+.btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+.btn-tut-next:hover { background: #143d57; }
+.btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+.btn-tut-next.finish:hover { background: #145a38; }
 </style>
 </head>
 <body>
 <header>
   <h1>PHVD Monitor</h1>
   <span>Dilatazione Ventricolare Post-Emorragica – Criteri Brouwer / ELVIS
-    <a href="https://pubmed.ncbi.nlm.nih.gov/41876331/" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin-left:.4rem">
-      <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
-    </a>
+    <a class="badge-link" href="https://pubmed.ncbi.nlm.nih.gov/41876331/" target="_blank" rel="noopener">PubMed</a>
   </span>
   <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
 </header>
@@ -585,8 +396,8 @@
 
       <div style="display:grid; grid-template-columns:90px 1fr 1fr; gap:.4rem; margin-bottom:.35rem;">
         <div></div>
-        <div style="font-size:0.7rem;font-family:var(--mono);color:#7a7870;text-align:center;">Destro</div>
-        <div style="font-size:0.7rem;font-family:var(--mono);color:#7a7870;text-align:center;">Sinistro</div>
+        <div style="font-size:0.7rem;font-family:var(--mono);color:var(--muted);text-align:center;">Destro</div>
+        <div style="font-size:0.7rem;font-family:var(--mono);color:var(--muted);text-align:center;">Sinistro</div>
       </div>
 
       <div class="measure-row">
@@ -594,21 +405,21 @@
         <input type="number" id="vi-r" min="0" max="40" step="0.1" placeholder="mm">
         <input type="number" id="vi-l" min="0" max="40" step="0.1" placeholder="mm">
       </div>
-      <div style="font-size:0.7rem;color:#7a7870;margin:-0.3rem 0 .6rem 94px;">Ventricular Index – piano coronale al forame di Monro</div>
+      <div style="font-size:0.7rem;color:var(--muted);margin:-0.3rem 0 .6rem 94px;">Ventricular Index – piano coronale al forame di Monro</div>
 
       <div class="measure-row">
         <div class="meas-label">AHW</div>
         <input type="number" id="ahw-r" min="0" max="30" step="0.1" placeholder="mm">
         <input type="number" id="ahw-l" min="0" max="30" step="0.1" placeholder="mm">
       </div>
-      <div style="font-size:0.7rem;color:#7a7870;margin:-0.3rem 0 .6rem 94px;">Anterior Horn Width – piano coronale caudotalamica</div>
+      <div style="font-size:0.7rem;color:var(--muted);margin:-0.3rem 0 .6rem 94px;">Anterior Horn Width – piano coronale caudotalamica</div>
 
       <div class="measure-row">
         <div class="meas-label">TOD</div>
         <input type="number" id="tod-r" min="0" max="60" step="0.1" placeholder="mm">
         <input type="number" id="tod-l" min="0" max="60" step="0.1" placeholder="mm">
       </div>
-      <div style="font-size:0.7rem;color:#7a7870;margin:-0.3rem 0 .6rem 94px;">Thalamo-Occipital Distance – piano parasagittale</div>
+      <div style="font-size:0.7rem;color:var(--muted);margin:-0.3rem 0 .6rem 94px;">Thalamo-Occipital Distance – piano parasagittale</div>
     </div>
 
     <div class="actions">
@@ -842,7 +653,7 @@ function calculate() {
 
     <div class="result-block">
       <div class="section-label">Misure per lato</div>
-      <table class="metrics-table">
+      <div class="table-scroll"><table class="metrics-table">
         <thead>
           <tr>
             <th>Misura</th>
@@ -875,13 +686,19 @@ function calculate() {
             <td>${badgeHtml(todLcls, todLcls === 'danger' ? '>25mm' : todLcls === 'ok' ? 'Normale' : 'n.d.')}</td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
 
-      <div style="margin-top:.8rem;padding:.6rem .8rem;background:var(--paper);border-radius:6px;font-size:0.74rem;color:#7a7870;font-family:var(--mono);">
+      <div style="margin-top:.8rem;padding:.6rem .8rem;background:var(--paper);border-radius:6px;font-size:0.74rem;color:var(--muted);font-family:var(--mono);">
         Soglie: VI &gt; P97 = lieve/mod. &nbsp;|&nbsp; VI &gt; P97+4mm = severo<br>
         AHW &gt; 6 mm = lieve/mod. &nbsp;|&nbsp; AHW &gt; 10 mm = severo<br>
         TOD &gt; 25 mm = severo
       </div>
+    </div>
+  `;
+
+  const disclaimer = `
+    <div class="disclaimer-note">
+      <strong>Avvertenza:</strong> Referto generato automaticamente a supporto della pratica clinica: non sostituisce il giudizio del medico. I valori vanno interpretati nel contesto clinico del singolo paziente e verificati prima dell'uso.
     </div>
   `;
 
@@ -893,7 +710,7 @@ function calculate() {
   `;
 
   document.getElementById('placeholder-msg') && (document.getElementById('placeholder-msg').remove());
-  document.getElementById('output-panel').innerHTML = html + actions;
+  document.getElementById('output-panel').innerHTML = html + disclaimer + actions;
 }
 
 function copyReport() {

@@ -1,0 +1,650 @@
+/* ==========================================================================
+   BASE — FONDAMENTA CONDIVISE DA TUTTI GLI STRUMENTI
+   --------------------------------------------------------------------------
+   Va incluso in ogni pagina PRIMA del <style> locale, così che le regole
+   specifiche del singolo strumento possano sovrascrivere queste:
+
+     <link rel="stylesheet" href="../assets/nav.css">
+     <link rel="stylesheet" href="../assets/base.css">
+     <style> ...solo ciò che è specifico di questo strumento... </style>
+
+   Contiene: palette, tipografia, header, layout workspace, form, referto,
+   modale tutorial, regole responsive e regole di stampa.
+
+   Personalizzazione per strumento — bastano le variabili, senza riscrivere
+   le regole:
+     .workspace { --panel-w: 420px; }        larghezza colonna sinistra
+     .report-container { --report-max: 780px; }
+
+   NOTA sugli scostamenti rispetto agli stili originali. Sono deliberati e
+   valgono per tutti gli strumenti:
+     - i campi di input erano stilati in due modi diversi (4 tool in sans su
+       fondo --paper, 2 in mono su fondo bianco con anello di focus):
+       unificati sulla seconda variante, più leggibile e con focus visibile;
+     - testo secondario (.hint, .unit, .report-citation) da #7a7870/#888 a
+       --muted: i primi stavano sotto 4.5:1 di contrasto;
+     - scala tipografica minima alzata: label, .hint, .section-label,
+       .centile-table th e .report-card erano fra 10.4px e 13.9px.
+   ========================================================================== */
+
+/* ── FONT ─────────────────────────────────────────────────────────────────
+   IBM Plex servito da assets/fonts/, non più via @import da Google Fonts.
+   Serve perché il sito funzioni davvero senza rete (e toglie una richiesta
+   a terzi in serie prima del primo disegno).
+
+   IBM Plex Sans diritto è un font variabile: lo stesso file copre 300, 400 e
+   600, per questo tre @font-face puntano allo stesso woff2 — è esattamente
+   ciò che faceva Google Fonts.
+
+   Per aggiornare i font: riscaricare da fonts.gstatic.com i subset latin e
+   latin-ext e sostituire i file in assets/fonts/.
+   ------------------------------------------------------------------------ */
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('fonts/ibm-plex-sans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/ibm-plex-sans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/ibm-plex-sans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url('fonts/ibm-plex-sans-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/ibm-plex-sans-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/ibm-plex-sans-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/ibm-plex-mono-400-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/ibm-plex-mono-400-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/ibm-plex-mono-600-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/ibm-plex-mono-600-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #1a1c22;
+  --paper: #f5f4f0;
+  --card: #ffffff;
+  --rule: #d0cfc8;
+  --accent: #1b4f72;
+  --accent-light: #d6e8f5;
+  --warn: #8b2500;
+  --warn-bg: #fdecea;
+  --ok: #1a4731;
+  --ok-bg: #e8f5ee;
+  --mid: #4a3800;
+  --mid-bg: #fdf8e1;
+  --neutral-bg: #eef3f8;
+  --neutral: #1b4f72;
+
+  /* testo secondario — contrasto >= 4.5:1 sia su --paper che su --card */
+  --muted: #6b6960;
+
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+
+  /* dimensioni sovrascrivibili dal singolo strumento */
+  --panel-w: 400px;
+  --report-max: 720px;
+
+  /* spazio riservato alla barra risultato sticky; lo imposta mobile-result.js */
+  --resultbar-h: 0px;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ── HEADER ────────────────────────────────────────────────────────────── */
+
+header {
+  background: var(--accent);
+  color: #fff;
+  padding: 1.5rem 2rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+header h1 {
+  font-family: var(--mono);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+header span {
+  font-size: 0.8rem;
+  font-style: italic;
+  opacity: .8;
+}
+
+.btn-info {
+  margin-left: auto;
+  display: flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.5);
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; flex-shrink: 0; line-height: 1;
+  transition: background .15s, border-color .15s;
+}
+
+.btn-info:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.8); }
+
+/* ── COLLEGAMENTO A FONTE ESTERNA ─────────────────────────────────────────
+   Sostituisce i badge immagine di shields.io: niente richiesta a un servizio
+   terzo (che offline lasciava un'immagine rotta), scala col testo invece di
+   essere un PNG ad altezza fissa, e si stampa.
+   ------------------------------------------------------------------------ */
+
+.badge-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: .25rem .5rem;
+  border-radius: 4px;
+  border: 1px solid var(--accent-light);
+  background: var(--neutral-bg);
+  color: var(--accent);
+  transition: background .15s, border-color .15s;
+}
+
+.badge-link:hover { background: var(--accent-light); }
+
+/* per etichette che sono nomi propri o percorsi: "gmadevs/neurotools" non va
+   maiuscolizzato */
+.badge-link.is-name {
+  text-transform: none;
+  letter-spacing: .02em;
+}
+
+.badge-link::after {
+  content: '↗';
+  font-size: .9em;
+  opacity: .7;
+}
+
+/* nell'header il fondo è blu pieno */
+header .badge-link {
+  margin-left: .4rem;
+  background: rgba(255,255,255,.16);
+  border-color: rgba(255,255,255,.35);
+  color: #fff;
+}
+
+header .badge-link:hover { background: rgba(255,255,255,.3); }
+
+/* ── LAYOUT ────────────────────────────────────────────────────────────── */
+
+.workspace {
+  display: grid;
+  grid-template-columns: var(--panel-w) 1fr;
+  min-height: calc(100vh - 68px);
+}
+
+.input-panel {
+  background: var(--card);
+  border-right: 1px solid var(--rule);
+  padding: 1.8rem 1.5rem 2rem;
+  overflow-y: auto;
+}
+
+.output-panel {
+  background: var(--paper);
+  padding: 1.8rem 1.5rem 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.report-panel {
+  background: var(--paper);
+  padding: 2rem 2.5rem;
+  overflow-y: auto;
+}
+
+/* ── TIPOGRAFIA DI SEZIONE ─────────────────────────────────────────────── */
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: .6rem;
+  padding-bottom: .35rem;
+  border-bottom: 1.5px solid var(--accent-light);
+}
+
+.section-block { margin-bottom: 1.6rem; }
+
+/* ── FORM ──────────────────────────────────────────────────────────────── */
+
+.form-group { margin-bottom: 1.1rem; }
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: .3rem;
+  color: #3a3c45;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: .2rem;
+  line-height: 1.45;
+}
+
+input[type="number"],
+input[type="text"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  padding: .45rem .7rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  background: #fff;
+  color: var(--ink);
+  transition: border-color .15s;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+/* le caselle erano 15px: sotto la soglia utilizzabile al tocco */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.field-grid.full { grid-template-columns: 1fr; }
+
+.unit {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.hidden { display: none !important; }
+
+/* ── REFERTO ───────────────────────────────────────────────────────────── */
+
+.report-container { max-width: var(--report-max); margin: 0 auto; }
+
+.report-card {
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 2.2rem 2.4rem 1.8rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.report-placeholder p {
+  font-size: 0.88rem;
+  font-style: italic;
+  max-width: 300px;
+  color: var(--muted);
+}
+
+.report-section-title {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 1.4rem 0 .7rem;
+}
+
+.report-citation {
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.5;
+  border-top: 1px solid var(--rule);
+  margin-top: 1.8rem;
+  padding-top: 1rem;
+}
+
+/* Avvertenza clinica in coda al referto. Compare a schermo e in stampa; il
+   testo copiato per il PACS resta invariato, perché quello confluisce in un
+   referto firmato dal medico. */
+.disclaimer-note {
+  margin-top: 1.2rem;
+  padding: .7rem .9rem;
+  background: #fffbea;
+  border: 1px solid #e8d96e;
+  border-left-width: 3px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: #5a4f00;
+}
+
+.disclaimer-note strong { font-weight: 600; }
+
+/* le tabelle del referto sono generate via JS: senza questo contenitore
+   sfondano lateralmente su schermi stretti */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.centile-table th {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-align: left;
+  padding: .35rem .5rem;
+  border-bottom: 1.5px solid var(--rule);
+  color: #5c5c5c;
+  text-transform: uppercase;
+}
+
+/* ── MODALE TUTORIAL ───────────────────────────────────────────────────── */
+
+.tutorial-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10,20,35,.55);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.tutorial-overlay.open { display: flex; }
+
+.tutorial-modal {
+  background: var(--card);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 92vh;
+  box-shadow: 0 16px 48px rgba(0,0,0,.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tutorial-body {
+  padding: 1.6rem 1.8rem 1.2rem;
+  min-height: 200px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── BARRA RISULTATO STICKY (mobile, inserita da mobile-result.js) ─────── */
+
+.result-bar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 250;
+  display: none;
+  align-items: center;
+  gap: .8rem;
+  width: 100%;
+  padding: .7rem 1rem;
+  padding-bottom: calc(.7rem + env(safe-area-inset-bottom, 0px));
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  text-align: left;
+  font-family: var(--sans);
+  cursor: pointer;
+  box-shadow: 0 -4px 16px rgba(0,0,0,.18);
+  transform: translateY(110%);
+  transition: transform .22s ease;
+}
+
+.result-bar.visible { transform: translateY(0); }
+
+.result-bar-text { flex: 1; min-width: 0; }
+
+.result-bar-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+.result-bar-value {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-bar-cta {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border: 1.5px solid rgba(255,255,255,.55);
+  border-radius: 6px;
+  padding: .5rem .7rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ── RESPONSIVE ────────────────────────────────────────────────────────────
+   Un solo sistema di breakpoint per tutti gli strumenti, al posto dei
+   quattro precedenti (780 / 800 / 860 / 640px):
+     <= 900px  il workspace passa a colonna singola
+     <= 640px  telefono: tocco, tipografia, barra risultato
+   ------------------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .input-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .output-panel { border-top: 1px solid var(--rule); }
+
+  .field-grid { grid-template-columns: 1fr; }
+
+  /* titolo e pulsante "?" sulla prima riga, sottotitolo a capo sulla seconda:
+     senza l'ordinamento esplicito il margin-left:auto del pulsante lo manda
+     da solo su una riga vuota */
+  header {
+    padding: 1.1rem 1.25rem;
+    flex-wrap: wrap;
+    gap: .5rem 1rem;
+    align-items: center;
+  }
+
+  header h1 { order: 1; }
+  .btn-info { order: 2; margin-left: auto; }
+  header span { order: 3; flex-basis: 100%; }
+
+  .report-panel { padding: 1.6rem 1.4rem; }
+  .report-card { padding: 1.5rem 1.4rem 1.2rem; }
+}
+
+@media (max-width: 640px) {
+  /* 16px è la soglia sotto la quale iOS Safari ingrandisce la pagina
+     a ogni focus sul campo */
+  input[type="number"],
+  input[type="text"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px;
+    padding: .65rem .7rem;
+  }
+
+  /* soglia di tocco */
+  button,
+  .btn-info,
+  .btn-copy, .btn-print, .btn-generate,
+  .mode-btn, .tab-btn {
+    min-height: 44px;
+  }
+
+  .btn-info { width: 2.75rem; height: 2.75rem; font-size: 1rem; }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  .input-panel,
+  .output-panel,
+  .report-panel { padding: 1.4rem 1.1rem 1.6rem; }
+
+  /* lascia spazio alla barra risultato in fondo alla pagina */
+  body { padding-bottom: var(--resultbar-h); }
+
+  .result-bar { display: flex; }
+
+  .report-card { padding: 1.2rem 1.1rem 1rem; font-size: 0.95rem; }
+
+  header h1 { font-size: 0.95rem; }
+  header span { font-size: 0.78rem; }
+}
+
+/* ── STAMPA ────────────────────────────────────────────────────────────── */
+
+@media print {
+  header, .input-panel, .report-actions, .site-nav, .result-bar {
+    display: none !important;
+  }
+  .tutorial-overlay, .guide-overlay { display: none !important; }
+  .workspace { display: block; }
+  .report-panel, .output-panel { padding: 0; }
+  .report-card { border: none; box-shadow: none; }
+  body { padding-bottom: 0; background: #fff; }
+}
+
+/* ── MOVIMENTO RIDOTTO ─────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

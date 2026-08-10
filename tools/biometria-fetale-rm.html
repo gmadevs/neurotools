@@ -2,369 +2,230 @@
 <html lang="it" data-root="..">
 <head>
 <link rel="stylesheet" href="../assets/nav.css">
+<link rel="stylesheet" href="../assets/base.css">
 <script src="../assets/site-config.js"></script>
 <script src="../assets/nav.js"></script>
+<script src="../assets/mobile-result.js" defer></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Biometria Fetale RM – Centili</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+:root {
+  --panel-w: 380px;
+  --report-max: 780px;
+}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --ink: #1a1c22;
-    --paper: #f5f4f0;
-    --card: #ffffff;
-    --rule: #d0cfc8;
-    --accent: #1b4f72;
-    --accent-light: #d6e8f5;
-    --warn: #8b2500;
-    --warn-bg: #fdecea;
-    --ok: #1a4731;
-    --ok-bg: #e8f5ee;
-    --mid: #4a3800;
-    --mid-bg: #fdf8e1;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
-  }
-
-  body { font-family: var(--sans); background: var(--paper); color: var(--ink); min-height: 100vh; padding: 0; }
-
-  header {
-    background: var(--accent); color: #fff;
-    padding: 1.5rem 2rem 1.25rem;
-    display: flex; align-items: center; gap: 1.2rem;
-  }
-  header h1 { font-family: var(--mono); font-size: 1rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
-  header span { font-size: 0.78rem; opacity: .7; font-style: italic; }
-
-  .workspace { display: grid; grid-template-columns: 380px 1fr; min-height: calc(100vh - 68px); }
-
-  .input-panel {
-    background: var(--card); border-right: 1px solid var(--rule);
-    padding: 1.8rem 1.5rem 2rem; overflow-y: auto;
-  }
-
-  .section-label {
-    font-family: var(--mono); font-size: 0.68rem; font-weight: 600;
-    letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
-    margin-bottom: .6rem; padding-bottom: .35rem;
-    border-bottom: 1.5px solid var(--accent-light);
-  }
-
-  .form-group { margin-bottom: 1.1rem; }
-
-  label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: .3rem; color: #3a3c45; }
-
-  input[type="number"], input[type="text"], input[type="date"], select {
-    font-family: var(--sans); font-size: 0.83rem;
-    border: 1px solid var(--rule); border-radius: 4px;
-    padding: .42rem .6rem; background: var(--paper); color: var(--ink);
-    transition: border-color .15s;
-  }
-  input:focus, select:focus {
-    outline: none; border-color: var(--accent); background: #fff;
-  }
-  select, input[type="text"], input[type="date"] { width: 100%; }
-
-  .param-grid { display: grid; gap: .45rem; }
-  .param-row {
+.param-grid { display: grid; gap: .45rem; }
+.param-row {
     display: grid; grid-template-columns: 1fr auto 3rem;
     gap: .4rem; align-items: center;
   }
-  .param-row label { margin: 0; font-size: 0.75rem; }
-  .param-row input { width: 90px; text-align: right; }
-  .unit { font-size: 0.7rem; color: #888; font-family: var(--mono); }
-
-  .ga-display {
+.param-row label { margin: 0; font-size: 0.75rem; }
+.param-row input { width: 90px; text-align: right; }
+.ga-display {
     font-family: var(--mono); font-size: 0.8rem; font-weight: 600;
     color: var(--accent); background: var(--accent-light);
     padding: .4rem .6rem; border-radius: 4px; margin-top: .4rem;
   }
-  .ga-display.out-of-range { color: var(--warn); background: var(--warn-bg); }
-
-  .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
-  .date-grid label { font-size: 0.72rem; }
-
-  .btn-generate {
+.ga-display.out-of-range { color: var(--warn); background: var(--warn-bg); }
+.date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.date-grid label { font-size: 0.72rem; }
+.btn-generate {
     width: 100%; margin-top: 1.2rem; padding: .75rem 1rem;
     background: var(--accent); color: #fff; border: none; border-radius: 6px;
     font-family: var(--mono); font-size: 0.85rem; font-weight: 600;
     letter-spacing: .06em; text-transform: uppercase; cursor: pointer; transition: background .15s;
   }
-  .btn-generate:hover { background: #143d57; }
-
-  .report-panel { padding: 2rem 2.5rem; overflow-y: auto; background: var(--paper); }
-  .report-container { max-width: 780px; margin: 0 auto; }
-
-  .report-placeholder {
+.btn-generate:hover { background: #143d57; }
+.report-placeholder {
     display: flex; flex-direction: column; align-items: center;
-    justify-content: center; height: 60vh; gap: 1rem; color: #aaa; text-align: center;
+    justify-content: center; height: 60vh; gap: 1rem; color: var(--muted); text-align: center;
   }
-  .report-placeholder svg { opacity: .3; }
-  .report-placeholder p { font-size: 0.85rem; font-style: italic; max-width: 300px; }
-
-  .report-card {
-    background: #fff; border: 1px solid var(--rule); border-radius: 6px;
-    padding: 2.2rem 2.4rem 1.8rem; font-size: 0.87rem; line-height: 1.65;
-  }
-
-  .report-header { border-bottom: 2px solid var(--ink); padding-bottom: 1rem; margin-bottom: 1.4rem; }
-  .report-header h2 {
+.report-placeholder svg { opacity: .3; }
+.report-header { border-bottom: 2px solid var(--ink); padding-bottom: 1rem; margin-bottom: 1.4rem; }
+.report-header h2 {
     font-family: var(--mono); font-size: 0.9rem; font-weight: 600;
     text-transform: uppercase; letter-spacing: .08em; color: var(--accent);
   }
-  .report-meta {
+.report-meta {
     display: grid; grid-template-columns: 1fr 1fr; gap: .2rem .8rem;
     margin-top: .7rem; font-size: 0.8rem; color: #555;
   }
-  .report-meta span { font-weight: 600; color: var(--ink); }
-
-  .report-section-title {
-    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
-    letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
-    margin: 1.4rem 0 .7rem;
-  }
-
-  .centile-table { width: 100%; border-collapse: collapse; font-size: 0.79rem; margin-bottom: .6rem; }
-  .centile-table th {
-    font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
-    letter-spacing: .06em; text-align: left; padding: .35rem .5rem;
-    border-bottom: 1.5px solid var(--rule); color: #666; text-transform: uppercase;
-  }
-  .centile-table td { padding: .38rem .5rem; border-bottom: 1px solid #eee; }
-  .centile-table tr:last-child td { border-bottom: none; }
-  .centile-table .val { font-family: var(--mono); font-size: 0.8rem; }
-  .centile-table td.derived { color: #666; font-style: italic; }
-
-  .centile-value { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; }
-  .centile-normal { color: var(--ok); }
-  .centile-abnormal { color: var(--warn); }
-
-  .diagnosis-box {
+.report-meta span { font-weight: 600; color: var(--ink); }
+.centile-table { width: 100%; border-collapse: collapse; font-size: 0.79rem; margin-bottom: .6rem; }
+.centile-table td { padding: .38rem .5rem; border-bottom: 1px solid #eee; }
+.centile-table tr:last-child td { border-bottom: none; }
+.centile-table .val { font-family: var(--mono); font-size: 0.8rem; }
+.centile-table td.derived { color: #666; font-style: italic; }
+.centile-value { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; }
+.centile-normal { color: var(--ok); }
+.centile-abnormal { color: var(--warn); }
+.diagnosis-box {
     margin-top: 1.4rem; padding: 1rem 1.2rem; border-radius: 5px; border-left: 4px solid;
   }
-  .diagnosis-box.normal { background: var(--ok-bg); border-color: #2e7d52; }
-  .diagnosis-box.abnormal { background: var(--warn-bg); border-color: var(--warn); }
-  .diagnosis-box.attention { background: var(--mid-bg); border-color: #b08000; }
-  .diagnosis-box h3 {
+.diagnosis-box.normal { background: var(--ok-bg); border-color: #2e7d52; }
+.diagnosis-box.abnormal { background: var(--warn-bg); border-color: var(--warn); }
+.diagnosis-box.attention { background: var(--mid-bg); border-color: #b08000; }
+.diagnosis-box h3 {
     font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
     text-transform: uppercase; letter-spacing: .08em; margin-bottom: .4rem;
   }
-  .diagnosis-box p { font-size: 0.84rem; line-height: 1.6; }
-
-  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: .5rem; }
-  .chart-cell { border: 1px solid #eee; border-radius: 4px; padding: .5rem .4rem .2rem; background: #fdfdfc; }
-  .chart-cell h4 {
+.diagnosis-box p { font-size: 0.84rem; line-height: 1.6; }
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: .5rem; }
+.chart-cell { border: 1px solid #eee; border-radius: 4px; padding: .5rem .4rem .2rem; background: #fdfdfc; }
+.chart-cell h4 {
     font-family: var(--mono); font-size: 0.63rem; font-weight: 600; text-transform: uppercase;
     letter-spacing: .05em; color: #555; text-align: center; margin-bottom: .2rem;
   }
-  .chart-cell svg { display: block; width: 100%; height: auto; }
-  .chart-legend {
-    font-size: 0.7rem; color: #888; margin-top: .5rem; display: flex;
+.chart-cell svg { display: block; width: 100%; height: auto; }
+.chart-legend {
+    font-size: 0.7rem; color: var(--muted); margin-top: .5rem; display: flex;
     gap: 1rem; flex-wrap: wrap; align-items: center;
   }
-  .chart-legend i { display: inline-block; width: 1.4rem; height: 0; vertical-align: middle; margin-right: .3rem; }
-
-  .report-citation {
-    margin-top: 1.8rem; padding-top: 1rem; border-top: 1px solid var(--rule);
-    font-size: 0.72rem; color: #888; font-style: italic; line-height: 1.5;
-  }
-
-  .btn-copy {
+.chart-legend i { display: inline-block; width: 1.4rem; height: 0; vertical-align: middle; margin-right: .3rem; }
+.btn-copy {
     padding: .55rem 1.2rem; background: var(--ok); border: none; color: #fff;
     border-radius: 5px; font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
     letter-spacing: .05em; text-transform: uppercase; cursor: pointer; transition: background .2s;
   }
-  .btn-copy:hover { background: #145a38; }
-  .btn-copy.copied { background: #555; }
-
-  .btn-print {
+.btn-copy:hover { background: #145a38; }
+.btn-copy.copied { background: #555; }
+.btn-print {
     padding: .55rem 1.1rem; background: transparent; border: 1px solid var(--accent);
     color: var(--accent); border-radius: 5px; font-family: var(--mono); font-size: 0.75rem;
     font-weight: 600; letter-spacing: .05em; text-transform: uppercase; cursor: pointer; transition: all .15s;
   }
-  .btn-print:hover { background: var(--accent); color: #fff; }
-
-  .report-actions { display: flex; gap: .7rem; margin-top: 1.4rem; align-items: center; }
-
-  .info-note {
-    font-size: 0.72rem; color: #888; margin-top: .3rem; line-height: 1.4;
+.btn-print:hover { background: var(--accent); color: #fff; }
+.report-actions { display: flex; gap: .7rem; margin-top: 1.4rem; align-items: center; }
+.info-note {
+    font-size: 0.72rem; color: var(--muted); margin-top: .3rem; line-height: 1.4;
     padding: .3rem .5rem; background: #f8f8f5; border-radius: 3px; border-left: 2px solid #ccc;
   }
-
-  /* ── GUIDA ALLE MISURE ── */
-  .section-label.with-action {
+/* ── GUIDA ALLE MISURE ── */
+.section-label.with-action {
     display: flex; align-items: baseline; justify-content: space-between; gap: .5rem;
   }
-  .btn-guide {
+.btn-guide {
     font-family: var(--mono); font-size: 0.6rem; font-weight: 600; letter-spacing: .06em;
     text-transform: uppercase; color: var(--accent); background: var(--accent-light);
     border: 1px solid #b9d8ee; border-radius: 3px; padding: .18rem .45rem;
     cursor: pointer; transition: background .15s; flex-shrink: 0;
   }
-  .btn-guide:hover { background: #c2e0f5; }
-
-  .guide-overlay {
+.btn-guide:hover { background: #c2e0f5; }
+.guide-overlay {
     display: none; position: fixed; inset: 0;
     background: rgba(10,20,35,.6); z-index: 1100;
     align-items: center; justify-content: center; padding: 1rem;
   }
-  .guide-overlay.open { display: flex; }
-
-  .guide-modal {
+.guide-overlay.open { display: flex; }
+.guide-modal {
     background: var(--card); border-radius: 10px; width: 100%; max-width: 980px;
     max-height: 92vh; display: flex; flex-direction: column;
     box-shadow: 0 16px 48px rgba(0,0,0,.3); overflow: hidden;
   }
-  .guide-head {
+.guide-head {
     background: var(--accent); color: #fff; padding: 1.1rem 1.4rem;
     display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   }
-  .guide-head h2 {
+.guide-head h2 {
     font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
     letter-spacing: .07em; text-transform: uppercase;
   }
-  .guide-body { padding: 1.4rem 1.6rem 1.6rem; overflow-y: auto; }
-  .guide-fig {
+.guide-body { padding: 1.4rem 1.6rem 1.6rem; overflow-y: auto; }
+.guide-fig {
     width: 100%; height: auto; display: block;
     border: 1px solid var(--rule); border-radius: 5px; background: #000;
   }
-  .guide-legend {
+.guide-legend {
     display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 1.6rem; margin-top: 1.2rem;
   }
-  .guide-legend div {
+.guide-legend div {
     display: flex; gap: .55rem; align-items: baseline;
     padding: .38rem 0; border-bottom: 1px solid #f0efeb; font-size: 0.8rem; line-height: 1.45;
   }
-  .guide-legend b {
+.guide-legend b {
     font-family: var(--mono); color: var(--accent); font-size: 0.78rem;
     min-width: 1.1rem; flex-shrink: 0;
   }
-  .guide-legend em { color: #777; font-size: 0.74rem; font-style: italic; }
-  .guide-credit {
+.guide-legend em { color: #777; font-size: 0.74rem; font-style: italic; }
+.guide-credit {
     margin-top: 1.2rem; padding-top: .9rem; border-top: 1px solid var(--rule);
-    font-size: 0.7rem; color: #999; font-style: italic; line-height: 1.55;
+    font-size: 0.7rem; color: var(--muted); font-style: italic; line-height: 1.55;
   }
-  .guide-credit a { color: #999; }
-
-  .tut-figure {
+.guide-credit a { color: var(--muted); }
+.tut-figure {
     width: 100%; height: auto; display: block; margin-top: .7rem;
     border: 1px solid var(--rule); border-radius: 4px; background: #000; cursor: zoom-in;
   }
-  .tut-figcaption {
-    font-size: 0.72rem; color: #999; font-style: italic; margin-top: .35rem; text-align: center;
+.tut-figcaption {
+    font-size: 0.72rem; color: var(--muted); font-style: italic; margin-top: .35rem; text-align: center;
   }
-
-  /* ── INFO BUTTON ── */
-  .btn-info {
-    margin-left: auto;
-    display: flex; align-items: center; justify-content: center;
-    width: 2rem; height: 2rem; border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,.5);
-    background: rgba(255,255,255,.12); color: #fff;
-    font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
-    cursor: pointer; flex-shrink: 0;
-    transition: background .15s, border-color .15s; line-height: 1;
-  }
-  .btn-info:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.8); }
-
-  /* ── TUTORIAL MODAL ── */
-  .tutorial-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(10,20,35,.55); z-index: 1000;
-    align-items: center; justify-content: center; padding: 1rem;
-  }
-  .tutorial-overlay.open { display: flex; }
-
-  .tutorial-modal {
-    background: var(--card); border-radius: 10px; width: 100%; max-width: 520px;
-    max-height: 92vh;
-    box-shadow: 0 16px 48px rgba(0,0,0,.25); overflow: hidden;
-    display: flex; flex-direction: column;
-  }
-
-  .tutorial-header {
+/* ── INFO BUTTON ── */
+/* ── TUTORIAL MODAL ── */
+.tutorial-header {
     background: var(--accent); color: #fff;
     padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
   }
-  .tutorial-header h2 {
+.tutorial-header h2 {
     font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
     letter-spacing: .07em; text-transform: uppercase;
   }
-  .tutorial-close {
+.tutorial-close {
     background: none; border: none; color: rgba(255,255,255,.7);
     font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
   }
-  .tutorial-close:hover { color: #fff; }
-
-  .tutorial-steps-bar {
+.tutorial-close:hover { color: #fff; }
+.tutorial-steps-bar {
     display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
     background: #f8f7f4; border-bottom: 1px solid var(--rule);
   }
-  .step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
-  .step-dot.active { background: var(--accent); }
-  .step-dot.done { background: var(--ok); }
-
-  .tutorial-body { padding: 1.6rem 1.8rem 1.2rem; min-height: 200px; flex: 1; overflow-y: auto; }
-  .tutorial-steps-bar, .tutorial-header, .tutorial-footer { flex-shrink: 0; }
-
-  .step-number {
+.step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+.step-dot.active { background: var(--accent); }
+.step-dot.done { background: var(--ok); }
+.tutorial-steps-bar, .tutorial-header, .tutorial-footer { flex-shrink: 0; }
+.step-number {
     font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
     letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
   }
-  .tutorial-body h3 {
+.tutorial-body h3 {
     font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: .7rem;
   }
-  .tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
-  .tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
-  .tut-tip {
+.tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
+.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
+.tut-tip {
     background: var(--accent-light); border-left: 3px solid var(--accent);
     padding: .6rem .9rem; border-radius: 0 4px 4px 0;
     font-size: 0.78rem; color: var(--accent); margin-top: .8rem;
   }
-  .tut-warn {
+.tut-warn {
     background: var(--warn-bg); border-left: 3px solid var(--warn);
     padding: .6rem .9rem; border-radius: 0 4px 4px 0;
     font-size: 0.78rem; color: var(--warn); margin-top: .8rem;
   }
-
-  .tutorial-footer {
+.tutorial-footer {
     padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
     justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
   }
-  .tutorial-skip {
-    font-size: 0.75rem; color: #aaa; cursor: pointer;
+.tutorial-skip {
+    font-size: 0.75rem; color: var(--muted); cursor: pointer;
     background: none; border: none; padding: 0; transition: color .15s;
   }
-  .tutorial-skip:hover { color: #666; }
-  .tutorial-nav { display: flex; gap: .6rem; }
-  .btn-tut-prev, .btn-tut-next {
+.tutorial-skip:hover { color: #666; }
+.tutorial-nav { display: flex; gap: .6rem; }
+.btn-tut-prev, .btn-tut-next {
     font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
     letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
   }
-  .btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
-  .btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
-  .btn-tut-next:hover { background: #143d57; }
-  .btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
-  .btn-tut-next.finish:hover { background: #145a38; }
-
-  @media print {
-    header, .input-panel, .report-actions { display: none !important; }
-    .workspace { display: block; }
-    .report-panel { padding: 0; }
-    .report-card { border: none; box-shadow: none; }
-    .tutorial-overlay, .guide-overlay { display: none !important; }
-  }
-
-  @media (max-width: 860px) {
-    .workspace { grid-template-columns: 1fr; }
-    .input-panel { border-right: none; border-bottom: 1px solid var(--rule); }
-    .chart-grid { grid-template-columns: 1fr; }
-    .guide-legend { grid-template-columns: 1fr; }
-  }
+.btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
+.btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+.btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+.btn-tut-next:hover { background: #143d57; }
+.btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+.btn-tut-next.finish:hover { background: #145a38; }
+@media (max-width: 900px) {
+  .chart-grid { grid-template-columns: 1fr; }
+  .guide-legend { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -372,9 +233,7 @@
 <header>
   <h1>Biometria Fetale RM</h1>
   <span>Centili 2D e 3D dell'encefalo fetale – Kyriakopoulou et al. 2017
-    <a href="https://pubmed.ncbi.nlm.nih.gov/?term=10.1007%2Fs00429-016-1342-6" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin-left:.4rem">
-      <img src="https://img.shields.io/badge/PubMed-326599?style=for-the-badge&logo=pubmed&logoColor=white" alt="PubMed" style="height:1.2rem">
-    </a>
+    <a class="badge-link" href="https://pubmed.ncbi.nlm.nih.gov/?term=10.1007%2Fs00429-016-1342-6" target="_blank" rel="noopener">PubMed</a>
   </span>
   <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
 </header>
@@ -441,7 +300,7 @@
     <div class="section-label">Dati Esame</div>
 
     <div class="form-group">
-      <label>Nome / ID paziente <span style="font-weight:400;color:#999">(opzionale)</span></label>
+      <label>Nome / ID paziente <span style="font-weight:400;color:var(--muted)">(opzionale)</span></label>
       <input type="text" id="patientName" placeholder="—">
     </div>
 
@@ -932,13 +791,13 @@ function buildChart(param, ga, value) {
   let grid = '';
   for (let g = 22; g <= 38; g += 4) {
     grid += `<line x1="${sx(g).toFixed(1)}" y1="${MT}" x2="${sx(g).toFixed(1)}" y2="${H - MB}" stroke="#eee" stroke-width="1"/>`;
-    grid += `<text x="${sx(g).toFixed(1)}" y="${H - MB + 14}" text-anchor="middle" font-size="9" fill="#999" font-family="IBM Plex Mono, monospace">${g}</text>`;
+    grid += `<text x="${sx(g).toFixed(1)}" y="${H - MB + 14}" text-anchor="middle" font-size="9" fill="#6b6960" font-family="IBM Plex Mono, monospace">${g}</text>`;
   }
   const nTicks = 4;
   for (let i = 0; i <= nTicks; i++) {
     const y = yMin + (yMax - yMin) * i / nTicks;
     grid += `<line x1="${ML}" y1="${sy(y).toFixed(1)}" x2="${W - MR}" y2="${sy(y).toFixed(1)}" stroke="#eee" stroke-width="1"/>`;
-    grid += `<text x="${ML - 5}" y="${(sy(y) + 3).toFixed(1)}" text-anchor="end" font-size="9" fill="#999" font-family="IBM Plex Mono, monospace">${y >= 100 ? y.toFixed(0) : y.toFixed(1)}</text>`;
+    grid += `<text x="${ML - 5}" y="${(sy(y) + 3).toFixed(1)}" text-anchor="end" font-size="9" fill="#6b6960" font-family="IBM Plex Mono, monospace">${y >= 100 ? y.toFixed(0) : y.toFixed(1)}</text>`;
   }
 
   const inRange = ga >= x0 && ga <= x1;
@@ -959,7 +818,7 @@ function buildChart(param, ga, value) {
       <path d="${path('p5')}"  fill="none" stroke="#1b4f72" stroke-width="1" stroke-dasharray="4 3" opacity=".7"/>
       <path d="${path('p50')}" fill="none" stroke="#1b4f72" stroke-width="1.8"/>
       <circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="4" fill="${ptColor}" stroke="#fff" stroke-width="1.5"${inRange ? '' : ' opacity=".5"'}/>
-      <text x="${(ML + W - MR) / 2}" y="${H - 6}" text-anchor="middle" font-size="9" fill="#aaa" font-family="IBM Plex Sans, sans-serif">età gestazionale (settimane)</text>
+      <text x="${(ML + W - MR) / 2}" y="${H - 6}" text-anchor="middle" font-size="9" fill="#6b6960" font-family="IBM Plex Sans, sans-serif">età gestazionale (settimane)</text>
     </svg>
   </div>`;
 }
@@ -1011,7 +870,7 @@ function generateReport() {
   const rows3D = buildRows(PARAMS_3D);
 
   function tableHTML(rows, unitLabel) {
-    return `<table class="centile-table">
+    return `<div class="table-scroll"><table class="centile-table">
       <thead>
         <tr>
           <th>Parametro</th><th>Valore</th>
@@ -1020,7 +879,7 @@ function generateReport() {
         </tr>
       </thead>
       <tbody>${rows}</tbody>
-    </table>`;
+    </table></div>`;
   }
 
   let diagClass, diagText;
@@ -1061,14 +920,14 @@ function generateReport() {
       il centile è calcolato come 100 × Φ[(valore − media) / DS], con P5 e P95 pari a media ∓ 1.645 DS.</p>
 
       ${rows2D ? `<div class="report-section-title">Misure 2D (mm)</div>${tableHTML(rows2D, 'mm')}
-        <p style="font-size:.72rem;color:#999;margin-top:.4rem">
+        <p style="font-size:.72rem;color:var(--muted);margin-top:.4rem">
           * Parametri derivati: circonferenza cranica = 1.62 × (BPD cranico + OFD cranico);
           CSF extracerebrale 2D = BPD cranico − BPD encefalico.
         </p>` : ''}
 
       ${rows3D ? `<div class="report-section-title">Misure 3D volumetriche (cm³)</div>${tableHTML(rows3D, 'cm³')}` : ''}
 
-      <p style="font-size:.72rem;color:#999;margin-top:.4rem">
+      <p style="font-size:.72rem;color:var(--muted);margin-top:.4rem">
         I valori in <span style="color:var(--warn);font-weight:600">rosso</span> sono al di fuori dell'intervallo
         5°–95° centile per l'età gestazionale.
       </p>
@@ -1098,6 +957,10 @@ function generateReport() {
         Normative biometry of the fetal brain using magnetic resonance imaging.
         <em>Brain Struct Funct.</em> 2017;222(5):2295–2307. doi:10.1007/s00429-016-1342-6.
         Coefficienti estratti dal calcolatore Excel allegato alla pubblicazione.
+      </div>
+
+      <div class="disclaimer-note">
+        <strong>Avvertenza:</strong> Referto generato automaticamente a supporto della pratica clinica: non sostituisce il giudizio del medico. I valori vanno interpretati nel contesto clinico del singolo paziente e verificati prima dell'uso.
       </div>
 
       <div class="report-actions">

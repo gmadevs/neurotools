@@ -5,29 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NeuroTools</title>
 <link rel="stylesheet" href="assets/nav.css">
+<link rel="stylesheet" href="assets/base.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --ink: #1a1c22;
-    --paper: #f5f4f0;
-    --card: #ffffff;
-    --rule: #d0cfc8;
-    --accent: #1b4f72;
-    --accent-light: #d6e8f5;
-    --sidebar-w: 220px;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
-  }
-
-  body {
-    font-family: var(--sans);
-    background: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-  }
+  /* Palette, reset, font e tipografia arrivano da assets/base.css.
+     Qui resta solo ciò che è specifico della home. */
 
   /* ── HERO ── */
   .hero {
@@ -56,7 +37,7 @@
     transition: background .15s;
   }
 
-  .search-wrap input::placeholder { color: rgba(255,255,255,.6); }
+  .search-wrap input::placeholder { color: rgba(255,255,255,.75); }
   .search-wrap input:focus { background: rgba(255,255,255,.25); }
 
   .search-wrap svg {
@@ -64,7 +45,7 @@
     left: .7rem;
     top: 50%;
     transform: translateY(-50%);
-    opacity: .6;
+    opacity: .75;
     pointer-events: none;
   }
 
@@ -78,66 +59,63 @@
     gap: 2rem;
   }
 
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: var(--sidebar-w);
+  /* ── NAVIGAZIONE PER CATEGORIA ──────────────────────────────────────────
+     Stesso markup a ogni larghezza: colonna laterale su desktop, riga di
+     chip scorrevole su telefono. Prima spariva del tutto sotto i 640px, e
+     con essa l'unico modo di filtrare per gruppo. */
+  .catnav {
+    width: 220px;
     flex-shrink: 0;
     position: sticky;
     top: 1rem;
   }
 
-  .sidebar-title {
+  .catnav-title {
     font-family: var(--mono);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: #8a8d97;
+    color: var(--muted);
     margin-bottom: .8rem;
   }
 
-  .sidebar-list {
-    list-style: none;
-  }
+  .catnav-list { list-style: none; }
+  .catnav-list li + li { margin-top: 2px; }
 
-  .sidebar-list li + li { margin-top: 2px; }
-
-  .sidebar-btn {
+  .cat-btn {
     display: block;
     width: 100%;
     text-align: left;
     background: none;
     border: none;
     border-radius: 4px;
-    padding: .45rem .7rem;
+    padding: .5rem .7rem;
     font-family: var(--sans);
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: var(--ink);
     cursor: pointer;
     transition: background .12s, color .12s;
   }
 
-  .sidebar-btn:hover { background: var(--accent-light); color: var(--accent); }
+  .cat-btn:hover { background: var(--accent-light); color: var(--accent); }
 
-  .sidebar-btn.active {
+  .cat-btn[aria-pressed="true"] {
     background: var(--accent);
     color: #fff;
     font-weight: 600;
   }
 
-  .sidebar-count {
+  .cat-count {
     float: right;
     font-family: var(--mono);
-    font-size: 0.7rem;
-    opacity: .6;
+    font-size: 0.75rem;
+    opacity: .7;
     margin-top: 1px;
   }
 
-  /* ── TOOL LIST ── */
-  .tools-col {
-    flex: 1;
-    min-width: 0;
-  }
+  /* ── ELENCO STRUMENTI ── */
+  .tools-col { flex: 1; min-width: 0; }
 
   .category-section { margin-bottom: 2rem; }
 
@@ -155,21 +133,22 @@
 
   .subcategory-heading {
     font-family: var(--mono);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: #8a8d97;
-    margin: 1rem 0 .5rem;
+    color: var(--muted);
+    margin: 1.1rem 0 .5rem;
   }
 
   .tool-list { list-style: none; }
 
+  /* Titolo e descrizione su due righe. Prima stavano su una riga sola con
+     white-space:nowrap: la descrizione veniva troncata già su desktop e
+     nascosta del tutto sotto i 640px. */
   .tool-item {
-    display: flex;
-    align-items: baseline;
-    gap: .8rem;
-    padding: .55rem .7rem;
+    display: block;
+    padding: .6rem .7rem;
     border-radius: 4px;
     text-decoration: none;
     color: var(--ink);
@@ -177,32 +156,31 @@
   }
 
   .tool-item:hover { background: var(--accent-light); }
+  .tool-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   .tool-item-title {
-    font-size: 0.9rem;
+    display: block;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--accent);
-    white-space: nowrap;
-    flex-shrink: 0;
+    margin-bottom: .1rem;
   }
 
   .tool-item-desc {
-    font-size: 0.83rem;
-    color: #5a5d67;
-    line-height: 1.4;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: block;
+    font-size: 0.85rem;
+    color: #4f525c;
+    line-height: 1.45;
   }
 
   .badge-new {
     display: inline-block;
     font-family: var(--mono);
-    font-size: 0.58rem;
+    font-size: 0.6rem;
     font-weight: 600;
     letter-spacing: .08em;
     text-transform: uppercase;
-    background: #1a7a4a;
+    background: #17663e;
     color: #fff;
     border-radius: 3px;
     padding: 1px 5px;
@@ -210,42 +188,98 @@
     margin-left: .35rem;
     position: relative;
     top: -1px;
-    flex-shrink: 0;
   }
 
   .no-results {
-    font-size: 0.9rem;
-    color: #6a6d77;
+    font-size: 0.92rem;
+    color: var(--muted);
     font-style: italic;
     padding: 1rem .7rem;
   }
 
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
   /* ── RESPONSIVE ── */
-  @media (max-width: 640px) {
-    .sidebar { display: none; }
-    .tool-item-desc { display: none; }
+  @media (max-width: 760px) {
+    .main-layout {
+      display: block;
+      padding: 0 0 3rem;
+    }
+
+    .catnav {
+      width: auto;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--paper);
+      border-bottom: 1px solid var(--rule);
+      padding: .6rem 0;
+    }
+
+    .catnav-title { display: none; }
+
+    .catnav-list {
+      display: flex;
+      gap: .4rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 0 1rem;
+    }
+
+    .catnav-list::-webkit-scrollbar { display: none; }
+    .catnav-list li + li { margin-top: 0; }
+
+    .cat-btn {
+      width: auto;
+      white-space: nowrap;
+      border: 1px solid var(--rule);
+      border-radius: 99px;
+      padding: .55rem .9rem;
+      min-height: 44px;
+      background: var(--card);
+      font-size: 0.88rem;
+    }
+
+    .cat-count {
+      float: none;
+      margin-left: .4rem;
+    }
+
+    .tools-col { padding: 1.4rem 1rem 0; }
+
+    .tool-item { padding: .7rem .6rem; }
   }
 </style>
 </head>
 <body>
 
+<h1 class="visually-hidden">NeuroTools — strumenti clinici per la neuroradiologia</h1>
+
 <div class="hero">
   <div class="search-wrap">
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <circle cx="6.5" cy="6.5" r="5" stroke="white" stroke-width="1.5"/>
       <line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
+    <label class="visually-hidden" for="search-input">Cerca uno strumento</label>
     <input type="text" id="search-input" placeholder="Cerca uno strumento…" autocomplete="off">
   </div>
 </div>
 
 <div class="main-layout">
-  <nav class="sidebar">
-    <div class="sidebar-title">Categorie</div>
-    <ul class="sidebar-list" id="sidebar-list"></ul>
+  <nav class="catnav" aria-label="Categorie">
+    <div class="catnav-title">Categorie</div>
+    <ul class="catnav-list" id="catnav-list"></ul>
   </nav>
 
-  <div class="tools-col" id="tools-col"></div>
+  <div class="tools-col" id="tools-col" aria-live="polite"></div>
 </div>
 
 <script src="assets/site-config.js"></script>
@@ -254,55 +288,60 @@
 (function () {
   var tools = window.SITE_TOOLS || [];
   var NEW_IDS = ['rano-2.0'];
+  var FALLBACK_CAT = 'Altri strumenti';
 
-  // ── build category structure (sorted alphabetically) ──
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+
+  var catOf = function (t) { return t.category || FALLBACK_CAT; };
+
+  /* ── struttura per categoria e sottocategoria ── */
   var categories = [];
-  var byCategory = {};
+  var subcatsOf = {};
+
   tools.forEach(function (t) {
-    var cat = t.category || 'Altri strumenti';
-    if (!byCategory[cat]) {
-      byCategory[cat] = { direct: [], subcats: [], bySubcat: {} };
-      categories.push(cat);
-    }
-    var g = byCategory[cat];
-    if (t.subcategory) {
-      if (!g.bySubcat[t.subcategory]) { g.bySubcat[t.subcategory] = []; g.subcats.push(t.subcategory); }
-      g.bySubcat[t.subcategory].push(t);
-    } else {
-      g.direct.push(t);
+    var cat = catOf(t);
+    if (subcatsOf[cat] === undefined) { subcatsOf[cat] = []; categories.push(cat); }
+    if (t.subcategory && subcatsOf[cat].indexOf(t.subcategory) === -1) {
+      subcatsOf[cat].push(t.subcategory);
     }
   });
 
-  // ordine alfabetico categorie e sottocategorie
-  categories.sort(function (a, b) { return a.localeCompare(b, 'it'); });
-  categories.forEach(function (cat) {
-    byCategory[cat].subcats.sort(function (a, b) { return a.localeCompare(b, 'it'); });
-  });
+  var byIt = function (a, b) { return a.localeCompare(b, 'it'); };
+  categories.sort(byIt);
+  categories.forEach(function (c) { subcatsOf[c].sort(byIt); });
 
   var activeCategory = 'all';
 
-  // ── sidebar ──
-  var sidebarList = document.getElementById('sidebar-list');
+  var catnavList = document.getElementById('catnav-list');
+  var toolsCol = document.getElementById('tools-col');
+  var searchInput = document.getElementById('search-input');
 
-  function buildSidebar(filtered) {
-    var counts = { all: filtered.length };
+  /* ── navigazione per categoria ──
+     I conteggi si calcolano sulla sola ricerca, non sulla categoria attiva:
+     altrimenti selezionando un gruppo tutti gli altri mostrerebbero 0 e non
+     si saprebbe più quanti strumenti contengono. */
+  function buildCatnav(searchFiltered) {
+    var counts = { all: searchFiltered.length };
     categories.forEach(function (cat) {
-      counts[cat] = filtered.filter(function (t) { return (t.category || 'Altri strumenti') === cat; }).length;
+      counts[cat] = searchFiltered.filter(function (t) { return catOf(t) === cat; }).length;
     });
 
     var items = [{ key: 'all', label: 'Tutti gli strumenti' }].concat(
       categories.map(function (c) { return { key: c, label: c }; })
     );
 
-    sidebarList.innerHTML = items.map(function (item) {
-      return '<li><button class="sidebar-btn' + (activeCategory === item.key ? ' active' : '') +
-             '" data-cat="' + item.key + '">' +
-             item.label +
-             '<span class="sidebar-count">' + (counts[item.key] || 0) + '</span>' +
-             '</button></li>';
+    catnavList.innerHTML = items.map(function (item) {
+      var on = activeCategory === item.key;
+      return '<li><button type="button" class="cat-btn" aria-pressed="' + on + '"' +
+             ' data-cat="' + esc(item.key) + '">' + esc(item.label) +
+             '<span class="cat-count">' + (counts[item.key] || 0) + '</span></button></li>';
     }).join('');
 
-    sidebarList.querySelectorAll('.sidebar-btn').forEach(function (btn) {
+    catnavList.querySelectorAll('.cat-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         activeCategory = btn.dataset.cat;
         render();
@@ -310,19 +349,19 @@
     });
   }
 
-  // ── tool list ──
-  var toolsCol = document.getElementById('tools-col');
-
+  /* ── elenco strumenti ── */
   function itemHtml(t) {
     var isNew = NEW_IDS.indexOf(t.id) !== -1;
-    return '<li><a class="tool-item" href="' + t.url + '">' +
-           '<span class="tool-item-title">' + t.title + (isNew ? '<span class="badge-new">Nuovo</span>' : '') + '</span>' +
-           '<span class="tool-item-desc">' + t.description + '</span>' +
+    return '<li><a class="tool-item" href="' + esc(t.url) + '">' +
+             '<span class="tool-item-title">' + esc(t.title) +
+               (isNew ? '<span class="badge-new">Nuovo</span>' : '') +
+             '</span>' +
+             '<span class="tool-item-desc">' + esc(t.description) + '</span>' +
            '</a></li>';
   }
 
   function buildList(filtered) {
-    if (filtered.length === 0) {
+    if (!filtered.length) {
       toolsCol.innerHTML = '<p class="no-results">Nessuno strumento trovato.</p>';
       return;
     }
@@ -331,50 +370,49 @@
       ? categories
       : categories.filter(function (c) { return c === activeCategory; });
 
-    var html = '';
-    visibleCats.forEach(function (cat) {
-      var g = byCategory[cat];
-      var catItems = filtered.filter(function (t) { return (t.category || 'Altri strumenti') === cat; });
-      if (catItems.length === 0) return;
+    toolsCol.innerHTML = visibleCats.map(function (cat) {
+      var catItems = filtered.filter(function (t) { return catOf(t) === cat; });
+      if (!catItems.length) return '';
 
-      html += '<div class="category-section"><div class="category-heading">' + cat + '</div>';
+      var html = '<div class="category-section"><div class="category-heading">' +
+                 esc(cat) + '</div>';
 
-      var directItems = catItems.filter(function (t) { return !t.subcategory; });
-      if (directItems.length) {
-        html += '<ul class="tool-list">' + directItems.map(itemHtml).join('') + '</ul>';
+      var direct = catItems.filter(function (t) { return !t.subcategory; });
+      if (direct.length) {
+        html += '<ul class="tool-list">' + direct.map(itemHtml).join('') + '</ul>';
       }
 
-      g.subcats.forEach(function (sub) {
+      subcatsOf[cat].forEach(function (sub) {
         var subItems = catItems.filter(function (t) { return t.subcategory === sub; });
         if (!subItems.length) return;
-        html += '<div class="subcategory-heading">' + sub + '</div>';
-        html += '<ul class="tool-list">' + subItems.map(itemHtml).join('') + '</ul>';
+        html += '<div class="subcategory-heading">' + esc(sub) + '</div>' +
+                '<ul class="tool-list">' + subItems.map(itemHtml).join('') + '</ul>';
       });
 
-      html += '</div>';
-    });
-
-    toolsCol.innerHTML = html;
+      return html + '</div>';
+    }).join('');
   }
 
-  // ── render ──
+  /* ── render ── */
   function render() {
-    var query = document.getElementById('search-input').value.trim().toLowerCase();
+    var query = searchInput.value.trim().toLowerCase();
 
-    var filtered = tools.filter(function (t) {
-      var matchCat = activeCategory === 'all' || (t.category || 'Altri strumenti') === activeCategory;
-      var matchSearch = !query ||
-        t.title.toLowerCase().indexOf(query) !== -1 ||
-        t.description.toLowerCase().indexOf(query) !== -1 ||
-        (t.category || '').toLowerCase().indexOf(query) !== -1;
-      return matchCat && matchSearch;
+    var searchFiltered = tools.filter(function (t) {
+      if (!query) return true;
+      /* la ricerca guarda anche la sottocategoria: "ecografia" e
+         "risonanza" sono fra i termini più naturali da digitare */
+      var haystack = [t.title, t.description, t.category, t.subcategory]
+        .join(' ').toLowerCase();
+      return haystack.indexOf(query) !== -1;
     });
 
-    buildSidebar(filtered);
-    buildList(filtered);
+    buildCatnav(searchFiltered);
+    buildList(searchFiltered.filter(function (t) {
+      return activeCategory === 'all' || catOf(t) === activeCategory;
+    }));
   }
 
-  document.getElementById('search-input').addEventListener('input', function () {
+  searchInput.addEventListener('input', function () {
     activeCategory = 'all';
     render();
   });
