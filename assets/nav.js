@@ -69,7 +69,10 @@
     nav.className = 'site-nav';
     nav.innerHTML =
       '<div class="site-nav-inner">' +
-        '<a class="site-nav-home" href="' + root + '/index.html">' + escapeHtml(siteTitle) + '</a>' +
+        '<a class="site-nav-home" href="' + root + '/index.html">' +
+          '<img class="site-nav-logo" src="' + root + '/assets/img/logo-mark.png" alt="" width="23" height="26">' +
+          '<span>' + escapeHtml(siteTitle) + '</span>' +
+        '</a>' +
         '<a href="' + root + '/info.html" class="site-nav-info-link' + (isInfoActive ? ' active' : '') + '"' +
         (isInfoActive ? ' aria-current="page"' : '') + '>Info</a>' +
       '</div>';
