@@ -31,7 +31,7 @@
 input[type="date"] { flex: 1; }
 .btn-today {
     font-family: var(--mono);
-    font-size: 0.65rem;
+    font-size: var(--fs-xs);
     padding: .42rem .6rem;
     border: 1px solid var(--accent);
     background: var(--accent-light);
@@ -46,7 +46,7 @@ input[type="date"] { flex: 1; }
 .btn-today:hover { background: #c0d9ee; }
 .age-display {
     font-family: var(--mono);
-    font-size: 0.82rem;
+    font-size: var(--fs-sm);
     color: var(--accent);
     margin-top: .35rem;
     min-height: 1.2em;
@@ -57,7 +57,7 @@ input[type="date"] { flex: 1; }
     margin-bottom: 1.4rem;
   }
 .suture-name {
-    font-size: 0.76rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     color: var(--accent);
     margin-bottom: .5rem;
@@ -81,7 +81,7 @@ input[type="date"] { flex: 1; }
     gap: .5rem;
     align-items: center;
   }
-.suture-row label { margin: 0; font-size: 0.75rem; }
+.suture-row label { margin: 0; font-size: var(--fs-xs); }
 .closed-check {
     display: flex;
     align-items: center;
@@ -91,7 +91,7 @@ input[type="date"] { flex: 1; }
     background: #fdecea;
     border: 1px solid #f5c6c0;
     border-radius: 4px;
-    font-size: 0.72rem;
+    font-size: var(--fs-xs);
     color: #8b2500;
     cursor: pointer;
     user-select: none;
@@ -115,7 +115,7 @@ input[type="date"] { flex: 1; }
     width: 100%;
     resize: vertical;
     min-height: 70px;
-    font-size: 0.8rem;
+    font-size: var(--fs-sm);
     line-height: 1.4;
   }
 .btn-generate {
@@ -127,7 +127,7 @@ input[type="date"] { flex: 1; }
     border: none;
     border-radius: 6px;
     font-family: var(--mono);
-    font-size: 0.85rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: .06em;
     text-transform: uppercase;
@@ -156,7 +156,7 @@ input[type="date"] { flex: 1; }
   }
 .report-header h2 {
     font-family: var(--mono);
-    font-size: 0.9rem;
+    font-size: var(--fs-md);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .08em;
@@ -167,7 +167,7 @@ input[type="date"] { flex: 1; }
     grid-template-columns: 1fr 1fr;
     gap: .2rem .8rem;
     margin-top: .7rem;
-    font-size: 0.8rem;
+    font-size: var(--fs-sm);
     color: #555;
   }
 .report-meta span { font-weight: 600; color: var(--ink); }
@@ -175,7 +175,7 @@ input[type="date"] { flex: 1; }
 .centile-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.79rem;
+    font-size: var(--fs-sm);
     margin-bottom: .6rem;
   }
 .centile-table td {
@@ -183,11 +183,11 @@ input[type="date"] { flex: 1; }
     border-bottom: 1px solid #eee;
   }
 .centile-table tr:last-child td { border-bottom: none; }
-.centile-table .val { font-family: var(--mono); font-size: 0.8rem; }
+.centile-table .val { font-family: var(--mono); font-size: var(--fs-sm); }
 .badge {
     display: inline-block;
     font-family: var(--mono);
-    font-size: 0.65rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     padding: .1rem .45rem;
     border-radius: 3px;
@@ -209,16 +209,16 @@ input[type="date"] { flex: 1; }
 .diagnosis-box.abnormal { background: var(--warn-bg); border-color: var(--warn); }
 .diagnosis-box h3 {
     font-family: var(--mono);
-    font-size: 0.72rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .08em;
     margin-bottom: .4rem;
   }
-.diagnosis-box p { font-size: 0.84rem; line-height: 1.6; }
+.diagnosis-box p { font-size: var(--fs-sm); line-height: 1.6; }
 .report-finding-text {
     white-space: pre-wrap;
-    font-size: 0.84rem;
+    font-size: var(--fs-sm);
     line-height: 1.7;
   }
 .btn-copy {
@@ -228,7 +228,7 @@ input[type="date"] { flex: 1; }
     color: #fff;
     border-radius: 5px;
     font-family: var(--mono);
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     letter-spacing: .05em;
     text-transform: uppercase;
@@ -244,7 +244,7 @@ input[type="date"] { flex: 1; }
     color: var(--accent);
     border-radius: 5px;
     font-family: var(--mono);
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     letter-spacing: .05em;
     text-transform: uppercase;
@@ -270,7 +270,7 @@ input[type="date"] { flex: 1; }
   }
 .tutorial-header h2 {
     font-family: var(--mono);
-    font-size: 0.82rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: .07em;
     text-transform: uppercase;
@@ -279,7 +279,7 @@ input[type="date"] { flex: 1; }
     background: none;
     border: none;
     color: rgba(255,255,255,.7);
-    font-size: 1.3rem;
+    font-size: var(--fs-xl);
     cursor: pointer;
     line-height: 1;
     padding: 0 .2rem;
@@ -306,7 +306,7 @@ input[type="date"] { flex: 1; }
 .tutorial-step.visible { display: block; }
 .step-number {
     font-family: var(--mono);
-    font-size: 0.65rem;
+    font-size: var(--fs-xs);
     font-weight: 700;
     letter-spacing: .12em;
     text-transform: uppercase;
@@ -315,20 +315,20 @@ input[type="date"] { flex: 1; }
   }
 .tutorial-step h3 {
     font-family: var(--mono);
-    font-size: 0.9rem;
+    font-size: var(--fs-md);
     font-weight: 600;
     color: var(--ink);
     margin-bottom: .7rem;
   }
 .tutorial-step p {
-    font-size: 0.84rem;
+    font-size: var(--fs-sm);
     line-height: 1.65;
     color: #444;
     margin-bottom: .6rem;
   }
 .tutorial-step ul {
     margin: .4rem 0 .6rem 1.1rem;
-    font-size: 0.83rem;
+    font-size: var(--fs-sm);
     line-height: 1.7;
     color: #444;
   }
@@ -337,7 +337,7 @@ input[type="date"] { flex: 1; }
     border-left: 3px solid var(--accent);
     padding: .6rem .9rem;
     border-radius: 0 4px 4px 0;
-    font-size: 0.78rem;
+    font-size: var(--fs-sm);
     color: var(--accent);
     margin-top: .8rem;
   }
@@ -346,7 +346,7 @@ input[type="date"] { flex: 1; }
     border-left: 3px solid var(--warn);
     padding: .6rem .9rem;
     border-radius: 0 4px 4px 0;
-    font-size: 0.78rem;
+    font-size: var(--fs-sm);
     color: var(--warn);
     margin-top: .8rem;
   }
@@ -359,7 +359,7 @@ input[type="date"] { flex: 1; }
     gap: .8rem;
   }
 .tutorial-skip {
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
     color: var(--muted);
     cursor: pointer;
     background: none;
@@ -374,7 +374,7 @@ input[type="date"] { flex: 1; }
   }
 .btn-tut-prev, .btn-tut-next {
     font-family: var(--mono);
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     letter-spacing: .05em;
     padding: .5rem 1.1rem;
@@ -453,7 +453,7 @@ input[type="date"] { flex: 1; }
 
     <!-- Suture -->
     <div class="section-label" style="margin-top:.8rem">Misure Suture (mm)</div>
-    <p style="font-size:.72rem;color:var(--muted);margin-bottom:.8rem">Inserire la larghezza massima del gap ipo-ecogeno. Lasciare vuoto se non misurato.</p>
+    <p style="font-size:var(--fs-xs);color:var(--muted);margin-bottom:.8rem">Inserire la larghezza massima del gap ipo-ecogeno. Lasciare vuoto se non misurato.</p>
 
     <div id="sutureForm">
 
@@ -1187,7 +1187,7 @@ function generateReport() {
         </thead>
         <tbody>${rows}</tbody>
       </table></div>
-      <p style="font-size:.72rem;color:var(--muted);margin-top:.4rem">I valori di riferimento si riferiscono al mese più vicino all'età dell'esame. P10 = 10° percentile; P90 = 90° percentile.</p>
+      <p style="font-size:var(--fs-xs);color:var(--muted);margin-top:.4rem">I valori di riferimento si riferiscono al mese più vicino all'età dell'esame. P10 = 10° percentile; P90 = 90° percentile.</p>
 
       <div class="diagnosis-box ${diagClass}">
         <h3>${diagTitle}</h3>

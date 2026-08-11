@@ -25,7 +25,7 @@
    .check-label diventerebbe tutto in grassetto e la distinzione fra testo
    normale e <strong> andrebbe persa. */
 .check {
-    font-size: 1rem;
+    font-size: var(--fs-lg);
     font-weight: 400;
     color: var(--ink);
     display: flex;
@@ -44,27 +44,27 @@
     background: var(--accent-light);
   }
 .check input[type="checkbox"] {
-    width: 1.15rem;
-    height: 1.15rem;
+    width: 1.5rem;
+    height: 1.5rem;
     margin-top: 2px;
     accent-color: var(--accent);
     flex-shrink: 0;
     cursor: pointer;
   }
 .check-label {
-    font-size: 0.8rem;
+    font-size: var(--fs-sm);
     color: var(--ink);
     line-height: 1.45;
   }
 .check-label strong { font-weight: 600; }
 .check-label .sub {
     display: block;
-    font-size: 0.72rem;
+    font-size: var(--fs-xs);
     color: var(--muted);
     margin-top: .15rem;
   }
 .subsection-title {
-    font-size: 0.72rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     font-family: var(--mono);
     letter-spacing: .05em;
@@ -86,7 +86,7 @@
   }
 .or-divider span {
     font-family: var(--mono);
-    font-size: 0.68rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     letter-spacing: .08em;
     color: var(--muted);
@@ -100,7 +100,7 @@
     padding: .55rem 1.2rem;
     border-radius: 6px;
     font-family: var(--mono);
-    font-size: 0.8rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: .04em;
     cursor: pointer;
@@ -127,7 +127,7 @@
 .result-badge {
     display: inline-block;
     font-family: var(--mono);
-    font-size: 0.72rem;
+    font-size: var(--fs-xs);
     font-weight: 700;
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -143,7 +143,7 @@
 .result-badge.non-caa { background: var(--ok-bg); color: var(--ok); }
 .result-main {
     font-family: var(--mono);
-    font-size: 1.7rem;
+    font-size: var(--fs-2xl);
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: -.01em;
@@ -151,7 +151,7 @@
     color: var(--ink);
   }
 .result-copy {
-    font-size: 0.82rem;
+    font-size: var(--fs-sm);
     color: #5a5c65;
     line-height: 1.55;
     margin-bottom: 1rem;
@@ -161,14 +161,14 @@
     padding: .7rem .9rem;
     background: var(--paper);
     border-radius: 6px;
-    font-size: 0.78rem;
+    font-size: var(--fs-sm);
     color: #5a5c65;
     line-height: 1.55;
   }
 .criteria-met strong {
     display: block;
     font-family: var(--mono);
-    font-size: 0.66rem;
+    font-size: var(--fs-xs);
     font-weight: 700;
     letter-spacing: .08em;
     text-transform: uppercase;
@@ -186,14 +186,14 @@
     padding: .6rem .8rem;
     background: var(--paper);
     border-radius: 6px;
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
     color: var(--muted);
     border-left: 3px solid var(--rule);
   }
 .note {
     border-radius: 6px;
     padding: .8rem 1rem;
-    font-size: 0.8rem;
+    font-size: var(--fs-sm);
     line-height: 1.5;
     border: 1px solid;
   }
@@ -208,7 +208,7 @@
     padding: 1.2rem 1.4rem;
   }
 .rule-item {
-    font-size: 0.8rem;
+    font-size: var(--fs-sm);
     color: #5a5c65;
     padding: .55rem 0;
     border-bottom: 1px solid var(--rule);
@@ -222,7 +222,7 @@
     border: 1px solid #f5b8ae;
     border-radius: 6px;
     padding: .7rem .9rem;
-    font-size: 0.78rem;
+    font-size: var(--fs-sm);
     color: var(--warn);
     margin-bottom: 1rem;
     display: none;
@@ -235,12 +235,12 @@
     padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
   }
 .tutorial-header h2 {
-    font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
     letter-spacing: .07em; text-transform: uppercase;
   }
 .tutorial-close {
     background: none; border: none; color: rgba(255,255,255,.7);
-    font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+    font-size: var(--fs-xl); cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
   }
 .tutorial-close:hover { color: #fff; }
 .tutorial-steps-bar {
@@ -251,36 +251,36 @@
 .step-dot.active { background: var(--accent); }
 .step-dot.done { background: var(--ok); }
 .step-number {
-    font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 700;
     letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
   }
 .tutorial-body h3 {
-    font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+    font-family: var(--mono); font-size: var(--fs-md); font-weight: 600; color: var(--ink); margin-bottom: .7rem;
   }
-.tutorial-body p { font-size: 0.84rem; line-height: 1.65; color: #444; margin-bottom: .6rem; }
-.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: 0.83rem; line-height: 1.7; color: #444; }
+.tutorial-body p { font-size: var(--fs-sm); line-height: 1.65; color: #444; margin-bottom: .6rem; }
+.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: var(--fs-sm); line-height: 1.7; color: #444; }
 .tut-tip {
     background: var(--accent-light); border-left: 3px solid var(--accent);
     padding: .6rem .9rem; border-radius: 0 4px 4px 0;
-    font-size: 0.78rem; color: var(--accent); margin-top: .8rem;
+    font-size: var(--fs-sm); color: var(--accent); margin-top: .8rem;
   }
 .tut-warn {
     background: var(--warn-bg); border-left: 3px solid var(--warn);
     padding: .6rem .9rem; border-radius: 0 4px 4px 0;
-    font-size: 0.78rem; color: var(--warn); margin-top: .8rem;
+    font-size: var(--fs-sm); color: var(--warn); margin-top: .8rem;
   }
 .tutorial-footer {
     padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
     justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
   }
 .tutorial-skip {
-    font-size: 0.75rem; color: var(--muted); cursor: pointer;
+    font-size: var(--fs-xs); color: var(--muted); cursor: pointer;
     background: none; border: none; padding: 0; transition: color .15s;
   }
 .tutorial-skip:hover { color: #666; }
 .tutorial-nav { display: flex; gap: .6rem; }
 .btn-tut-prev, .btn-tut-next {
-    font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
     letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
   }
 .btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
@@ -357,7 +357,7 @@
     <!-- Marker emorragici lobari -->
     <div class="section-block">
       <div class="section-label">Marker MRI emorragici lobari (T2*)</div>
-      <p style="font-size:.74rem;color:var(--muted);margin-bottom:.8rem">Valutabili su GRE T2* o sequenze SWI. Le lesioni lobari sono strettamente corticali/sottocorticali o subaracnoidee convessitali.</p>
+      <p style="font-size:var(--fs-xs);color:var(--muted);margin-bottom:.8rem">Valutabili su GRE T2* o sequenze SWI. Le lesioni lobari sono strettamente corticali/sottocorticali o subaracnoidee convessitali.</p>
 
       <label class="check">
         <input type="checkbox" id="ich" onchange="calc()">
@@ -401,7 +401,7 @@
     <!-- Marker non-emorragici (WHITE MATTER) -->
     <div class="section-block">
       <div class="section-label">Marker MRI non-emorragici (sostanza bianca)</div>
-      <p style="font-size:.74rem;color:var(--muted);margin-bottom:.8rem">Novità della v2.0. Uno di questi, in presenza di almeno 1 lesione emorragica lobare, è sufficiente per CAA Probabile. Senza lesioni emorragiche, contribuiscono alla categoria Possibile.</p>
+      <p style="font-size:var(--fs-xs);color:var(--muted);margin-bottom:.8rem">Novità della v2.0. Uno di questi, in presenza di almeno 1 lesione emorragica lobare, è sufficiente per CAA Probabile. Senza lesioni emorragiche, contribuiscono alla categoria Possibile.</p>
 
       <label class="check">
         <input type="checkbox" id="pvs" onchange="calc()">
