@@ -379,11 +379,11 @@
       <div class="section-label">Dati paziente</div>
 
       <div class="form-group">
-        <label>Data di nascita</label>
+        <label for="dob">Data di nascita</label>
         <input type="date" id="dob">
       </div>
 
-      <!-- I due campi hanno una <label for> propria: prima l'unità stava in un
+      <!-- I due campi hanno una <label for="ga-weeks" for> propria: prima l'unità stava in un
            .hint sotto, che è testo decorativo e non viene associato al campo —
            uno screen reader leggeva "Età gestazionale alla nascita" su
            entrambi, senza distinguere le settimane dai giorni. -->
@@ -402,7 +402,7 @@
       </fieldset>
 
       <div class="form-group">
-        <label>Data dell'ecografia</label>
+        <label for="eco-date">Data dell'ecografia</label>
         <div class="date-with-btn">
           <input type="date" id="eco-date">
           <button class="btn-today" onclick="setToday()">Oggi</button>
@@ -426,22 +426,22 @@
 
       <div class="measure-row">
         <div class="meas-label">VI</div>
-        <input type="number" id="vi-r" min="0" max="40" step="0.1" placeholder="mm" inputmode="decimal">
-        <input type="number" id="vi-l" min="0" max="40" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="vi-r" aria-label="VI destro" min="0" max="40" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="vi-l" aria-label="VI sinistro" min="0" max="40" step="0.1" placeholder="mm" inputmode="decimal">
       </div>
       <div style="font-size:var(--fs-xs);color:var(--muted);margin:-0.3rem 0 .6rem 94px;">Ventricular Index – piano coronale al forame di Monro</div>
 
       <div class="measure-row">
         <div class="meas-label">AHW</div>
-        <input type="number" id="ahw-r" min="0" max="30" step="0.1" placeholder="mm" inputmode="decimal">
-        <input type="number" id="ahw-l" min="0" max="30" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="ahw-r" aria-label="AHW destro" min="0" max="30" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="ahw-l" aria-label="AHW sinistro" min="0" max="30" step="0.1" placeholder="mm" inputmode="decimal">
       </div>
       <div style="font-size:var(--fs-xs);color:var(--muted);margin:-0.3rem 0 .6rem 94px;">Anterior Horn Width – piano coronale caudotalamica</div>
 
       <div class="measure-row">
         <div class="meas-label">TOD</div>
-        <input type="number" id="tod-r" min="0" max="60" step="0.1" placeholder="mm" inputmode="decimal">
-        <input type="number" id="tod-l" min="0" max="60" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="tod-r" aria-label="TOD destro" min="0" max="60" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="tod-l" aria-label="TOD sinistro" min="0" max="60" step="0.1" placeholder="mm" inputmode="decimal">
       </div>
       <div style="font-size:var(--fs-xs);color:var(--muted);margin:-0.3rem 0 .6rem 94px;">Thalamo-Occipital Distance – piano parasagittale</div>
     </div>

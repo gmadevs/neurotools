@@ -66,10 +66,29 @@
     if (!testo) return;
 
     function riuscito() { conferma(btn, '✓ Copiato!', 'copied'); }
+
+    /* Ultima spiaggia: si seleziona il referto nella pagina, così all'utente
+       resta un Ctrl+C. Niente prompt(): in una TWA e in diverse webview non
+       è supportato e lancia, cioè fallirebbe proprio il percorso d'errore. */
+    function selezionaReferto() {
+      var card = document.querySelector('.report-card, .report-container, .output-panel');
+      if (!card || !window.getSelection || !document.createRange) return false;
+      try {
+        var sel = window.getSelection();
+        var range = document.createRange();
+        range.selectNodeContents(card);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
     function fallito() {
-      conferma(btn, '✗ Copia non riuscita');
-      /* l'utente deve poterlo prendere lo stesso */
-      window.prompt('Copia manualmente il referto (Ctrl+C / Cmd+C):', testo);
+      conferma(btn, selezionaReferto()
+        ? '✗ Copia bloccata — testo selezionato, usa Ctrl+C'
+        : '✗ Copia non riuscita');
     }
 
     if (navigator.clipboard && navigator.clipboard.writeText &&

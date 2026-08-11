@@ -451,14 +451,14 @@ input[type="date"] { flex: 1; }
     <div class="section-label">Dati Paziente</div>
 
     <div class="form-group">
-      <label>Data di nascita</label>
+      <label for="dob">Data di nascita</label>
       <div class="date-row">
         <input type="date" id="dob" oninput="calcAge()">
       </div>
     </div>
 
     <div class="form-group">
-      <label>Data dell'esame</label>
+      <label for="examDate">Data dell'esame</label>
       <div class="date-row">
         <input type="date" id="examDate" oninput="calcAge()">
         <button class="btn-today" onclick="setToday()">Oggi</button>
@@ -477,14 +477,14 @@ input[type="date"] { flex: 1; }
         <div class="suture-inputs">
           <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-              <label>Sutura metopica</label>
+              <label for="metopic">Sutura metopica</label>
               <div class="suture-row-wrap">
                 <input type="number" id="metopic" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_metopic').checked=false" inputmode="decimal">
                 <span class="unit">mm</span>
               </div>
             </div>
             <label class="closed-check" id="cl_metopic_lbl" onclick="toggleClosed('cl_metopic','metopic')">
-              <input type="checkbox" id="cl_metopic" onchange="toggleClosed('cl_metopic','metopic')"> Chiusa
+              <input type="checkbox" id="cl_metopic" aria-label="Sutura metopica — chiusa" onchange="toggleClosed('cl_metopic','metopic')"> Chiusa
             </label>
           </div>
         </div>
@@ -495,38 +495,38 @@ input[type="date"] { flex: 1; }
         <div class="suture-inputs">
           <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-              <label>Anteriore</label>
+              <label for="sag_ant">Anteriore</label>
               <div class="suture-row-wrap">
                 <input type="number" id="sag_ant" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_sag_ant').checked=false" inputmode="decimal">
                 <span class="unit">mm</span>
               </div>
             </div>
             <label class="closed-check" id="cl_sag_ant_lbl" onclick="toggleClosed('cl_sag_ant','sag_ant')">
-              <input type="checkbox" id="cl_sag_ant" onchange="toggleClosed('cl_sag_ant','sag_ant')"> Chiusa
+              <input type="checkbox" id="cl_sag_ant" aria-label="Anteriore — chiusa" onchange="toggleClosed('cl_sag_ant','sag_ant')"> Chiusa
             </label>
           </div>
           <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-              <label>Media</label>
+              <label for="sag_mid">Media</label>
               <div class="suture-row-wrap">
                 <input type="number" id="sag_mid" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_sag_mid').checked=false" inputmode="decimal">
                 <span class="unit">mm</span>
               </div>
             </div>
             <label class="closed-check" id="cl_sag_mid_lbl" onclick="toggleClosed('cl_sag_mid','sag_mid')">
-              <input type="checkbox" id="cl_sag_mid" onchange="toggleClosed('cl_sag_mid','sag_mid')"> Chiusa
+              <input type="checkbox" id="cl_sag_mid" aria-label="Media — chiusa" onchange="toggleClosed('cl_sag_mid','sag_mid')"> Chiusa
             </label>
           </div>
           <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-              <label>Posteriore</label>
+              <label for="sag_post">Posteriore</label>
               <div class="suture-row-wrap">
                 <input type="number" id="sag_post" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_sag_post').checked=false" inputmode="decimal">
                 <span class="unit">mm</span>
               </div>
             </div>
             <label class="closed-check" id="cl_sag_post_lbl" onclick="toggleClosed('cl_sag_post','sag_post')">
-              <input type="checkbox" id="cl_sag_post" onchange="toggleClosed('cl_sag_post','sag_post')"> Chiusa
+              <input type="checkbox" id="cl_sag_post" aria-label="Posteriore — chiusa" onchange="toggleClosed('cl_sag_post','sag_post')"> Chiusa
             </label>
           </div>
         </div>
@@ -537,26 +537,26 @@ input[type="date"] { flex: 1; }
         <div class="suture-inputs">
           <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-              <label>Destra</label>
+              <label for="cor_r">Destra</label>
               <div class="suture-row-wrap">
-                <input type="number" id="cor_r" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_cor_r').checked=false" inputmode="decimal">
+                <input type="number" id="cor_r" aria-label="Coronale — Destra" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_cor_r').checked=false" inputmode="decimal">
                 <span class="unit">mm</span>
               </div>
             </div>
             <label class="closed-check" id="cl_cor_r_lbl" onclick="toggleClosed('cl_cor_r','cor_r')">
-              <input type="checkbox" id="cl_cor_r" onchange="toggleClosed('cl_cor_r','cor_r')"> Chiusa
+              <input type="checkbox" id="cl_cor_r" aria-label="Coronale — Destra — chiusa" onchange="toggleClosed('cl_cor_r','cor_r')"> Chiusa
             </label>
           </div>
           <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-              <label>Sinistra</label>
+              <label for="cor_l">Sinistra</label>
               <div class="suture-row-wrap">
-                <input type="number" id="cor_l" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_cor_l').checked=false" inputmode="decimal">
+                <input type="number" id="cor_l" aria-label="Coronale — Sinistra" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_cor_l').checked=false" inputmode="decimal">
                 <span class="unit">mm</span>
               </div>
             </div>
             <label class="closed-check" id="cl_cor_l_lbl" onclick="toggleClosed('cl_cor_l','cor_l')">
-              <input type="checkbox" id="cl_cor_l" onchange="toggleClosed('cl_cor_l','cor_l')"> Chiusa
+              <input type="checkbox" id="cl_cor_l" aria-label="Coronale — Sinistra — chiusa" onchange="toggleClosed('cl_cor_l','cor_l')"> Chiusa
             </label>
           </div>
         </div>
@@ -567,26 +567,26 @@ input[type="date"] { flex: 1; }
         <div class="suture-inputs">
           <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-              <label>Destra</label>
+              <label for="lam_r">Destra</label>
               <div class="suture-row-wrap">
-                <input type="number" id="lam_r" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_lam_r').checked=false" inputmode="decimal">
+                <input type="number" id="lam_r" aria-label="Lambdoidea — Destra" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_lam_r').checked=false" inputmode="decimal">
                 <span class="unit">mm</span>
               </div>
             </div>
             <label class="closed-check" id="cl_lam_r_lbl" onclick="toggleClosed('cl_lam_r','lam_r')">
-              <input type="checkbox" id="cl_lam_r" onchange="toggleClosed('cl_lam_r','lam_r')"> Chiusa
+              <input type="checkbox" id="cl_lam_r" aria-label="Lambdoidea — Destra — chiusa" onchange="toggleClosed('cl_lam_r','lam_r')"> Chiusa
             </label>
           </div>
           <div class="suture-row" style="flex-direction:column;align-items:flex-start;gap:.3rem">
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-              <label>Sinistra</label>
+              <label for="lam_l">Sinistra</label>
               <div class="suture-row-wrap">
-                <input type="number" id="lam_l" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_lam_l').checked=false" inputmode="decimal">
+                <input type="number" id="lam_l" aria-label="Lambdoidea — Sinistra" min="0" max="10" step="0.1" placeholder="—" oninput="if(this.value) document.getElementById('cl_lam_l').checked=false" inputmode="decimal">
                 <span class="unit">mm</span>
               </div>
             </div>
             <label class="closed-check" id="cl_lam_l_lbl" onclick="toggleClosed('cl_lam_l','lam_l')">
-              <input type="checkbox" id="cl_lam_l" onchange="toggleClosed('cl_lam_l','lam_l')"> Chiusa
+              <input type="checkbox" id="cl_lam_l" aria-label="Lambdoidea — Sinistra — chiusa" onchange="toggleClosed('cl_lam_l','lam_l')"> Chiusa
             </label>
           </div>
         </div>
@@ -597,7 +597,7 @@ input[type="date"] { flex: 1; }
     <!-- Note aggiuntive -->
     <div class="section-label" style="margin-top:.6rem">Note Aggiuntive</div>
     <div class="extras">
-      <textarea id="extraNotes" placeholder="Eventuali osservazioni aggiuntive da includere nel referto…"></textarea>
+      <textarea id="extraNotes" aria-label="Note aggiuntive per il referto" placeholder="Eventuali osservazioni aggiuntive da includere nel referto…"></textarea>
     </div>
 
     <button class="btn-generate" onclick="generateReport()">▶ Genera Referto</button>

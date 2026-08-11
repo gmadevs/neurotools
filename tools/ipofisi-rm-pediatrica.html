@@ -198,7 +198,7 @@
     <div class="section-label">Dati Paziente</div>
 
     <div class="form-group">
-      <label>Sesso</label>
+      <label for="sex">Sesso</label>
       <select id="sex">
         <option value="">— seleziona —</option>
         <option value="F">Femmina</option>
@@ -207,7 +207,7 @@
     </div>
 
     <div class="form-group">
-      <label>Età</label>
+      <label for="ageGroup">Età</label>
       <select id="ageGroup">
         <option value="">— seleziona —</option>
         <option value="0">&lt; 1 anno</option>
@@ -235,22 +235,22 @@
     <div class="section-label" style="margin-top:.8rem">Misure Ipofisi</div>
     <div class="param-grid">
       <div class="param-row">
-        <label>Altezza (craniocaudale)</label>
+        <label for="height">Altezza (craniocaudale)</label>
         <input type="number" id="height" min="0" max="20" step="0.1" placeholder="—" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
-        <label>Larghezza coronale</label>
+        <label for="coronal_width">Larghezza coronale</label>
         <input type="number" id="coronal_width" min="0" max="30" step="0.1" placeholder="—" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
-        <label>Larghezza sagittale (AP)</label>
+        <label for="width">Larghezza sagittale (AP)</label>
         <input type="number" id="width" min="0" max="20" step="0.1" placeholder="—" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
-        <label>Volume</label>
+        <label for="volume">Volume</label>
         <input type="number" id="volume" min="0" max="1000" step="1" placeholder="—" inputmode="numeric">
         <span class="unit">mm³</span>
       </div>
@@ -260,7 +260,7 @@
     <div class="section-label" style="margin-top:1rem">Peduncolo Ipofisario</div>
     <div class="param-grid">
       <div class="param-row">
-        <label>Rapporto PS/BA</label>
+        <label for="psba">Rapporto PS/BA</label>
         <input type="number" id="psba" min="0" max="2" step="0.01" placeholder="—" inputmode="decimal">
         <span class="unit"></span>
       </div>

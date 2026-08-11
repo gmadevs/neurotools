@@ -226,7 +226,7 @@ input[type="date"] { flex: 1; }
     <div class="section-label">Dati Paziente</div>
 
     <div class="form-group">
-      <label>Età gestazionale (settimane)</label>
+      <label for="gaGroup">Età gestazionale (settimane)</label>
       <select id="gaGroup">
         <option value="">— seleziona —</option>
         <option value="2528">25–28 settimane</option>
@@ -237,14 +237,14 @@ input[type="date"] { flex: 1; }
     </div>
 
     <div class="form-group">
-      <label>Data di nascita</label>
+      <label for="dob">Data di nascita</label>
       <div class="date-row">
         <input type="date" id="dob" oninput="calcAge()">
       </div>
     </div>
 
     <div class="form-group">
-      <label>Data dell'esame</label>
+      <label for="examDate">Data dell'esame</label>
       <div class="date-row">
         <input type="date" id="examDate" oninput="calcAge()">
         <button class="btn-today" onclick="setToday()">Oggi</button>
@@ -258,28 +258,28 @@ input[type="date"] { flex: 1; }
     <div class="artery-block">
       <div class="param-grid">
         <div class="param-row">
-          <label>PSV (velocità sistolica di picco)</label>
-          <input type="number" id="aca_psv" min="0" max="200" step="0.1" placeholder="—" inputmode="decimal">
+          <label for="aca_psv">PSV (velocità sistolica di picco)</label>
+          <input type="number" id="aca_psv" aria-label="ACA — PSV (velocità sistolica di picco)" min="0" max="200" step="0.1" placeholder="—" inputmode="decimal">
           <span class="unit">cm/s</span>
         </div>
         <div class="param-row">
-          <label>EDV (velocità telediastolica)</label>
-          <input type="number" id="aca_edv" min="0" max="100" step="0.1" placeholder="—" inputmode="decimal">
+          <label for="aca_edv">EDV (velocità telediastolica)</label>
+          <input type="number" id="aca_edv" aria-label="ACA — EDV (velocità telediastolica)" min="0" max="100" step="0.1" placeholder="—" inputmode="decimal">
           <span class="unit">cm/s</span>
         </div>
         <div class="param-row">
-          <label>RI (indice di resistenza)</label>
-          <input type="number" id="aca_ri" min="0" max="2" step="0.01" placeholder="—" inputmode="decimal">
+          <label for="aca_ri">RI (indice di resistenza)</label>
+          <input type="number" id="aca_ri" aria-label="ACA — RI (indice di resistenza)" min="0" max="2" step="0.01" placeholder="—" inputmode="decimal">
           <span class="unit"></span>
         </div>
         <div class="param-row">
-          <label>MV (velocità media)</label>
-          <input type="number" id="aca_mv" min="0" max="200" step="0.1" placeholder="—" inputmode="decimal">
+          <label for="aca_mv">MV (velocità media)</label>
+          <input type="number" id="aca_mv" aria-label="ACA — MV (velocità media)" min="0" max="200" step="0.1" placeholder="—" inputmode="decimal">
           <span class="unit">cm/s</span>
         </div>
         <div class="param-row">
-          <label>PI (indice di pulsatilità)</label>
-          <input type="number" id="aca_pi" min="0" max="5" step="0.01" placeholder="—" inputmode="decimal">
+          <label for="aca_pi">PI (indice di pulsatilità)</label>
+          <input type="number" id="aca_pi" aria-label="ACA — PI (indice di pulsatilità)" min="0" max="5" step="0.01" placeholder="—" inputmode="decimal">
           <span class="unit"></span>
         </div>
       </div>
@@ -290,28 +290,28 @@ input[type="date"] { flex: 1; }
     <div class="artery-block">
       <div class="param-grid">
         <div class="param-row">
-          <label>PSV (velocità sistolica di picco)</label>
-          <input type="number" id="mca_psv" min="0" max="200" step="0.1" placeholder="—" inputmode="decimal">
+          <label for="mca_psv">PSV (velocità sistolica di picco)</label>
+          <input type="number" id="mca_psv" aria-label="MCA — PSV (velocità sistolica di picco)" min="0" max="200" step="0.1" placeholder="—" inputmode="decimal">
           <span class="unit">cm/s</span>
         </div>
         <div class="param-row">
-          <label>EDV (velocità telediastolica)</label>
-          <input type="number" id="mca_edv" min="0" max="100" step="0.1" placeholder="—" inputmode="decimal">
+          <label for="mca_edv">EDV (velocità telediastolica)</label>
+          <input type="number" id="mca_edv" aria-label="MCA — EDV (velocità telediastolica)" min="0" max="100" step="0.1" placeholder="—" inputmode="decimal">
           <span class="unit">cm/s</span>
         </div>
         <div class="param-row">
-          <label>RI (indice di resistenza)</label>
-          <input type="number" id="mca_ri" min="0" max="2" step="0.01" placeholder="—" inputmode="decimal">
+          <label for="mca_ri">RI (indice di resistenza)</label>
+          <input type="number" id="mca_ri" aria-label="MCA — RI (indice di resistenza)" min="0" max="2" step="0.01" placeholder="—" inputmode="decimal">
           <span class="unit"></span>
         </div>
         <div class="param-row">
-          <label>MV (velocità media)</label>
-          <input type="number" id="mca_mv" min="0" max="200" step="0.1" placeholder="—" inputmode="decimal">
+          <label for="mca_mv">MV (velocità media)</label>
+          <input type="number" id="mca_mv" aria-label="MCA — MV (velocità media)" min="0" max="200" step="0.1" placeholder="—" inputmode="decimal">
           <span class="unit">cm/s</span>
         </div>
         <div class="param-row">
-          <label>PI (indice di pulsatilità)</label>
-          <input type="number" id="mca_pi" min="0" max="5" step="0.01" placeholder="—" inputmode="decimal">
+          <label for="mca_pi">PI (indice di pulsatilità)</label>
+          <input type="number" id="mca_pi" aria-label="MCA — PI (indice di pulsatilità)" min="0" max="5" step="0.01" placeholder="—" inputmode="decimal">
           <span class="unit"></span>
         </div>
       </div>

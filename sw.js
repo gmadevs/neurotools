@@ -21,7 +21,7 @@
    statici restano quelli in cache e la modifica non arriva.
    ========================================================================== */
 
-const VERSIONE = 'neurotools-v8';
+const VERSIONE = 'neurotools-v12';
 
 /* Percorsi relativi al service worker: così valgono sia su dominio proprio
    sia sotto il sottopercorso di GitHub Pages (/neurotools/). */
