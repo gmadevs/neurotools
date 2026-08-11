@@ -6,6 +6,7 @@
 <script src="../assets/site-config.js"></script>
 <script src="../assets/nav.js"></script>
 <script src="../assets/app.js"></script>
+<script src="../assets/tutorial.js"></script>
 <script src="../assets/report-actions.js"></script>
 <script src="../assets/mobile-result.js" defer></script>
 <meta charset="UTF-8">
@@ -786,61 +787,9 @@ const TUTORIAL_STEPS = [
   }
 ];
 
-let tutCurrentStep = 0;
 
-function openTutorial() {
-  tutCurrentStep = 0;
-  renderTutorial();
-  document.getElementById('tutorialOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
 
-function closeTutorial() {
-  document.getElementById('tutorialOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function handleOverlayClick(e) {
-  if (e.target === document.getElementById('tutorialOverlay')) closeTutorial();
-}
-
-function tutStep(dir) {
-  const next = tutCurrentStep + dir;
-  if (next < 0 || next >= TUTORIAL_STEPS.length) return;
-  tutCurrentStep = next;
-  renderTutorial();
-}
-
-function renderTutorial() {
-  const total = TUTORIAL_STEPS.length;
-  const i = tutCurrentStep;
-  const step = TUTORIAL_STEPS[i];
-
-  document.getElementById('stepBar').innerHTML = TUTORIAL_STEPS.map((_, idx) => {
-    const cls = idx < i ? 'done' : idx === i ? 'active' : '';
-    return `<div class="step-dot ${cls}"></div>`;
-  }).join('');
-
-  document.getElementById('tutorialBody').innerHTML = `
-    <div class="step-number">Passo ${i + 1} di ${total}</div>
-    <h3>${step.title}</h3>
-    ${step.body}
-  `;
-
-  document.getElementById('btnPrev').style.visibility = i === 0 ? 'hidden' : 'visible';
-
-  const btnNext = document.getElementById('btnNext');
-  if (i === total - 1) {
-    btnNext.textContent = '✓ Ho capito';
-    btnNext.className = 'btn-tut-next finish';
-    btnNext.onclick = closeTutorial;
-  } else {
-    btnNext.innerHTML = 'Avanti &#8594;';
-    btnNext.className = 'btn-tut-next';
-    btnNext.onclick = () => tutStep(1);
-  }
-}
-
+initTutorial(TUTORIAL_STEPS);
 window.addEventListener('DOMContentLoaded', () => { setToday(); });
 </script>
 </body>

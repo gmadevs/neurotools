@@ -126,8 +126,13 @@
     return document.querySelector(SELETTORE + '.open');
   }
 
+  /* Chi apre la modale blocca lo scroll della pagina sotto (overflow: hidden
+     sul body). Chiudendo da qui — gesto Indietro o Escape — non passiamo dalla
+     funzione di chiusura dello strumento, quindi quel blocco va tolto a mano:
+     senza, la modale sparisce e la pagina resta immobile. */
   function chiudi(overlay) {
     overlay.classList.remove('open');
+    document.body.style.overflow = '';
   }
 
   function avviaModali() {
