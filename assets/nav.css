@@ -19,8 +19,11 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  padding: 0 1.25rem;
-  height: 48px;
+  /* con viewport-fit=cover in orizzontale la tacca invade il lato: la barra
+     resta a tutta larghezza, il contenuto si scosta */
+  padding-left: max(1.25rem, env(safe-area-inset-left));
+  padding-right: max(1.25rem, env(safe-area-inset-right));
+  min-height: 48px;
 }
 
 /* I link della navbar riempiono l'altezza della barra: 48px è la soglia di

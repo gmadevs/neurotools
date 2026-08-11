@@ -221,6 +221,7 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
+
 /* ── HEADER ────────────────────────────────────────────────────────────── */
 
 header {
@@ -709,6 +710,49 @@ input[type="radio"] {
   .report-panel, .output-panel { padding: 0; }
   .report-card { border: none; box-shadow: none; }
   body { padding-bottom: 0; background: #fff; }
+}
+
+/* ── SAFE AREA ─────────────────────────────────────────────────────────────
+   Con viewport-fit=cover nel meta viewport la pagina si estende sotto la
+   tacca e sotto la barra a gesti, e env(safe-area-inset-*) smette di valere
+   zero — prima il padding-bottom della barra risultato calcolava una difesa
+   che non entrava mai in funzione.
+
+   Il blocco sta in fondo di proposito: deve vincere sulle shorthand padding
+   dei media query qui sopra, che altrimenti lo azzererebbero.
+
+   max() e non somma: dove la tacca non c'e' l'inset vale 0 e resta il padding
+   normale, dove c'e' vince il piu' grande dei due.
+   ------------------------------------------------------------------------ */
+
+header,
+.input-panel,
+.output-panel,
+.report-panel,
+.result-bar {
+  padding-left: max(var(--sp-4), env(safe-area-inset-left));
+  padding-right: max(var(--sp-4), env(safe-area-inset-right));
+}
+
+@media (min-width: 641px) {
+  .input-panel,
+  .output-panel,
+  .report-panel {
+    padding-left: max(var(--sp-6), env(safe-area-inset-left));
+    padding-right: max(var(--sp-6), env(safe-area-inset-right));
+  }
+
+  header {
+    padding-left: max(var(--sp-8), env(safe-area-inset-left));
+    padding-right: max(var(--sp-8), env(safe-area-inset-right));
+  }
+}
+
+@media print {
+  header,
+  .input-panel,
+  .output-panel,
+  .report-panel { padding-left: 0; padding-right: 0; }
 }
 
 /* ── MOVIMENTO RIDOTTO ─────────────────────────────────────────────────── */

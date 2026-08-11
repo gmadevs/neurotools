@@ -7,7 +7,7 @@
 <script src="../assets/nav.js"></script>
 <script src="../assets/mobile-result.js" defer></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>PHVD – Monitoraggio Dilatazione Ventricolare</title>
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png">
@@ -372,11 +372,11 @@
         <label>Età gestazionale alla nascita</label>
         <div class="field-grid">
           <div>
-            <input type="number" id="ga-weeks" min="22" max="42" placeholder="settimane" step="1">
+            <input type="number" id="ga-weeks" min="22" max="42" placeholder="settimane" step="1" inputmode="numeric">
             <div class="hint">settimane</div>
           </div>
           <div>
-            <input type="number" id="ga-days" min="0" max="6" placeholder="giorni" step="1" value="0">
+            <input type="number" id="ga-days" min="0" max="6" placeholder="giorni" step="1" value="0" inputmode="numeric">
             <div class="hint">giorni (0–6)</div>
           </div>
         </div>
@@ -407,22 +407,22 @@
 
       <div class="measure-row">
         <div class="meas-label">VI</div>
-        <input type="number" id="vi-r" min="0" max="40" step="0.1" placeholder="mm">
-        <input type="number" id="vi-l" min="0" max="40" step="0.1" placeholder="mm">
+        <input type="number" id="vi-r" min="0" max="40" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="vi-l" min="0" max="40" step="0.1" placeholder="mm" inputmode="decimal">
       </div>
       <div style="font-size:var(--fs-xs);color:var(--muted);margin:-0.3rem 0 .6rem 94px;">Ventricular Index – piano coronale al forame di Monro</div>
 
       <div class="measure-row">
         <div class="meas-label">AHW</div>
-        <input type="number" id="ahw-r" min="0" max="30" step="0.1" placeholder="mm">
-        <input type="number" id="ahw-l" min="0" max="30" step="0.1" placeholder="mm">
+        <input type="number" id="ahw-r" min="0" max="30" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="ahw-l" min="0" max="30" step="0.1" placeholder="mm" inputmode="decimal">
       </div>
       <div style="font-size:var(--fs-xs);color:var(--muted);margin:-0.3rem 0 .6rem 94px;">Anterior Horn Width – piano coronale caudotalamica</div>
 
       <div class="measure-row">
         <div class="meas-label">TOD</div>
-        <input type="number" id="tod-r" min="0" max="60" step="0.1" placeholder="mm">
-        <input type="number" id="tod-l" min="0" max="60" step="0.1" placeholder="mm">
+        <input type="number" id="tod-r" min="0" max="60" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="tod-l" min="0" max="60" step="0.1" placeholder="mm" inputmode="decimal">
       </div>
       <div style="font-size:var(--fs-xs);color:var(--muted);margin:-0.3rem 0 .6rem 94px;">Thalamo-Occipital Distance – piano parasagittale</div>
     </div>

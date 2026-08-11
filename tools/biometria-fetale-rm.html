@@ -7,7 +7,7 @@
 <script src="../assets/nav.js"></script>
 <script src="../assets/mobile-result.js" defer></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Biometria Fetale RM – Centili</title>
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png">
@@ -313,7 +313,7 @@
       <label>Età gestazionale</label>
       <div class="param-row" style="grid-template-columns:1fr auto 3rem">
         <label>EG al momento dell'esame</label>
-        <input type="number" id="ga" min="18" max="42" step="0.01" placeholder="—" oninput="onGaInput()">
+        <input type="number" id="ga" min="18" max="42" step="0.01" placeholder="—" oninput="onGaInput()" inputmode="decimal">
         <span class="unit">sett</span>
       </div>
       <div class="info-note" style="margin-top:.5rem">Oppure calcolala dalle date:</div>
@@ -337,47 +337,47 @@
     <div class="param-grid">
       <div class="param-row">
         <label>Diametro biparietale encefalico</label>
-        <input type="number" id="bpd_brain" min="0" max="200" step="0.1" placeholder="—" oninput="updateDerived()">
+        <input type="number" id="bpd_brain" min="0" max="200" step="0.1" placeholder="—" oninput="updateDerived()" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
         <label>Lunghezza fronto-occipitale encefalica</label>
-        <input type="number" id="fol" min="0" max="250" step="0.1" placeholder="—">
+        <input type="number" id="fol" min="0" max="250" step="0.1" placeholder="—" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
         <label>Diametro biparietale cranico</label>
-        <input type="number" id="bpd_skull" min="0" max="200" step="0.1" placeholder="—" oninput="updateDerived()">
+        <input type="number" id="bpd_skull" min="0" max="200" step="0.1" placeholder="—" oninput="updateDerived()" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
         <label>Diametro occipitofrontale cranico</label>
-        <input type="number" id="ofd_skull" min="0" max="250" step="0.1" placeholder="—" oninput="updateDerived()">
+        <input type="number" id="ofd_skull" min="0" max="250" step="0.1" placeholder="—" oninput="updateDerived()" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
         <label>Diametro cerebellare trasverso</label>
-        <input type="number" id="tcd" min="0" max="150" step="0.1" placeholder="—">
+        <input type="number" id="tcd" min="0" max="150" step="0.1" placeholder="—" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
         <label>Diametro atriale</label>
-        <input type="number" id="atrial" min="0" max="50" step="0.1" placeholder="—">
+        <input type="number" id="atrial" min="0" max="50" step="0.1" placeholder="—" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
         <label>Altezza del verme</label>
-        <input type="number" id="vermis_h" min="0" max="60" step="0.1" placeholder="—">
+        <input type="number" id="vermis_h" min="0" max="60" step="0.1" placeholder="—" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
         <label>Larghezza del verme</label>
-        <input type="number" id="vermis_w" min="0" max="60" step="0.1" placeholder="—">
+        <input type="number" id="vermis_w" min="0" max="60" step="0.1" placeholder="—" inputmode="decimal">
         <span class="unit">mm</span>
       </div>
       <div class="param-row">
         <label>Area del verme</label>
-        <input type="number" id="vermis_a" min="0" max="1500" step="1" placeholder="—">
+        <input type="number" id="vermis_a" min="0" max="1500" step="1" placeholder="—" inputmode="numeric">
         <span class="unit">mm²</span>
       </div>
     </div>
@@ -391,37 +391,37 @@
     <div class="param-grid">
       <div class="param-row">
         <label>Tessuto cerebrale sovratentoriale</label>
-        <input type="number" id="sbt" min="0" max="800" step="0.01" placeholder="—">
+        <input type="number" id="sbt" min="0" max="800" step="0.01" placeholder="—" inputmode="decimal">
         <span class="unit">cm³</span>
       </div>
       <div class="param-row">
         <label>Ventricoli laterali (totale)</label>
-        <input type="number" id="vent_tot" min="0" max="200" step="0.01" placeholder="—">
+        <input type="number" id="vent_tot" min="0" max="200" step="0.01" placeholder="—" inputmode="decimal">
         <span class="unit">cm³</span>
       </div>
       <div class="param-row">
         <label>Ventricolo laterale destro</label>
-        <input type="number" id="vent_r" min="0" max="100" step="0.01" placeholder="—">
+        <input type="number" id="vent_r" min="0" max="100" step="0.01" placeholder="—" inputmode="decimal">
         <span class="unit">cm³</span>
       </div>
       <div class="param-row">
         <label>Ventricolo laterale sinistro</label>
-        <input type="number" id="vent_l" min="0" max="100" step="0.01" placeholder="—">
+        <input type="number" id="vent_l" min="0" max="100" step="0.01" placeholder="—" inputmode="decimal">
         <span class="unit">cm³</span>
       </div>
       <div class="param-row">
         <label>Corteccia</label>
-        <input type="number" id="cortex" min="0" max="400" step="0.01" placeholder="—">
+        <input type="number" id="cortex" min="0" max="400" step="0.01" placeholder="—" inputmode="decimal">
         <span class="unit">cm³</span>
       </div>
       <div class="param-row">
         <label>Cervelletto</label>
-        <input type="number" id="cerebellum" min="0" max="120" step="0.01" placeholder="—">
+        <input type="number" id="cerebellum" min="0" max="120" step="0.01" placeholder="—" inputmode="decimal">
         <span class="unit">cm³</span>
       </div>
       <div class="param-row">
         <label>CSF extracerebrale</label>
-        <input type="number" id="ecsf3d" min="0" max="400" step="0.01" placeholder="—">
+        <input type="number" id="ecsf3d" min="0" max="400" step="0.01" placeholder="—" inputmode="decimal">
         <span class="unit">cm³</span>
       </div>
     </div>

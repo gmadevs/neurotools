@@ -7,7 +7,7 @@
 <script src="../assets/nav.js"></script>
 <script src="../assets/mobile-result.js" defer></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>RANO 2.0 – Calcolatore Risposta Radiologica</title>
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png">
@@ -367,18 +367,18 @@
         <div class="field-grid" id="grid2DBaseline">
           <div class="form-group">
             <label for="base1">Diametro 1 (mm)</label>
-            <input id="base1" type="number" step="0.1" min="0" placeholder="es. 24">
+            <input id="base1" type="number" step="0.1" min="0" placeholder="es. 24" inputmode="decimal">
           </div>
           <div class="form-group">
             <label for="base2">Diametro 2 (mm)</label>
-            <input id="base2" type="number" step="0.1" min="0" placeholder="es. 18">
+            <input id="base2" type="number" step="0.1" min="0" placeholder="es. 18" inputmode="decimal">
           </div>
         </div>
 
         <div class="field-grid full hidden" id="grid3DBaseline">
           <div class="form-group">
             <label for="baseVol">Volume baseline (mm³ o cm³)</label>
-            <input id="baseVol" type="number" step="0.1" min="0" placeholder="es. 4200">
+            <input id="baseVol" type="number" step="0.1" min="0" placeholder="es. 4200" inputmode="decimal">
           </div>
         </div>
       </div>
@@ -390,24 +390,24 @@
         <div class="field-grid" id="grid2DCurrent">
           <div class="form-group">
             <label for="curr1">Diametro 1 (mm)</label>
-            <input id="curr1" type="number" step="0.1" min="0" placeholder="es. 31">
+            <input id="curr1" type="number" step="0.1" min="0" placeholder="es. 31" inputmode="decimal">
           </div>
           <div class="form-group">
             <label for="curr2">Diametro 2 (mm)</label>
-            <input id="curr2" type="number" step="0.1" min="0" placeholder="es. 20">
+            <input id="curr2" type="number" step="0.1" min="0" placeholder="es. 20" inputmode="decimal">
           </div>
         </div>
 
         <div class="field-grid full hidden" id="grid3DCurrent">
           <div class="form-group">
             <label for="currVol">Volume attuale (mm³ o cm³)</label>
-            <input id="currVol" type="number" step="0.1" min="0" placeholder="es. 5800">
+            <input id="currVol" type="number" step="0.1" min="0" placeholder="es. 5800" inputmode="decimal">
           </div>
         </div>
 
         <div class="form-group" style="margin-top:.8rem">
           <label for="weeks">Settimane dal termine della RT</label>
-          <input id="weeks" type="number" step="0.1" min="0" placeholder="es. 8">
+          <input id="weeks" type="number" step="0.1" min="0" placeholder="es. 8" inputmode="decimal">
           <div class="hint">Serve per segnalare la finestra potenziale di pseudoprogressione (≤ 12 sett.).</div>
         </div>
       </div>
