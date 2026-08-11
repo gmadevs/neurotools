@@ -444,6 +444,26 @@ label {
   color: var(--ink);
 }
 
+/* Gruppi di campi che vanno letti insieme (settimane + giorni, destro +
+   sinistro): serve un fieldset perché il gruppo abbia un nome anche per uno
+   screen reader, ma senza il bordo che il browser gli mette di suo. La legend
+   ha lo stesso aspetto di una label. */
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 var(--sp-4);
+  min-width: 0;
+}
+
+legend {
+  display: block;
+  padding: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  margin-bottom: var(--sp-1);
+  color: var(--ink);
+}
+
 /* Le hint spiegano come si esegue la misura: è il testo che si legge in piedi
    accanto all'ecografo, non una nota a piè di pagina. Da 12.5px a 14px. */
 .hint {
@@ -495,6 +515,12 @@ input[type="radio"] {
 
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
 .field-grid.full { grid-template-columns: 1fr; }
+
+/* Coppie di campi corti che si leggono come un valore solo (settimane +
+   giorni, destro + sinistro): restano affiancate a ogni larghezza, perché
+   impilate occupano il doppio dello scroll senza guadagnare leggibilità.
+   Vedi la regola nel media query a 900px, che le impilerebbe. */
+.field-grid.compact { grid-template-columns: 1fr 1fr; }
 
 .unit {
   font-family: var(--mono);
@@ -702,6 +728,7 @@ input[type="radio"] {
   .output-panel { border-top: 1px solid var(--rule); }
 
   .field-grid { grid-template-columns: 1fr; }
+  .field-grid.compact { grid-template-columns: 1fr 1fr; }
 
   /* titolo e pulsante "?" sulla prima riga, sottotitolo a capo sulla seconda:
      senza l'ordinamento esplicito il margin-left:auto del pulsante lo manda

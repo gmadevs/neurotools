@@ -324,12 +324,19 @@
       <input type="text" id="patientName" placeholder="—">
     </div>
 
-    <div class="form-group">
-      <label>Età gestazionale</label>
-      <div class="param-row" style="grid-template-columns:1fr auto 3rem">
-        <label>EG al momento dell'esame</label>
-        <input type="number" id="ga" min="18" max="42" step="0.01" placeholder="—" oninput="onGaInput()" inputmode="decimal">
-        <span class="unit">sett</span>
+    <fieldset class="form-group">
+      <legend>Età gestazionale al momento dell'esame</legend>
+      <div class="field-grid compact">
+        <div>
+          <label for="ga-weeks">Settimane</label>
+          <input type="number" id="ga-weeks" min="18" max="42" step="1" placeholder="settimane"
+                 inputmode="numeric" oninput="onGaInput()">
+        </div>
+        <div>
+          <label for="ga-days">Giorni (0–6)</label>
+          <input type="number" id="ga-days" min="0" max="6" step="1" value="0" placeholder="giorni"
+                 inputmode="numeric" oninput="onGaInput()">
+        </div>
       </div>
       <div class="info-note" style="margin-top:.5rem">Oppure calcolala dalle date:</div>
       <div class="date-grid" style="margin-top:.5rem">
@@ -343,7 +350,7 @@
         </div>
       </div>
       <div class="ga-display" id="gaDisplay" style="display:none"></div>
-    </div>
+    </fieldset>
 
     <div class="section-label with-action" style="margin-top:1rem">
       <span>Misure 2D (mm)</span>
@@ -480,7 +487,7 @@ const TUTORIAL_STEPS = [
       <li>Inserisci direttamente l'<strong>EG in settimane decimali</strong> (es. 29.43), oppure</li>
       <li>inserisci <strong>EDD da datazione</strong> e <strong>data dell'esame RM</strong>: l'EG viene calcolata come (280 − giorni all'EDD) / 7</li>
     </ul>
-    <div class="tut-warn">I dati normativi coprono <strong>21.29–38.86 settimane</strong>. Fuori da questo intervallo il calcolo è un'estrapolazione e viene segnalato.</div>`
+    <div class="tut-warn">I dati normativi coprono <strong>21s + 2g – 38s + 6g</strong>. Fuori da questo intervallo il calcolo è un'estrapolazione e viene segnalato.</div>`
   },
   {
     title: 'Inserisci le misure',
@@ -731,26 +738,49 @@ function centileHTML(c) {
 }
 
 // ── Gestione EG ──
+/* L'età gestazionale si inserisce e si legge in settimane e giorni, come si
+   scrive in cartella. Le curve normative vogliono però un decimale: la
+   conversione avviene qui, in un punto solo, e il decimale non compare mai
+   nell'interfaccia né nel referto. */
+
+function gaDecimale() {
+  const cw = document.getElementById('ga-weeks').value.trim();
+  const cd = document.getElementById('ga-days').value.trim();
+  if (cw === '') return NaN;
+  const settimane = parseInt(cw, 10);
+  const giorni = cd === '' ? 0 : parseInt(cd, 10);
+  if (isNaN(settimane) || isNaN(giorni)) return NaN;
+  return settimane + giorni / 7;
+}
+
+/* "27s + 3g". L'epsilon evita che un decimale come 27.999999 dia 27s + 7g. */
+function gaTesto(ga) {
+  let w = Math.floor(ga + 1e-9);
+  let d = Math.round((ga - w) * 7);
+  if (d === 7) { w += 1; d = 0; }
+  return `${w}s + ${d}g`;
+}
+
 function computeGaFromDates() {
   const edd = document.getElementById('edd').value;
   const scan = document.getElementById('scanDate').value;
   if (!edd || !scan) return;
   const msDay = 24 * 3600 * 1000;
   const daysToEdd = Math.round((new Date(edd + 'T00:00:00') - new Date(scan + 'T00:00:00')) / msDay);
-  const ga = (280 - daysToEdd) / 7;
-  document.getElementById('ga').value = ga.toFixed(2);
+  const giorniTotali = 280 - daysToEdd;
+  document.getElementById('ga-weeks').value = Math.floor(giorniTotali / 7);
+  document.getElementById('ga-days').value = ((giorniTotali % 7) + 7) % 7;
   onGaInput();
 }
 
 function onGaInput() {
-  const ga = parseFloat(document.getElementById('ga').value);
+  const ga = gaDecimale();
   const box = document.getElementById('gaDisplay');
   if (isNaN(ga)) { box.style.display = 'none'; return; }
   box.style.display = 'block';
-  const w = Math.floor(ga), d = Math.round((ga - w) * 7);
-  let txt = `EG = ${ga.toFixed(2)} settimane (${w}w ${d}d)`;
+  let txt = `EG = ${gaTesto(ga)}`;
   if (ga < GA_MIN || ga > GA_MAX) {
-    txt += ` — fuori dall'intervallo normativo ${GA_MIN}–${GA_MAX} sett.`;
+    txt += ` — fuori dall'intervallo normativo ${gaTesto(GA_MIN)} – ${gaTesto(GA_MAX)}`;
     box.classList.add('out-of-range');
   } else {
     box.classList.remove('out-of-range');
@@ -845,7 +875,7 @@ function buildChart(param, ga, value) {
 
 // ── Referto ──
 function generateReport() {
-  const ga = parseFloat(document.getElementById('ga').value);
+  const ga = gaDecimale();
   if (isNaN(ga)) { alert('Inserire l\'età gestazionale (direttamente o tramite EDD e data dell\'esame).'); return; }
   if (ga < 16 || ga > 45) { alert('Età gestazionale non plausibile.'); return; }
 
@@ -855,8 +885,7 @@ function generateReport() {
 
   const name = document.getElementById('patientName').value.trim();
   const scan = document.getElementById('scanDate').value;
-  const w = Math.floor(ga), d = Math.round((ga - w) * 7);
-  const gaLabel = `${ga.toFixed(2)} sett (${w}w ${d}d)`;
+  const gaLabel = gaTesto(ga);
   const outOfRange = ga < GA_MIN || ga > GA_MAX;
 
   const low = [], high = [];
@@ -917,8 +946,8 @@ function generateReport() {
   const rangeWarn = outOfRange
     ? `<div class="diagnosis-box attention" style="margin-top:1rem">
          <h3>Attenzione – EG fuori intervallo</h3>
-         <p>L'età gestazionale inserita (${ga.toFixed(2)} sett) è al di fuori dell'intervallo della coorte normativa
-         (${GA_MIN}–${GA_MAX} settimane). I centili riportati derivano da un'estrapolazione delle curve di regressione
+         <p>L'età gestazionale inserita (${gaTesto(ga)}) è al di fuori dell'intervallo della coorte normativa
+         (${gaTesto(GA_MIN)} – ${gaTesto(GA_MAX)}). I centili riportati derivano da un'estrapolazione delle curve di regressione
          e non sono validati.</p>
        </div>` : '';
 
@@ -935,7 +964,7 @@ function generateReport() {
 
       <div class="report-section-title">Tecnica</div>
       <p>Studio RM dell'encefalo fetale. Le misure sono confrontate con i dati normativi di Kyriakopoulou et al. (2017),
-      ottenuti su 127 esami RM 1.5 T di feti con encefalo morfologicamente normale tra 21.29 e 38.86 settimane di età gestazionale.
+      ottenuti su 127 esami RM 1.5 T di feti con encefalo morfologicamente normale tra 21s + 2g e 38s + 6g di età gestazionale.
       Per ciascun parametro media e deviazione standard sono modellate come funzione dell'età gestazionale;
       il centile è calcolato come 100 × Φ[(valore − media) / DS], con P5 e P95 pari a media ∓ 1.645 DS.</p>
 
@@ -999,12 +1028,11 @@ function escapeHTML(s) {
 }
 
 function copyReport() {
-  const ga = parseFloat(document.getElementById('ga').value);
+  const ga = gaDecimale();
   if (isNaN(ga)) return;
   const vals = collectValues();
   const name = document.getElementById('patientName').value.trim();
   const scan = document.getElementById('scanDate').value;
-  const w = Math.floor(ga), d = Math.round((ga - w) * 7);
 
   const pad = (s, n) => String(s).padEnd(n);
   const COL = [40, 14, 10, 10, 10];
@@ -1051,16 +1079,16 @@ function copyReport() {
   const text = [
     'BIOMETRIA ENCEFALICA FETALE - RM',
     '',
-    (name ? `Paziente: ${name}   ` : '') + `Eta gestazionale: ${ga.toFixed(2)} sett (${w}w ${d}d)` +
+    (name ? `Paziente: ${name}   ` : '') + `Eta gestazionale: ${gaTesto(ga)}` +
       (scan ? `   Data esame: ${new Date(scan + 'T00:00:00').toLocaleDateString('it-IT')}` : ''),
     '',
     'TECNICA',
-    'Studio RM dell\'encefalo fetale. Misure confrontate con i dati normativi di Kyriakopoulou et al. 2017 (127 esami RM 1.5 T, feti normali 21.29-38.86 settimane). Centile = 100 x Fi[(valore - media)/DS]; P5/P95 = media -/+ 1.645 DS.',
+    'Studio RM dell\'encefalo fetale. Misure confrontate con i dati normativi di Kyriakopoulou et al. 2017 (127 esami RM 1.5 T, feti normali da 21s + 2g a 38s + 6g). Centile = 100 x Fi[(valore - media)/DS]; P5/P95 = media -/+ 1.645 DS.',
     ...b2d,
     ...(b2d.length ? ['* Parametri derivati: circonferenza cranica = 1.62 x (BPD cranico + OFD cranico); CSF extracerebrale 2D = BPD cranico - BPD encefalico.'] : []),
     ...b3d,
     ...(ga < GA_MIN || ga > GA_MAX
-        ? ['', `ATTENZIONE: eta gestazionale fuori dall'intervallo normativo (${GA_MIN}-${GA_MAX} sett); centili estrapolati e non validati.`]
+        ? ['', `ATTENZIONE: eta gestazionale fuori dall'intervallo normativo (${gaTesto(GA_MIN)} - ${gaTesto(GA_MAX)}); centili estrapolati e non validati.`]
         : []),
     '',
     'CONCLUSIONI',

@@ -383,19 +383,23 @@
         <input type="date" id="dob">
       </div>
 
-      <div class="form-group">
-        <label>Età gestazionale alla nascita</label>
-        <div class="field-grid">
+      <!-- I due campi hanno una <label for> propria: prima l'unità stava in un
+           .hint sotto, che è testo decorativo e non viene associato al campo —
+           uno screen reader leggeva "Età gestazionale alla nascita" su
+           entrambi, senza distinguere le settimane dai giorni. -->
+      <fieldset class="form-group">
+        <legend>Età gestazionale alla nascita</legend>
+        <div class="field-grid compact">
           <div>
+            <label for="ga-weeks">Settimane</label>
             <input type="number" id="ga-weeks" min="22" max="42" placeholder="settimane" step="1" inputmode="numeric">
-            <div class="hint">settimane</div>
           </div>
           <div>
+            <label for="ga-days">Giorni (0–6)</label>
             <input type="number" id="ga-days" min="0" max="6" placeholder="giorni" step="1" value="0" inputmode="numeric">
-            <div class="hint">giorni (0–6)</div>
           </div>
         </div>
-      </div>
+      </fieldset>
 
       <div class="form-group">
         <label>Data dell'ecografia</label>
