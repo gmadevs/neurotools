@@ -182,7 +182,8 @@
   font-weight: 600;
   letter-spacing: .12em;
   text-transform: uppercase;
-  color: #6c7280;
+  /* #6c7280 stava a 3.31:1 sul fondo del menu: sotto soglia per il testo */
+  color: #8e95a8;
   padding: 0.6rem 1rem 0.25rem;
 }
 

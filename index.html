@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>NeuroTools</title>
+<meta name="description" content="Calcolatori e generatori di referto per la neuroradiologia: centili pediatrici, criteri diagnostici e misure quantitative. Funziona anche senza rete.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Neuro-tools">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Neuro-tools — strumenti clinici per la neuroradiologia">
+<meta property="og:description" content="Calcolatori e generatori di referto per la neuroradiologia: centili pediatrici, criteri diagnostici e misure quantitative. Funziona anche senza rete.">
+<meta property="og:url" content="https://gmadevs.github.io/neurotools/">
+<meta property="og:image" content="https://gmadevs.github.io/neurotools/assets/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo Neuro-tools: uno scudo con un encefalo e strumenti di misura">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="./favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="./assets/img/favicon-32.png">
 <link rel="apple-touch-icon" href="./assets/img/apple-touch-icon.png">
@@ -16,12 +28,49 @@
   /* Palette, reset, font e tipografia arrivano da assets/base.css.
      Qui resta solo ciò che è specifico della home. */
 
-  /* ── HERO ── */
+  /* ── HERO ──────────────────────────────────────────────────────────────
+     Installata come app non c'è la barra del titolo del browser: senza
+     questa riga l'applicazione si apre su un campo di ricerca e non dice
+     nemmeno come si chiama. */
   .hero {
     background: var(--accent);
     color: #fff;
-    padding: 1.1rem 1.5rem;
+    padding: var(--sp-5) var(--sp-6) var(--sp-6);
     text-align: center;
+  }
+
+  .hero-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-5);
+  }
+
+  .hero-logo {
+    width: auto;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  .hero-name {
+    font-family: var(--mono);
+    font-size: var(--fs-lg);
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  .hero-tagline {
+    display: block;
+    font-family: var(--sans);
+    font-size: var(--fs-sm);
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: .85;
+    margin-top: 2px;
   }
 
   .search-wrap {
@@ -266,9 +315,15 @@
 </head>
 <body>
 
-<h1 class="visually-hidden">NeuroTools — strumenti clinici per la neuroradiologia</h1>
-
 <div class="hero">
+  <div class="hero-brand">
+    <img class="hero-logo" src="assets/img/logo-mark.png" alt="" width="39" height="44">
+    <h1 class="hero-name">
+      Neuro-tools
+      <span class="hero-tagline">Strumenti clinici per la neuroradiologia</span>
+    </h1>
+  </div>
+
   <div class="search-wrap">
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <circle cx="6.5" cy="6.5" r="5" stroke="white" stroke-width="1.5"/>

@@ -721,12 +721,19 @@ input[type="radio"] {
   .report-card { padding: var(--sp-6) var(--sp-5) var(--sp-5); }
 }
 
-@media (max-width: 640px) {
-  /* soglia di tocco: 48px, vedi --touch */
+/* ── SOGLIA DI TOCCO ───────────────────────────────────────────────────────
+   La condizione è il tipo di puntatore, non la larghezza dello schermo: un
+   tablet in orizzontale supera i 640px ma si usa col dito lo stesso, e con la
+   sola regola sulla larghezza restava con i bersagli da mouse. La max-width
+   resta in OR per i browser che non riportano pointer.
+   ------------------------------------------------------------------------ */
+
+@media (pointer: coarse), (max-width: 640px) {
   button,
   .btn-info,
   .btn-copy, .btn-print, .btn-generate,
-  .mode-btn, .tab-btn {
+  .mode-btn, .tab-btn,
+  .btn, .btn-guide, .btn-today, .btn-feedback, .cat-btn {
     min-height: var(--touch);
   }
 
@@ -755,7 +762,9 @@ input[type="radio"] {
     width: 1.5rem;
     height: 1.5rem;
   }
+}
 
+@media (max-width: 640px) {
   .input-panel,
   .output-panel,
   .report-panel { padding: var(--sp-6) var(--sp-4); }
