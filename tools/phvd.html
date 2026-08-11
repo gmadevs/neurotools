@@ -6,6 +6,7 @@
 <script src="../assets/site-config.js"></script>
 <script src="../assets/nav.js"></script>
 <script src="../assets/app.js"></script>
+<script src="../assets/report-actions.js"></script>
 <script src="../assets/mobile-result.js" defer></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -778,25 +779,7 @@ function copyReport() {
   plain += `Centili: Brouwer MJ et al., Radiology 2012;262:224-33.\n`;
   plain += `Algoritmo: Acun C et al., Semin Fetal Neonatal Med 2026 (Fig. 4); El-Dib M et al., J Pediatr 2020.\n`;
 
-  const btn = document.getElementById('btnCopy');
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(plain).then(() => {
-      btn.textContent = '✓ Copiato!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
-    });
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = plain;
-    ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    btn.textContent = '✓ Copiato!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
-  }
+  copiaPerPACS(plain, document.getElementById('btnCopy'));
 }
 
 // ── TUTORIAL ──

@@ -67,7 +67,7 @@
 
 /* link diretti (senza categoria) usano la stessa classe .nav-link */
 .site-nav-links > a {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: #b8bcc4;
   text-decoration: none;
   white-space: nowrap;
@@ -97,11 +97,12 @@
 .cat-trigger {
   display: flex;
   align-items: center;
+  min-height: 48px;
   gap: 0.35rem;
   background: none;
   border: none;
   font-family: inherit;
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: #b8bcc4;
   white-space: nowrap;
   padding: 0.4rem 0.6rem;
@@ -153,9 +154,11 @@
 }
 
 .nav-dropdown a {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
   padding: 0.5rem 1rem;
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: #b8bcc4;
   text-decoration: none;
   white-space: nowrap;
@@ -175,7 +178,7 @@
 
 .subcat-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -189,10 +192,12 @@
 
 .site-nav-toggle {
   display: none;
+  min-width: 48px;
+  min-height: 48px;
   background: none;
   border: none;
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   cursor: pointer;
   flex-shrink: 0;
 }

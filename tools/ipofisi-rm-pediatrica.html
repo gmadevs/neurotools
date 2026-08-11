@@ -6,6 +6,7 @@
 <script src="../assets/site-config.js"></script>
 <script src="../assets/nav.js"></script>
 <script src="../assets/app.js"></script>
+<script src="../assets/report-actions.js"></script>
 <script src="../assets/mobile-result.js" defer></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -700,18 +701,7 @@ function copyReport() {
     'Rif.: Sari S et al. Measures of pituitary gland and stalk: from neonate to adolescence. J Pediatr Endocr Met. 2014;27(11-12):1071-1076. PMID: 25367689.'
   ].join('\n');
 
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('btnCopy');
-    btn.textContent = '✓ Copiato!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
-  }).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-    const btn = document.getElementById('btnCopy');
-    btn.textContent = '✓ Copiato!'; btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
-  });
+  copiaPerPACS(text, document.getElementById('btnCopy'));
 }
 </script>
 </body>

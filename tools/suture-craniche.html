@@ -6,6 +6,7 @@
 <script src="../assets/site-config.js"></script>
 <script src="../assets/nav.js"></script>
 <script src="../assets/app.js"></script>
+<script src="../assets/report-actions.js"></script>
 <script src="../assets/mobile-result.js" defer></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -914,27 +915,7 @@ function copyReport() {
     'Rif.: Rozovsky K, Barrowman NJ, Miller E. Centile charts for cranial sutures in children younger than 1 year based on ultrasound measurements. Pediatric Radiology. 2018;48(5):701-707. https://doi.org/10.1007/s00247-017-4062-z'
   ].filter(l => l !== null).join('\n');
 
-  navigator.clipboard.writeText(plain).then(() => {
-    const btn = document.getElementById('btnCopy');
-    btn.textContent = '✓ Copiato!';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = '✓ Copia Testo per PACS';
-      btn.classList.remove('copied');
-    }, 2500);
-  }).catch(() => {
-    // fallback
-    const ta = document.createElement('textarea');
-    ta.value = plain;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    const btn = document.getElementById('btnCopy');
-    btn.textContent = '✓ Copiato!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '✓ Copia Testo per PACS'; btn.classList.remove('copied'); }, 2500);
-  });
+  copiaPerPACS(plain, document.getElementById('btnCopy'));
 }
 
 function generateReport() {
