@@ -14,7 +14,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png">
 <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
 <link rel="manifest" href="../site.webmanifest">
-<meta name="theme-color" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#10141a">
 <style>
 /* ── HEADER ── */
 /* ── LAYOUT ── */
@@ -63,7 +64,7 @@
     width: 1.5rem;
     height: 1.5rem;
     margin-top: 2px;
-    accent-color: var(--accent);
+    accent-color: var(--accent-ink);
     flex-shrink: 0;
   }
 .check-label {
@@ -133,7 +134,7 @@
   }
 .result-copy {
     font-size: var(--fs-sm);
-    color: #5a5c65;
+    color: var(--muted);
     line-height: 1.5;
     margin-bottom: 1rem;
   }
@@ -180,7 +181,7 @@
     border: 1px solid;
   }
 .note.info { background: var(--neutral-bg); color: var(--neutral); border-color: var(--accent-light); }
-.note.warning { background: var(--mid-bg);     color: var(--mid);     border-color: #e0c96a; }
+.note.warning { background: var(--mid-bg);     color: var(--mid);     border-color: var(--mid-border); }
 .note strong { font-weight: 600; display: block; margin-bottom: .25rem; }
 /* ── RULE CARD ── */
 .rule-block {
@@ -191,7 +192,7 @@
   }
 .rule-item {
     font-size: var(--fs-sm);
-    color: #5a5c65;
+    color: var(--muted);
     padding: .55rem 0;
     border-bottom: 1px solid var(--rule);
     line-height: 1.5;
@@ -253,24 +254,24 @@
 .tutorial-close:hover { color: #fff; }
 .tutorial-steps-bar {
     display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
-    background: #f8f7f4; border-bottom: 1px solid var(--rule);
+    background: var(--paper); border-bottom: 1px solid var(--rule);
   }
 .step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
 .step-dot.active { background: var(--accent); }
 .step-dot.done { background: var(--ok); }
 .step-number {
     font-family: var(--mono); font-size: var(--fs-xs); font-weight: 700;
-    letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: .5rem;
   }
 .tutorial-body h3 {
     font-family: var(--mono); font-size: var(--fs-md); font-weight: 600; color: var(--ink); margin-bottom: .7rem;
   }
-.tutorial-body p { font-size: var(--fs-sm); line-height: 1.65; color: #444; margin-bottom: .6rem; }
-.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: var(--fs-sm); line-height: 1.7; color: #444; }
+.tutorial-body p { font-size: var(--fs-sm); line-height: 1.65; color: var(--muted); margin-bottom: .6rem; }
+.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: var(--fs-sm); line-height: 1.7; color: var(--muted); }
 .tut-tip {
     background: var(--accent-light); border-left: 3px solid var(--accent);
     padding: .6rem .9rem; border-radius: 0 4px 4px 0;
-    font-size: var(--fs-sm); color: var(--accent); margin-top: .8rem;
+    font-size: var(--fs-sm); color: var(--accent-ink); margin-top: .8rem;
   }
 .tut-warn {
     background: var(--warn-bg); border-left: 3px solid var(--warn);
@@ -285,14 +286,14 @@
     font-size: var(--fs-xs); color: var(--muted); cursor: pointer;
     background: none; border: none; padding: 0; transition: color .15s;
   }
-.tutorial-skip:hover { color: #666; }
+.tutorial-skip:hover { color: var(--muted); }
 .tutorial-nav { display: flex; gap: .6rem; }
 .btn-tut-prev, .btn-tut-next {
     font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
     letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
   }
-.btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: #555; }
-.btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+.btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: var(--muted); }
+.btn-tut-prev:hover { border-color: var(--accent-ink); color: var(--accent-ink); }
 .btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
 .btn-tut-next:hover { background: #143d57; }
 .btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }

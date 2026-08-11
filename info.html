@@ -8,7 +8,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="./assets/img/favicon-32.png">
 <link rel="apple-touch-icon" href="./assets/img/apple-touch-icon.png">
 <link rel="manifest" href="./site.webmanifest">
-<meta name="theme-color" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#10141a">
 <link rel="stylesheet" href="assets/nav.css">
 <link rel="stylesheet" href="assets/base.css">
 <style>
@@ -52,7 +53,7 @@
     font-weight: 600;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--accent-ink);
     margin-bottom: 1rem;
     padding-bottom: .4rem;
     border-bottom: 1.5px solid var(--accent-light);
@@ -68,7 +69,7 @@
   .card p {
     font-size: var(--fs-md);
     line-height: 1.7;
-    color: #3a3d4a;
+    color: var(--ink);
     margin-bottom: 1rem;
   }
 
@@ -118,7 +119,7 @@
 
   .feedback-section p {
     font-size: var(--fs-md);
-    color: #4a4d57;
+    color: var(--ink);
     line-height: 1.6;
     margin-bottom: 1.5rem;
     max-width: 480px;
@@ -156,12 +157,12 @@
 
   /* ── DISCLAIMER ── */
   .disclaimer {
-    background: #fffbea;
+    background: var(--mid-bg);
     border: 1px solid #e8d96e;
     border-radius: 8px;
     padding: 1.2rem 1.5rem;
     font-size: var(--fs-sm);
-    color: #5a4f00;
+    color: var(--mid);
     line-height: 1.6;
   }
 

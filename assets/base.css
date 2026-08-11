@@ -179,12 +179,22 @@
   --brand-700: #1b4f72;
   --brand-500: #2b6cb0;
 
+  /* Dice al browser che entrambi i temi esistono: senza, i controlli di
+     sistema (scrollbar, date picker, caret) restano chiari su fondo scuro. */
+  color-scheme: light dark;
+
   --ink: #1a1c22;
   --paper: #f5f4f0;
   --card: #ffffff;
   --rule: #d0cfc8;
+
+  /* --accent fa da superficie (header, barra risultato, chip attivo) e
+     --accent-ink da testo su fondo chiaro. In chiaro coincidono; al buio no,
+     perché un blu che regge come superficie sparisce come testo. */
   --accent: var(--brand-700);
+  --accent-ink: var(--brand-700);
   --accent-light: #d6e8f5;
+  --mid-border: #e8d96e;
   --warn: #8b2500;
   --warn-bg: #fdecea;
   --ok: #1a4731;
@@ -210,6 +220,65 @@
 
   /* spazio riservato alla barra risultato sticky; lo imposta mobile-result.js */
   --resultbar-h: 0px;
+}
+
+/* ── TEMA SCURO ────────────────────────────────────────────────────────────
+   Su Android il tema scuro di sistema è il default per moltissimi, e questi
+   strumenti si usano in stanza di refertazione con le luci basse: un'app che
+   lì dentro si apre bianca abbaglia.
+
+   Si ridefiniscono solo le variabili — è la ragione per cui la palette stava
+   in custom properties fin dall'inizio. Nessuna regola viene riscritta.
+
+   Due criteri nel scegliere i valori:
+   - il fondo non è nero ma blu molto scuro (#10141a): il nero pieno su OLED
+     fa "smear" quando si scorre, e stacca troppo dal testo;
+   - le superfici colorate (--accent, i badge verdi e blu) restano quelle del
+     tema chiaro, perché erano già scure e reggono il bianco sopra. A cambiare
+     sono i colori usati come TESTO, che vanno schiariti.
+   ------------------------------------------------------------------------ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e6e9ee;
+    --paper: #10141a;
+    --card: #191e27;
+    --rule: #303845;
+    --muted: #a2a9b5;
+
+    /* superficie invariata, testo schiarito */
+    --accent: var(--brand-700);
+    --accent-ink: #8ec5f0;
+    --accent-light: #22384c;
+
+    --warn: #ff9e88;
+    --warn-bg: #381812;
+    --ok: #7ed3a6;
+    --ok-bg: #12291d;
+    --mid: #e8c766;
+    --mid-bg: #2b2410;
+    --mid-border: #5c4d1a;
+    --neutral: #8ec5f0;
+    --neutral-bg: #17232f;
+  }
+
+  /* Il referto si stampa sempre su carta bianca: al buio resta una superficie
+     scura a schermo, ma le regole di stampa più in basso lo riportano a nero
+     su bianco. */
+  .report-card,
+  input[type="number"],
+  input[type="text"],
+  input[type="date"],
+  select,
+  textarea {
+    background: var(--card);
+    color: var(--ink);
+  }
+
+  label { color: var(--ink); }
+
+  /* le ombre nere su fondo scuro non si vedono: serve un bordo */
+  .tutorial-modal { border: 1px solid var(--rule); }
 }
 
 body {
@@ -284,7 +353,7 @@ header span {
   border-radius: 4px;
   border: 1px solid var(--accent-light);
   background: var(--neutral-bg);
-  color: var(--accent);
+  color: var(--accent-ink);
   transition: background .15s, border-color .15s;
 }
 
@@ -355,7 +424,7 @@ header .badge-link:hover { background: rgba(255,255,255,.3); }
   font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-ink);
   margin-bottom: var(--sp-2);
   padding-bottom: var(--sp-1);
   border-bottom: 1.5px solid var(--accent-light);
@@ -372,7 +441,7 @@ label {
   font-size: var(--fs-sm);
   font-weight: 600;
   margin-bottom: var(--sp-1);
-  color: #3a3c45;
+  color: var(--ink);
 }
 
 /* Le hint spiegano come si esegue la misura: è il testo che si legge in piedi
@@ -400,7 +469,7 @@ textarea {
      "Dimensioni carattere" di Android crescessero le etichette e il numero
      dentro il campo restasse fermo. Così vale entrambe le cose. */
   font-size: max(16px, var(--fs-md));
-  background: #fff;
+  background: var(--card);
   color: var(--ink);
   transition: border-color .15s;
 }
@@ -411,7 +480,7 @@ input[type="date"]:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--accent-ink);
   box-shadow: 0 0 0 3px var(--accent-light);
 }
 
@@ -420,7 +489,7 @@ input[type="checkbox"],
 input[type="radio"] {
   width: 1.25rem;
   height: 1.25rem;
-  accent-color: var(--accent);
+  accent-color: var(--accent-ink);
   flex-shrink: 0;
 }
 
@@ -441,7 +510,7 @@ input[type="radio"] {
 
 /* Il referto è il testo che si legge davvero: 16px pieni, non 14.7. */
 .report-card {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--rule);
   border-radius: 6px;
   padding: var(--sp-8) var(--sp-8) var(--sp-6);
@@ -462,7 +531,7 @@ input[type="radio"] {
   font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-ink);
   margin: var(--sp-6) 0 var(--sp-3);
 }
 
@@ -482,13 +551,13 @@ input[type="radio"] {
 .disclaimer-note {
   margin-top: var(--sp-5);
   padding: var(--sp-3) var(--sp-4);
-  background: #fffbea;
-  border: 1px solid #e8d96e;
+  background: var(--mid-bg);
+  border: 1px solid var(--mid-border);
   border-left-width: 3px;
   border-radius: 6px;
   font-size: var(--fs-sm);
   line-height: 1.55;
-  color: #5a4f00;
+  color: var(--mid);
 }
 
 .disclaimer-note strong { font-weight: 600; }
@@ -510,7 +579,7 @@ input[type="radio"] {
   text-align: left;
   padding: var(--sp-2);
   border-bottom: 1.5px solid var(--rule);
-  color: #5c5c5c;
+  color: var(--muted);
 }
 
 /* ── MODALE TUTORIAL ───────────────────────────────────────────────────── */
@@ -709,7 +778,7 @@ input[type="radio"] {
   .workspace { display: block; }
   .report-panel, .output-panel { padding: 0; }
   .report-card { border: none; box-shadow: none; }
-  body { padding-bottom: 0; background: #fff; }
+  body { padding-bottom: 0; background: var(--card); }
 }
 
 /* ── SAFE AREA ─────────────────────────────────────────────────────────────

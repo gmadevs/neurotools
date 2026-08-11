@@ -8,7 +8,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="./assets/img/favicon-32.png">
 <link rel="apple-touch-icon" href="./assets/img/apple-touch-icon.png">
 <link rel="manifest" href="./site.webmanifest">
-<meta name="theme-color" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#10141a">
 <link rel="stylesheet" href="assets/nav.css">
 <link rel="stylesheet" href="assets/base.css">
 <style>
@@ -103,7 +104,7 @@
     transition: background .12s, color .12s;
   }
 
-  .cat-btn:hover { background: var(--accent-light); color: var(--accent); }
+  .cat-btn:hover { background: var(--accent-light); color: var(--accent-ink); }
 
   .cat-btn[aria-pressed="true"] {
     background: var(--accent);
@@ -130,7 +131,7 @@
     font-weight: 600;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--accent-ink);
     padding-bottom: .45rem;
     border-bottom: 1.5px solid var(--accent-light);
     margin-bottom: .8rem;
@@ -167,14 +168,14 @@
     display: block;
     font-size: var(--fs-md);
     font-weight: 600;
-    color: var(--accent);
+    color: var(--accent-ink);
     margin-bottom: .1rem;
   }
 
   .tool-item-desc {
     display: block;
     font-size: var(--fs-sm);
-    color: #4f525c;
+    color: var(--muted);
     line-height: 1.45;
   }
 

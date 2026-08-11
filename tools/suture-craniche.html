@@ -14,7 +14,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png">
 <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
 <link rel="manifest" href="../site.webmanifest">
-<meta name="theme-color" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#10141a">
 <style>
 :root {
   --panel-w: 380px;
@@ -36,7 +37,7 @@ input[type="date"] { flex: 1; }
     padding: .42rem .6rem;
     border: 1px solid var(--accent);
     background: var(--accent-light);
-    color: var(--accent);
+    color: var(--accent-ink);
     border-radius: 4px;
     cursor: pointer;
     white-space: nowrap;
@@ -48,7 +49,7 @@ input[type="date"] { flex: 1; }
 .age-display {
     font-family: var(--mono);
     font-size: var(--fs-sm);
-    color: var(--accent);
+    color: var(--accent-ink);
     margin-top: .35rem;
     min-height: 1.2em;
     font-weight: 600;
@@ -60,7 +61,7 @@ input[type="date"] { flex: 1; }
 .suture-name {
     font-size: var(--fs-sm);
     font-weight: 600;
-    color: var(--accent);
+    color: var(--accent-ink);
     margin-bottom: .5rem;
     display: flex;
     align-items: center;
@@ -89,18 +90,18 @@ input[type="date"] { flex: 1; }
     gap: .3rem;
     margin-top: .3rem;
     padding: .25rem .5rem;
-    background: #fdecea;
+    background: var(--warn-bg);
     border: 1px solid #f5c6c0;
     border-radius: 4px;
     font-size: var(--fs-xs);
-    color: #8b2500;
+    color: var(--warn);
     cursor: pointer;
     user-select: none;
     transition: background .15s;
   }
-.closed-check:hover { background: #fbd5d0; }
-.closed-check input[type="checkbox"] { accent-color: #8b2500; cursor: pointer; margin: 0; }
-.closed-check.active { background: #fbd5d0; font-weight: 600; }
+.closed-check:hover { background: var(--warn-bg); }
+.closed-check input[type="checkbox"] { accent-color: var(--warn); cursor: pointer; margin: 0; }
+.closed-check.active { background: var(--warn-bg); font-weight: 600; }
 .suture-row input {
     width: 80px;
     text-align: right;
@@ -161,7 +162,7 @@ input[type="date"] { flex: 1; }
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .08em;
-    color: var(--accent);
+    color: var(--accent-ink);
   }
 .report-meta {
     display: grid;
@@ -169,7 +170,7 @@ input[type="date"] { flex: 1; }
     gap: .2rem .8rem;
     margin-top: .7rem;
     font-size: var(--fs-sm);
-    color: #555;
+    color: var(--muted);
   }
 .report-meta span { font-weight: 600; color: var(--ink); }
 /* centile table */
@@ -181,7 +182,7 @@ input[type="date"] { flex: 1; }
   }
 .centile-table td {
     padding: .38rem .5rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--rule);
   }
 .centile-table tr:last-child td { border-bottom: none; }
 .centile-table .val { font-family: var(--mono); font-size: var(--fs-sm); }
@@ -198,15 +199,15 @@ input[type="date"] { flex: 1; }
 .badge-ok { background: var(--ok-bg); color: var(--ok); }
 .badge-low { background: var(--warn-bg); color: var(--warn); }
 .badge-high { background: var(--mid-bg); color: var(--mid); }
-.badge-closed { background: #ede9f5; color: #4a1d8c; }
-.badge-nd { background: #f0f0f0; color: var(--muted); }
+.badge-closed { background: var(--neutral-bg); color: var(--accent-ink); }
+.badge-nd { background: var(--paper); color: var(--muted); }
 .diagnosis-box {
     margin-top: 1.4rem;
     padding: 1rem 1.2rem;
     border-radius: 5px;
     border-left: 4px solid;
   }
-.diagnosis-box.normal { background: var(--ok-bg); border-color: #2e7d52; }
+.diagnosis-box.normal { background: var(--ok-bg); border-color: var(--ok); }
 .diagnosis-box.abnormal { background: var(--warn-bg); border-color: var(--warn); }
 .diagnosis-box h3 {
     font-family: var(--mono);
@@ -242,7 +243,7 @@ input[type="date"] { flex: 1; }
     padding: .55rem 1.1rem;
     background: transparent;
     border: 1px solid var(--accent);
-    color: var(--accent);
+    color: var(--accent-ink);
     border-radius: 5px;
     font-family: var(--mono);
     font-size: var(--fs-xs);
@@ -291,7 +292,7 @@ input[type="date"] { flex: 1; }
     display: flex;
     gap: .4rem;
     padding: 1rem 1.5rem .6rem;
-    background: #f8f7f4;
+    background: var(--paper);
     border-bottom: 1px solid var(--rule);
   }
 .step-dot {
@@ -311,7 +312,7 @@ input[type="date"] { flex: 1; }
     font-weight: 700;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--accent-ink);
     margin-bottom: .5rem;
   }
 .tutorial-step h3 {
@@ -324,14 +325,14 @@ input[type="date"] { flex: 1; }
 .tutorial-step p {
     font-size: var(--fs-sm);
     line-height: 1.65;
-    color: #444;
+    color: var(--muted);
     margin-bottom: .6rem;
   }
 .tutorial-step ul {
     margin: .4rem 0 .6rem 1.1rem;
     font-size: var(--fs-sm);
     line-height: 1.7;
-    color: #444;
+    color: var(--muted);
   }
 .tutorial-step .tip {
     background: var(--accent-light);
@@ -339,7 +340,7 @@ input[type="date"] { flex: 1; }
     padding: .6rem .9rem;
     border-radius: 0 4px 4px 0;
     font-size: var(--fs-sm);
-    color: var(--accent);
+    color: var(--accent-ink);
     margin-top: .8rem;
   }
 .tutorial-step .warn-tip {
@@ -368,7 +369,7 @@ input[type="date"] { flex: 1; }
     padding: 0;
     transition: color .15s;
   }
-.tutorial-skip:hover { color: #666; }
+.tutorial-skip:hover { color: var(--muted); }
 .tutorial-nav {
     display: flex;
     gap: .6rem;
@@ -386,9 +387,9 @@ input[type="date"] { flex: 1; }
 .btn-tut-prev {
     background: transparent;
     border: 1px solid var(--rule);
-    color: #555;
+    color: var(--muted);
   }
-.btn-tut-prev:hover { border-color: var(--accent); color: var(--accent); }
+.btn-tut-prev:hover { border-color: var(--accent-ink); color: var(--accent-ink); }
 .btn-tut-next {
     background: var(--accent);
     border: 1px solid var(--accent);
@@ -988,7 +989,7 @@ function generateReport() {
     if (closed[id]) {
       return `<tr>
         <td>${SUTURE_LABELS[id]}</td>
-        <td class="val" colspan="3" style="color:#8b2500;font-style:italic">Chiusa</td>
+        <td class="val" colspan="3" style="color: var(--warn);font-style:italic">Chiusa</td>
         <td>${badgeHTML('low','Chiusa')}</td>
       </tr>`;
     }
@@ -1173,7 +1174,7 @@ function generateReport() {
 
       <div class="report-section-title">Reperti</div>
       <p class="report-finding-text">${findingText.replace(/\n/g, '\n')}</p>
-      ${notes ? `\n<p style="margin-top:.7rem;font-style:italic;color:#555">${notes}</p>` : ''}
+      ${notes ? `\n<p style="margin-top:.7rem;font-style:italic;color: var(--muted)">${notes}</p>` : ''}
 
       <div class="report-section-title">Valori di Riferimento per Centili (${monthLabel}° mese)</div>
       <div class="table-scroll"><table class="centile-table">
