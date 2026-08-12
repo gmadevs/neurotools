@@ -21,7 +21,7 @@
    statici restano quelli in cache e la modifica non arriva.
    ========================================================================== */
 
-const VERSIONE = 'neurotools-v14';
+const VERSIONE = 'neurotools-v15';
 
 /* Percorsi relativi al service worker: così valgono sia su dominio proprio
    sia sotto il sottopercorso di GitHub Pages (/neurotools/). */
@@ -33,6 +33,7 @@ const PRECACHE = [
   './tools/boston-caa-v2.html',
   './tools/doppler-cerebrale-neonatale.html',
   './tools/ipofisi-rm-pediatrica.html',
+  './tools/mrpi.html',
   './tools/phvd.html',
   './tools/rano-2.0.html',
   './tools/suture-craniche.html',
@@ -57,6 +58,7 @@ const PRECACHE = [
   './assets/img/apple-touch-icon.png',
   './assets/img/og-cover.png',
   './assets/img/biometria-fetale-misure-2d.jpg',
+  './assets/img/mrpi-misure.jpg',
   './about.jpeg',
   './favicon.ico',
   './site.webmanifest'

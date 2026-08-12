@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="it" data-root="..">
+<head>
+<link rel="stylesheet" href="../assets/nav.css">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/site-config.js"></script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/app.js"></script>
+<script src="../assets/tutorial.js"></script>
+<script src="../assets/report-actions.js"></script>
+<script src="../assets/mobile-result.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MRPI e MRPI 2.0 – Magnetic Resonance Parkinsonism Index</title>
+<meta name="description" content="Calcolo di MRPI e MRPI 2.0 dalle misure RM di mesencefalo, ponte, peduncoli cerebellari e ventricoli">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Neuro-tools">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="MRPI e MRPI 2.0 — Neuro-tools">
+<meta property="og:description" content="Calcolo di MRPI e MRPI 2.0 dalle misure RM di mesencefalo, ponte, peduncoli cerebellari e ventricoli">
+<meta property="og:url" content="https://gmadevs.github.io/neurotools/tools/mrpi.html">
+<meta property="og:image" content="https://gmadevs.github.io/neurotools/assets/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo Neuro-tools: uno scudo con un encefalo e strumenti di misura">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#10141a">
+<style>
+/* ── INPUT ── */
+.measure-row {
+    display: grid;
+    grid-template-columns: 78px 1fr 1fr;
+    gap: .5rem;
+    align-items: center;
+    margin-bottom: .55rem;
+  }
+.measure-row .meas-label {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--ink);
+    font-family: var(--mono);
+  }
+.side-head {
+    display: grid; grid-template-columns: 78px 1fr 1fr;
+    gap: .5rem; margin-bottom: .35rem;
+  }
+.side-head span {
+    font-size: var(--fs-xs); font-family: var(--mono);
+    color: var(--muted); text-align: center;
+  }
+.meas-hint {
+    font-size: var(--fs-xs); color: var(--muted);
+    margin: -.3rem 0 .7rem 82px; line-height: 1.4;
+  }
+.live-index {
+    display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap;
+    padding: .55rem .8rem; margin-top: .75rem;
+    background: var(--neutral-bg); border: 1px solid var(--accent-light); border-radius: 6px;
+  }
+.live-index .li-label {
+    font-size: var(--fs-xs); color: var(--accent-ink); font-weight: 600;
+    font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em;
+  }
+.live-index .li-value {
+    font-family: var(--mono); font-size: var(--fs-lg); font-weight: 600; color: var(--ink);
+  }
+.actions { display: flex; gap: .75rem; margin-top: 1.2rem; }
+.btn {
+    padding: .55rem 1.2rem; border-radius: 6px;
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .04em; cursor: pointer; border: none; transition: opacity .15s;
+  }
+.btn:hover { opacity: .85; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
+/* ── OUTPUT ── */
+.result-block {
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: 8px; padding: 1.2rem 1.4rem;
+  }
+.result-status {
+    display: inline-block; font-family: var(--mono); font-size: var(--fs-sm);
+    font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: .4rem 1.1rem; border-radius: 99px; margin-bottom: .8rem;
+    background: var(--neutral-bg); color: var(--neutral);
+  }
+.result-status.ok     { background: var(--ok-bg);   color: var(--ok); }
+.result-status.warn   { background: var(--mid-bg);  color: var(--mid); }
+.result-status.danger { background: var(--warn-bg); color: var(--warn); }
+.result-main {
+    font-family: var(--mono); font-size: var(--fs-2xl); font-weight: 600;
+    line-height: 1.2; letter-spacing: -.01em; margin-bottom: .5rem; color: var(--ink);
+  }
+.result-copy {
+    font-size: var(--fs-sm); color: var(--muted); line-height: 1.55; margin-bottom: .4rem;
+  }
+.metrics-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.metrics-table th {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
+    text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+    padding: .4rem .6rem; text-align: left; border-bottom: 1px solid var(--rule);
+  }
+.metrics-table td {
+    padding: .5rem .6rem; border-bottom: 1px solid var(--rule);
+    font-family: var(--mono); font-size: var(--fs-sm);
+  }
+.metrics-table tr:last-child td { border-bottom: none; }
+.metrics-table tr.is-index td { background: var(--neutral-bg); font-weight: 600; }
+.badge {
+    display: inline-block; padding: .15rem .5rem; border-radius: 4px;
+    font-size: var(--fs-xs); font-weight: 700; font-family: var(--mono);
+    text-transform: uppercase; letter-spacing: .04em;
+  }
+.badge-ok     { background: var(--ok-bg);   color: var(--ok); }
+.badge-warn   { background: var(--mid-bg);  color: var(--mid); }
+.badge-danger { background: var(--warn-bg); color: var(--warn); }
+.badge-na     { background: var(--paper);   color: var(--muted); }
+.ref-note {
+    font-size: var(--fs-xs); color: var(--muted); margin-top: .8rem; line-height: 1.5;
+  }
+.caveat-box {
+    background: var(--mid-bg); border-left: 3px solid var(--mid);
+    padding: .8rem 1rem; border-radius: 0 5px 5px 0;
+    font-size: var(--fs-sm); color: var(--ink); line-height: 1.55;
+  }
+.caveat-box strong { color: var(--mid); }
+.placeholder {
+    text-align: center; color: var(--muted); font-size: var(--fs-sm);
+    padding: 3rem 1rem; font-style: italic;
+  }
+.btn-copy {
+    padding: .55rem 1.2rem; background: var(--ok); border: none; color: #fff;
+    border-radius: 5px; font-family: var(--mono); font-size: var(--fs-xs);
+    font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    cursor: pointer; transition: background .2s;
+  }
+.btn-copy:hover { background: #145a38; }
+.btn-copy.copied { background: #555; }
+.btn-print {
+    padding: .55rem 1.1rem; background: transparent; border: 1px solid var(--accent);
+    color: var(--accent-ink); border-radius: 5px; font-family: var(--mono);
+    font-size: var(--fs-xs); font-weight: 600; letter-spacing: .05em;
+    text-transform: uppercase; cursor: pointer; transition: all .15s;
+  }
+.btn-print:hover { background: var(--accent); color: #fff; }
+.report-actions { display: flex; gap: .7rem; margin-top: 1.4rem; align-items: center; }
+/* ── GUIDA ALLE MISURE ── */
+.section-label.with-action {
+    display: flex; align-items: baseline; justify-content: space-between; gap: .5rem;
+  }
+.btn-guide {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent-ink); background: var(--accent-light);
+    border: 1px solid var(--accent-light); border-radius: 3px; padding: .18rem .45rem;
+    cursor: pointer; transition: background .15s; flex-shrink: 0;
+  }
+.btn-guide:hover { background: var(--neutral-bg); }
+.guide-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.6); z-index: 1100;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+.guide-overlay.open { display: flex; }
+.guide-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 980px;
+    max-height: 92vh; display: flex; flex-direction: column;
+    box-shadow: 0 16px 48px rgba(0,0,0,.3); overflow: hidden;
+  }
+.guide-head {
+    background: var(--accent); color: #fff; padding: 1.1rem 1.4rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+.guide-head h2 {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+.guide-body { padding: 1.4rem 1.6rem 1.6rem; overflow-y: auto; }
+.guide-fig {
+    width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto;
+    border: 1px solid var(--rule); border-radius: 5px; background: #000;
+  }
+.guide-legend {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 1.6rem; margin-top: 1.2rem;
+  }
+.guide-legend div {
+    display: flex; gap: .55rem; align-items: baseline;
+    padding: .38rem 0; border-bottom: 1px solid var(--rule);
+    font-size: var(--fs-sm); line-height: 1.45;
+  }
+.guide-legend b {
+    font-family: var(--mono); color: var(--accent-ink); font-size: var(--fs-sm);
+    min-width: 1.1rem; flex-shrink: 0;
+  }
+.guide-formula {
+    margin-top: 1.2rem; padding: .8rem 1rem; background: var(--neutral-bg);
+    border-radius: 6px; font-family: var(--mono); font-size: var(--fs-sm);
+    line-height: 1.9; color: var(--ink);
+  }
+.guide-credit {
+    margin-top: 1.2rem; padding-top: .9rem; border-top: 1px solid var(--rule);
+    font-size: var(--fs-xs); color: var(--muted); font-style: italic; line-height: 1.55;
+  }
+.guide-credit a { color: var(--muted); }
+.tut-figure {
+    width: 100%; height: auto; display: block; margin-top: .7rem;
+    border: 1px solid var(--rule); border-radius: 4px; background: #000; cursor: zoom-in;
+  }
+.tut-figcaption {
+    font-size: var(--fs-xs); color: var(--muted); font-style: italic;
+    margin-top: .35rem; text-align: center;
+  }
+/* ── TUTORIAL MODAL ── */
+.tutorial-header {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  }
+.tutorial-header h2 {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+.tutorial-close {
+    background: none; border: none; color: rgba(255,255,255,.7);
+    font-size: var(--fs-xl); cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+  }
+.tutorial-close:hover { color: #fff; }
+.tutorial-steps-bar {
+    display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
+    background: var(--paper); border-bottom: 1px solid var(--rule);
+  }
+.step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+.step-dot.active { background: var(--accent); }
+.step-dot.done { background: var(--ok); }
+.tutorial-steps-bar, .tutorial-header, .tutorial-footer { flex-shrink: 0; }
+.step-number {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: .5rem;
+  }
+.tutorial-body h3 {
+    font-family: var(--mono); font-size: var(--fs-md); font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+  }
+.tutorial-body p { font-size: var(--fs-sm); line-height: 1.65; color: var(--muted); margin-bottom: .6rem; }
+.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: var(--fs-sm); line-height: 1.7; color: var(--muted); }
+.tut-tip {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: var(--fs-sm); color: var(--accent-ink); margin-top: .8rem;
+  }
+.tut-warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: var(--fs-sm); color: var(--warn); margin-top: .8rem;
+  }
+.tutorial-footer {
+    padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
+    justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
+  }
+.tutorial-skip {
+    font-size: var(--fs-xs); color: var(--muted); cursor: pointer;
+    background: none; border: none; padding: 0; transition: color .15s;
+  }
+.tutorial-nav { display: flex; gap: .6rem; }
+.btn-tut-prev, .btn-tut-next {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
+    letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
+  }
+.btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: var(--muted); }
+.btn-tut-prev:hover { border-color: var(--accent-ink); color: var(--accent-ink); }
+.btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+.btn-tut-next:hover { background: #143d57; }
+.btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+.btn-tut-next.finish:hover { background: #145a38; }
+@media (max-width: 900px) {
+  .guide-legend { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MRPI e MRPI 2.0</h1>
+  <span>Magnetic Resonance Parkinsonism Index – Quattrone et al.
+    <a class="badge-link" href="https://pubmed.ncbi.nlm.nih.gov/30068492/" target="_blank" rel="noopener">PubMed</a>
+  </span>
+  <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
+</header>
+
+<!-- ── TUTORIAL MODAL ── -->
+<div class="tutorial-overlay" id="tutorialOverlay" onclick="handleOverlayClick(event)">
+  <div class="tutorial-modal">
+    <div class="tutorial-header">
+      <h2>Come usare il tool</h2>
+      <button class="tutorial-close" onclick="closeTutorial()">&#10005;</button>
+    </div>
+    <div class="tutorial-steps-bar" id="stepBar"></div>
+    <div class="tutorial-body" id="tutorialBody"></div>
+    <div class="tutorial-footer">
+      <button class="tutorial-skip" onclick="closeTutorial()">Chiudi</button>
+      <div class="tutorial-nav">
+        <button class="btn-tut-prev" id="btnPrev" onclick="tutStep(-1)">&#8592; Indietro</button>
+        <button class="btn-tut-next" id="btnNext" onclick="tutStep(1)">Avanti &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── GUIDA ALLE MISURE (Fig. 1 del lavoro di Ugga et al. 2020) ── -->
+<div class="guide-overlay" id="guideOverlay" onclick="handleGuideOverlayClick(event)">
+  <div class="guide-modal">
+    <div class="guide-head">
+      <h2>Guida alle misure</h2>
+      <button class="tutorial-close" onclick="closeGuide()">&#10005;</button>
+    </div>
+    <div class="guide-body">
+      <img class="guide-fig" src="../assets/img/mrpi-misure.jpg"
+           alt="Sei sezioni RM T1 volumetriche, sagittali e assiali, con evidenziate le misure per MRPI e MRPI 2.0: aree di mesencefalo e ponte, spessore dei peduncoli cerebellari medio e superiore, distanza dei corni frontali, larghezza del terzo ventricolo e angolo interpeduncolare">
+      <div class="guide-legend">
+        <div><b>a</b><span>Sagittale mediana — <strong>area del mesencefalo</strong> (blu) e <strong>area del ponte</strong> (verde), separate dalla linea che passa per l'incisura pontina superiore e il margine inferiore della lamina quadrigemina</span></div>
+        <div><b>b</b><span>Parasagittale — <strong>spessore del peduncolo cerebellare medio (MCP)</strong></span></div>
+        <div><b>c</b><span>Coronale obliqua tangente al pavimento del IV ventricolo — <strong>spessore del peduncolo cerebellare superiore (SCP)</strong></span></div>
+        <div><b>d</b><span>Assiale alla massima dilatazione — <strong>distanza fra i corni frontali</strong>, larghezza destra-sinistra maggiore</span></div>
+        <div><b>e</b><span>Assiale al livello delle commissure anteriore e posteriore — <strong>larghezza del III ventricolo</strong>, media di tre misure della massima distanza fra i margini laterali</span></div>
+        <div><b>f</b><span>Assiale — <strong>angolo interpeduncolare (IPA)</strong>, formato dalla metà posteriore dei peduncoli cerebrali a livello dei corpi mammillari o subito al di sotto</span></div>
+      </div>
+      <div class="guide-formula">
+        MRPI = (area ponte / area mesencefalo) × (MCP / SCP)<br>
+        MRPI 2.0 = MRPI × (III ventricolo / corni frontali)
+      </div>
+      <div class="guide-credit">
+        Figura 1 da Ugga L, Cuocolo R, Cocozza S et al., <em>Magnetic resonance parkinsonism indices and interpeduncular
+        angle in idiopathic normal pressure hydrocephalus and progressive supranuclear palsy</em>,
+        Neuroradiology 2020;62(12):1657–1665, doi:10.1007/s00234-020-02500-1.
+        Riprodotta senza modifiche in quanto pubblicata Open Access con licenza
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">Creative Commons Attribution 4.0 International (CC BY 4.0)</a>.
+        Le immagini si riferiscono a un paziente con idrocefalo normoteso.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="workspace">
+  <!-- ── INPUT PANEL ── -->
+  <div class="input-panel">
+
+    <div class="section-block">
+      <div class="section-label with-action">
+        <span>Tronco encefalico</span>
+        <button class="btn-guide" onclick="openGuide()" title="Schema delle misure">&#9635; Guida misure</button>
+      </div>
+
+      <div class="form-group">
+        <label for="midbrain">Area del mesencefalo (mm²)</label>
+        <input type="number" id="midbrain" min="1" max="600" step="0.1" placeholder="mm²" inputmode="decimal">
+        <div class="hint">Sagittale mediana, T1 volumetrica</div>
+      </div>
+
+      <div class="form-group">
+        <label for="pons">Area del ponte (mm²)</label>
+        <input type="number" id="pons" min="1" max="1500" step="0.1" placeholder="mm²" inputmode="decimal">
+        <div class="hint">Separata dal mesencefalo dalla linea incisura pontina superiore – lamina quadrigemina</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Peduncoli cerebellari (mm)</div>
+
+      <div class="side-head">
+        <span></span><span>Destro</span><span>Sinistro</span>
+      </div>
+
+      <!-- div e non fieldset/legend: la legend di un fieldset in display:grid
+           non partecipa alla griglia (resta la casella speciale del browser) e
+           romperebbe le tre colonne. Il nome accessibile sta sugli aria-label,
+           che qui sono già univoci e autosufficienti. -->
+      <div class="measure-row">
+        <span class="meas-label">MCP</span>
+        <input type="number" id="mcp-r" aria-label="MCP destro" min="0" max="30" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="mcp-l" aria-label="MCP sinistro" min="0" max="30" step="0.1" placeholder="mm" inputmode="decimal">
+      </div>
+      <div class="meas-hint">Peduncolo cerebellare medio – piano parasagittale</div>
+
+      <div class="measure-row">
+        <span class="meas-label">SCP</span>
+        <input type="number" id="scp-r" aria-label="SCP destro" min="0" max="15" step="0.1" placeholder="mm" inputmode="decimal">
+        <input type="number" id="scp-l" aria-label="SCP sinistro" min="0" max="15" step="0.1" placeholder="mm" inputmode="decimal">
+      </div>
+      <div class="meas-hint">Peduncolo cerebellare superiore – coronale obliqua tangente al pavimento del IV ventricolo</div>
+
+      <div class="hint">Se si compila un solo lato viene usato quello; con entrambi si usa la media.</div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Ventricoli (solo per MRPI 2.0)</div>
+
+      <div class="form-group">
+        <label for="v3">Larghezza del III ventricolo (mm)</label>
+        <input type="number" id="v3" min="0" max="40" step="0.1" placeholder="mm" inputmode="decimal">
+        <div class="hint">Assiale a livello delle commissure anteriore e posteriore, media di tre misure</div>
+      </div>
+
+      <div class="form-group">
+        <label for="fh">Distanza fra i corni frontali (mm)</label>
+        <input type="number" id="fh" min="1" max="120" step="0.1" placeholder="mm" inputmode="decimal">
+        <div class="hint">Assiale alla massima dilatazione, larghezza destra-sinistra maggiore</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Misura ancillare (facoltativa)</div>
+
+      <div class="form-group">
+        <label for="ipa">Angolo interpeduncolare (°)</label>
+        <input type="number" id="ipa" min="20" max="140" step="0.1" placeholder="gradi" inputmode="decimal">
+        <div class="hint">Non entra nel calcolo degli indici: serve a riconoscere l'idrocefalo normoteso, che alza MRPI e MRPI 2.0 come la PSP</div>
+      </div>
+    </div>
+
+    <div class="live-index" id="live-index" style="display:none">
+      <span class="li-label">MRPI</span>
+      <span class="li-value" id="live-mrpi">—</span>
+      <span class="li-label">MRPI 2.0</span>
+      <span class="li-value" id="live-mrpi2">—</span>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="calculate()">Calcola</button>
+      <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+  <!-- ── OUTPUT PANEL ── -->
+  <div class="output-panel" id="output-panel">
+    <div class="placeholder" id="placeholder-msg">
+      Inserisci le aree di mesencefalo e ponte e gli spessori dei peduncoli, poi premi <strong>Calcola</strong>.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   SOGLIE
+   --------------------------------------------------------------------------
+   I cut-off pubblicati per MRPI variano molto fra le casistiche (10.67 in
+   Zangini, 12.6 in Constantinides, 13.55 in Quattrone, fino a 24.3 in lavori
+   recenti): dipendono dal fenotipo PSP incluso, dal gruppo di confronto e da
+   quanto è avanzata la malattia. Qui si usano quelli di Quattrone, che sono i
+   riferimenti storici dell'indice, e si segnala esplicitamente la zona grigia
+   fra la soglia bassa (PSP-P) e quella classica invece di far finta che una
+   sola linea separi malati e sani.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const CUT_MRPI       = 13.55;  /* Quattrone 2008 — PSP vs PD e MSA-P          */
+const CUT_MRPI_PSPP  = 11.34;  /* soglia bassa citata per la PSP-P            */
+const CUT_MRPI2      = 2.50;   /* Quattrone 2018 — PSP-RS                     */
+const CUT_MRPI2_O1   = 2.91;   /* PSP-P con paralisi sopranucleare verticale  */
+const CUT_MRPI2_O2   = 2.18;   /* PSP-P con rallentamento saccadi verticali   */
+
+/* Angolo interpeduncolare: Ugga 2020 non propone una soglia formale. Questo
+   valore sta a metà fra la media della PSP e quella dell'idrocefalo normoteso
+   e serve solo ad accendere una nota, mai a classificare. */
+const IPA_ORIENTATIVO = 80;
+
+/* Medie (± DS) da Ugga et al. 2020, Tabella 1 */
+const NORME = {
+  hc:   { n: 37, mrpi: [8.63, 1.38],  mrpi2: [1.40, 0.48], ipa: [75.53, 8.07] },
+  inph: { n: 30, mrpi: [15.23, 3.23], mrpi2: [4.57, 1.37], ipa: [83.50, 6.76] },
+  psp:  { n: 32, mrpi: [17.01, 4.08], mrpi2: [3.99, 1.30], ipa: [75.38, 5.72] }
+};
+
+/* ── lettura dei campi ─────────────────────────────────────────────────── */
+
+function num(id) {
+  const raw = document.getElementById(id).value;
+  if (raw === '') return null;
+  const v = parseFloat(raw);
+  return (isFinite(v) && v > 0) ? v : null;
+}
+
+/* Media dei due lati; se ne è compilato uno solo vale quello. */
+function media(idR, idL) {
+  const r = num(idR), l = num(idL);
+  if (r !== null && l !== null) return (r + l) / 2;
+  return r !== null ? r : l;
+}
+
+function leggi() {
+  const midbrain = num('midbrain');
+  const pons     = num('pons');
+  const mcp      = media('mcp-r', 'mcp-l');
+  const scp      = media('scp-r', 'scp-l');
+  const v3        = num('v3');
+  const fh        = num('fh');
+  const ipa       = num('ipa');
+
+  const pm    = (pons !== null && midbrain !== null) ? pons / midbrain : null;
+  const mcpScp = (mcp !== null && scp !== null) ? mcp / scp : null;
+  const mrpi   = (pm !== null && mcpScp !== null) ? pm * mcpScp : null;
+  const v3fh   = (v3 !== null && fh !== null) ? v3 / fh : null;
+  const mrpi2  = (mrpi !== null && v3fh !== null) ? mrpi * v3fh : null;
+
+  return { midbrain, pons, mcp, scp, v3, fh, ipa, pm, mcpScp, mrpi, v3fh, mrpi2 };
+}
+
+/* ── classificazione ───────────────────────────────────────────────────── */
+
+function classMrpi(v) {
+  if (v === null) return 'na';
+  if (v >= CUT_MRPI) return 'danger';
+  if (v >= CUT_MRPI_PSPP) return 'warn';
+  return 'ok';
+}
+
+function classMrpi2(v) {
+  if (v === null) return 'na';
+  if (v >= CUT_MRPI2) return 'danger';
+  if (v >= CUT_MRPI2_O2) return 'warn';
+  return 'ok';
+}
+
+function testoStato(cls) {
+  if (cls === 'ok')     return 'Sotto soglia';
+  if (cls === 'warn')   return 'Zona grigia';
+  if (cls === 'danger') return 'Sopra soglia';
+  return 'n.d.';
+}
+
+function fmt(v, dec) {
+  return v === null || v === undefined ? '—' : v.toFixed(dec === undefined ? 2 : dec);
+}
+
+function badgeHtml(cls, txt) {
+  return '<span class="badge badge-' + cls + '">' + txt + '</span>';
+}
+
+/* "1.40 ± 0.48", non "1.4 ± 0.48": in una colonna di numeri gli zeri finali
+   servono a far leggere in verticale. */
+function norma(coppia, dec) {
+  return coppia[0].toFixed(dec) + ' ± ' + coppia[1].toFixed(dec);
+}
+
+function badgeSoglia(v, soglia) {
+  if (v === null) return badgeHtml('na', 'n.d.');
+  return v >= soglia ? badgeHtml('danger', '≥ soglia') : badgeHtml('ok', '< soglia');
+}
+
+/* ── anteprima nel pannello di sinistra ────────────────────────────────── */
+
+function aggiornaLive() {
+  const d = leggi();
+  const box = document.getElementById('live-index');
+  if (d.mrpi === null) { box.style.display = 'none'; return; }
+  document.getElementById('live-mrpi').textContent  = fmt(d.mrpi);
+  document.getElementById('live-mrpi2').textContent = fmt(d.mrpi2);
+  box.style.display = 'flex';
+}
+
+['midbrain','pons','mcp-r','mcp-l','scp-r','scp-l','v3','fh','ipa'].forEach(function (id) {
+  document.getElementById(id).addEventListener('input', aggiornaLive);
+});
+
+/* ── referto ───────────────────────────────────────────────────────────── */
+
+function calculate() {
+  const d = leggi();
+
+  if (d.mrpi === null) {
+    alert('Per calcolare l\'MRPI servono: area del mesencefalo, area del ponte, MCP e SCP.');
+    return;
+  }
+
+  const clsMrpi  = classMrpi(d.mrpi);
+  const clsMrpi2 = classMrpi2(d.mrpi2);
+
+  /* Il verdetto sintetico è quello dell'indice più completo disponibile. */
+  const indicePrincipale = d.mrpi2 !== null ? 'MRPI 2.0' : 'MRPI';
+  const valorePrincipale = d.mrpi2 !== null ? d.mrpi2 : d.mrpi;
+  const clsPrincipale    = d.mrpi2 !== null ? clsMrpi2 : clsMrpi;
+
+  let commento;
+  if (clsPrincipale === 'danger') {
+    commento = 'Valore al di sopra del cut-off proposto per la PSP. Il dato va letto insieme alla clinica: ' +
+               'l\'indice è un supporto alla diagnosi, non un test diagnostico.';
+  } else if (clsPrincipale === 'warn') {
+    commento = 'Valore nella zona grigia fra la soglia proposta per la PSP-P e quella classica: ' +
+               'non conferma né esclude, e in questa fascia i cut-off pubblicati divergono fra le casistiche.';
+  } else {
+    commento = 'Valore al di sotto di tutti i cut-off proposti. Un MRPI basso non esclude la PSP, ' +
+               'in particolare nelle forme iniziali e nei fenotipi non Richardson.';
+  }
+
+  const iconaStato = clsPrincipale === 'ok' ? '✓' : clsPrincipale === 'warn' ? '⚠' : '✕';
+
+  /* ── blocco 1: verdetto ── */
+  let html = `
+    <div class="result-block">
+      <div class="section-label">Indice</div>
+      <div class="result-status ${clsPrincipale}">${iconaStato} ${testoStato(clsPrincipale)}</div>
+      <div class="result-main">${indicePrincipale} = ${fmt(valorePrincipale)}</div>
+      <div class="result-copy">${commento}</div>
+    </div>
+  `;
+
+  /* ── blocco 2: calcolo ── */
+  html += `
+    <div class="result-block">
+      <div class="section-label">Componenti e indici</div>
+      <div class="table-scroll"><table class="metrics-table">
+        <thead>
+          <tr><th>Voce</th><th>Valore</th><th>Esito</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Area mesencefalo</td><td>${fmt(d.midbrain, 1)} mm²</td><td></td></tr>
+          <tr><td>Area ponte</td><td>${fmt(d.pons, 1)} mm²</td><td></td></tr>
+          <tr><td>Ponte / mesencefalo</td><td>${fmt(d.pm)}</td><td></td></tr>
+          <tr><td>MCP</td><td>${fmt(d.mcp, 1)} mm</td><td></td></tr>
+          <tr><td>SCP</td><td>${fmt(d.scp, 1)} mm</td><td></td></tr>
+          <tr><td>MCP / SCP</td><td>${fmt(d.mcpScp)}</td><td></td></tr>
+          <tr class="is-index">
+            <td><strong>MRPI</strong></td>
+            <td>${fmt(d.mrpi)}</td>
+            <td>${badgeHtml(clsMrpi, testoStato(clsMrpi))}</td>
+          </tr>
+          <tr><td>III ventricolo</td><td>${fmt(d.v3, 1)} mm</td><td></td></tr>
+          <tr><td>Corni frontali</td><td>${fmt(d.fh, 1)} mm</td><td></td></tr>
+          <tr><td>III ventr. / corni frontali</td><td>${fmt(d.v3fh)}</td><td></td></tr>
+          <tr class="is-index">
+            <td><strong>MRPI 2.0</strong></td>
+            <td>${fmt(d.mrpi2)}</td>
+            <td>${badgeHtml(clsMrpi2, testoStato(clsMrpi2))}</td>
+          </tr>
+        </tbody>
+      </table></div>
+      ${d.mrpi2 === null ? '<div class="ref-note">MRPI 2.0 non calcolato: mancano la larghezza del III ventricolo e/o la distanza fra i corni frontali.</div>' : ''}
+    </div>
+  `;
+
+  /* ── blocco 3: cut-off ── */
+  html += `
+    <div class="result-block">
+      <div class="section-label">Confronto con i cut-off pubblicati</div>
+      <div class="table-scroll"><table class="metrics-table">
+        <thead>
+          <tr><th>Cut-off</th><th>Contesto</th><th>Esito</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>MRPI ≥ ${CUT_MRPI}</td><td>PSP vs PD e MSA-P (Quattrone 2008)</td><td>${badgeSoglia(d.mrpi, CUT_MRPI)}</td></tr>
+          <tr><td>MRPI ≥ ${CUT_MRPI_PSPP}</td><td>soglia bassa proposta per la PSP-P</td><td>${badgeSoglia(d.mrpi, CUT_MRPI_PSPP)}</td></tr>
+          <tr><td>MRPI 2.0 ≥ ${CUT_MRPI2.toFixed(2)}</td><td>PSP-RS (Quattrone 2018)</td><td>${badgeSoglia(d.mrpi2, CUT_MRPI2)}</td></tr>
+          <tr><td>MRPI 2.0 ≥ ${CUT_MRPI2_O1}</td><td>PSP-P con paralisi sopranucleare dello sguardo verticale</td><td>${badgeSoglia(d.mrpi2, CUT_MRPI2_O1)}</td></tr>
+          <tr><td>MRPI 2.0 ≥ ${CUT_MRPI2_O2}</td><td>PSP-P con rallentamento delle saccadi verticali</td><td>${badgeSoglia(d.mrpi2, CUT_MRPI2_O2)}</td></tr>
+        </tbody>
+      </table></div>
+      <div class="ref-note">
+        I cut-off pubblicati per l'MRPI variano fra le casistiche (10.67 – 24.3 a seconda di fenotipo PSP,
+        gruppo di confronto e stadio di malattia). Nella serie originale di Quattrone l'MRPI 2.0 distingueva
+        la PSP-P dalla malattia di Parkinson con sensibilità 100% e specificità 94.3%, contro 73.5% e 98.1%
+        dell'MRPI; le repliche successive riportano accuratezze inferiori.
+      </div>
+    </div>
+  `;
+
+  /* ── blocco 4: valori di riferimento per gruppo ── */
+  html += `
+    <div class="result-block">
+      <div class="section-label">Valori medi per gruppo</div>
+      <div class="table-scroll"><table class="metrics-table">
+        <thead>
+          <tr><th>Indice</th><th>Paziente</th><th>Controlli</th><th>Idrocefalo</th><th>PSP</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>MRPI</strong></td>
+            <td>${fmt(d.mrpi)}</td>
+            <td>${norma(NORME.hc.mrpi, 2)}</td>
+            <td>${norma(NORME.inph.mrpi, 2)}</td>
+            <td>${norma(NORME.psp.mrpi, 2)}</td>
+          </tr>
+          <tr>
+            <td><strong>MRPI 2.0</strong></td>
+            <td>${fmt(d.mrpi2)}</td>
+            <td>${norma(NORME.hc.mrpi2, 2)}</td>
+            <td>${norma(NORME.inph.mrpi2, 2)}</td>
+            <td>${norma(NORME.psp.mrpi2, 2)}</td>
+          </tr>
+          <tr>
+            <td><strong>IPA (°)</strong></td>
+            <td>${fmt(d.ipa, 1)}</td>
+            <td>${norma(NORME.hc.ipa, 2)}</td>
+            <td>${norma(NORME.inph.ipa, 2)}</td>
+            <td>${norma(NORME.psp.ipa, 2)}</td>
+          </tr>
+        </tbody>
+      </table></div>
+      <div class="ref-note">
+        Medie ± deviazione standard da Ugga et al. 2020 (37 controlli, 30 idrocefali normotesi, 32 PSP).
+        Sono valori descrittivi di gruppo: le distribuzioni si sovrappongono e non permettono di
+        classificare un singolo paziente.
+      </div>
+    </div>
+  `;
+
+  /* ── blocco 5: l'avvertenza che dà senso al tool ── */
+  const sospettoInph = (clsPrincipale !== 'ok') &&
+                       (d.ipa !== null && d.ipa >= IPA_ORIENTATIVO);
+
+  html += `
+    <div class="result-block">
+      <div class="section-label">Da tenere presente</div>
+      <div class="caveat-box">
+        <strong>L'idrocefalo normoteso alza MRPI e MRPI 2.0 quanto la PSP.</strong>
+        Nella casistica di Ugga et al. i due gruppi non differiscono né per MRPI (p = 0.06) né per
+        MRPI 2.0 (p = 0.09), entrambi ben sopra i controlli. Il III ventricolo dilatato allarga i
+        peduncoli cerebrali e, sulla sagittale mediana, fa sottostimare il mesencefalo: l'indice sale
+        senza atrofia mesencefalica. Un idrocefalo all'imaging è del resto un criterio di esclusione
+        per la diagnosi di PSP.
+      </div>
+      ${d.ipa !== null ? `
+      <div class="result-copy" style="margin-top:.9rem">
+        <strong>Angolo interpeduncolare: ${fmt(d.ipa, 1)}°.</strong>
+        ${sospettoInph
+          ? 'Ampio, in linea con i valori dell\'idrocefalo normoteso (83.5° ± 6.8) più che con quelli di PSP e controlli (≈ 75°): con un indice elevato, considerare l\'idrocefalo nella diagnosi differenziale.'
+          : 'Nella casistica di riferimento l\'IPA è sovrapponibile fra PSP e controlli (≈ 75°) e significativamente più ampio nell\'idrocefalo normoteso (83.5° ± 6.8).'}
+        Il lavoro originale non propone una soglia formale: l'IPA orienta, non classifica.
+      </div>` : `
+      <div class="ref-note">
+        L'angolo interpeduncolare non è stato inserito. È l'unica delle tre misure che nella casistica
+        di riferimento separa l'idrocefalo normoteso dalla PSP, e si misura sulla stessa acquisizione.
+      </div>`}
+    </div>
+  `;
+
+  const disclaimer = `
+    <div class="disclaimer-note">
+      <strong>Avvertenza:</strong> Referto generato automaticamente a supporto della pratica clinica: non sostituisce il giudizio del medico. I valori vanno interpretati nel contesto clinico del singolo paziente e verificati prima dell'uso.
+    </div>
+  `;
+
+  const actions = `
+    <div class="report-actions">
+      <button class="btn-copy" id="btnCopy" onclick="copyReport()">&#10003; Copia Testo per PACS</button>
+      <button class="btn-print" onclick="window.print()">Stampa / Salva PDF</button>
+    </div>
+  `;
+
+  const ph = document.getElementById('placeholder-msg');
+  if (ph) ph.remove();
+  document.getElementById('output-panel').innerHTML = html + disclaimer + actions;
+}
+
+function copyReport() {
+  const d = leggi();
+  if (d.mrpi === null) return;
+
+  const clsMrpi  = classMrpi(d.mrpi);
+  const clsMrpi2 = classMrpi2(d.mrpi2);
+  const mm  = (v) => v === null ? 'n.r.' : v.toFixed(1);
+  const rap = (v) => v === null ? 'n.c.' : v.toFixed(2);
+
+  let t = 'MRPI / MRPI 2.0 - Indici RM di parkinsonismo\n\n';
+
+  t += 'MISURE:\n';
+  t += `  Area mesencefalo:     ${mm(d.midbrain)} mm2\n`;
+  t += `  Area ponte:           ${mm(d.pons)} mm2\n`;
+  t += `  MCP:                  ${mm(d.mcp)} mm\n`;
+  t += `  SCP:                  ${mm(d.scp)} mm\n`;
+  t += `  III ventricolo:       ${mm(d.v3)} mm\n`;
+  t += `  Corni frontali:       ${mm(d.fh)} mm\n`;
+  if (d.ipa !== null) t += `  Angolo interpeduncolare: ${mm(d.ipa)} gradi\n`;
+
+  t += '\nRAPPORTI:\n';
+  t += `  Ponte / mesencefalo:  ${rap(d.pm)}\n`;
+  t += `  MCP / SCP:            ${rap(d.mcpScp)}\n`;
+  t += `  III ventr. / corni:   ${rap(d.v3fh)}\n`;
+
+  t += '\nINDICI:\n';
+  t += `  MRPI     = ${rap(d.mrpi)}   [${testoStato(clsMrpi)}]\n`;
+  t += `  MRPI 2.0 = ${rap(d.mrpi2)}   [${testoStato(clsMrpi2)}]\n`;
+
+  t += '\nCUT-OFF DI RIFERIMENTO:\n';
+  t += `  MRPI >= ${CUT_MRPI} (PSP vs PD/MSA-P, Quattrone 2008)\n`;
+  t += `  MRPI >= ${CUT_MRPI_PSPP} (soglia bassa per PSP-P)\n`;
+  t += `  MRPI 2.0 >= ${CUT_MRPI2.toFixed(2)} (PSP-RS) | >= ${CUT_MRPI2_O1} (PSP-P, paralisi sguardo verticale) | >= ${CUT_MRPI2_O2} (PSP-P, saccadi rallentate)\n`;
+
+  t += '\nVALORI MEDI PER GRUPPO (Ugga 2020):\n';
+  const nm = (c) => norma(c, 2).replace('±', '+/-');
+  t += `  MRPI     - controlli ${nm(NORME.hc.mrpi)} | idrocefalo ${nm(NORME.inph.mrpi)} | PSP ${nm(NORME.psp.mrpi)}\n`;
+  t += `  MRPI 2.0 - controlli ${nm(NORME.hc.mrpi2)} | idrocefalo ${nm(NORME.inph.mrpi2)} | PSP ${nm(NORME.psp.mrpi2)}\n`;
+  t += `  IPA      - controlli ${nm(NORME.hc.ipa)} | idrocefalo ${nm(NORME.inph.ipa)} | PSP ${nm(NORME.psp.ipa)}\n`;
+
+  t += '\nNOTA: MRPI e MRPI 2.0 sono elevati anche nell\'idrocefalo normoteso, senza differenze\n';
+  t += 'significative rispetto alla PSP (Ugga 2020). Un idrocefalo all\'imaging e\' criterio di\n';
+  t += 'esclusione per la diagnosi di PSP.\n';
+
+  t += '\n---\n';
+  t += 'MRPI: Quattrone A et al., Radiology 2008;246(1):214-21.\n';
+  t += 'MRPI 2.0: Quattrone A et al., Parkinsonism Relat Disord 2018;54:3-8.\n';
+  t += 'Misure e valori di riferimento: Ugga L et al., Neuroradiology 2020;62(12):1657-65.\n';
+
+  copiaPerPACS(t, document.getElementById('btnCopy'));
+}
+
+/* ── guida alle misure ─────────────────────────────────────────────────── */
+
+function openGuide() {
+  document.getElementById('guideOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGuide() {
+  document.getElementById('guideOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleGuideOverlayClick(e) {
+  if (e.target === document.getElementById('guideOverlay')) closeGuide();
+}
+
+/* ── TUTORIAL ── */
+const TUTORIAL_STEPS = [
+  {
+    title: 'MRPI e MRPI 2.0',
+    body: `<p>Due indici planimetrici calcolati su una RM volumetrica T1, usati come supporto nel
+    sospetto di <strong>paralisi sopranucleare progressiva (PSP)</strong>.</p>
+    <p>Misurano quello che nella PSP si atrofizza per primo — mesencefalo e peduncoli cerebellari
+    superiori — rapportandolo a quello che resta relativamente conservato: ponte e peduncoli
+    cerebellari medi.</p>
+    <div class="tut-tip">MRPI = (area ponte / area mesencefalo) × (MCP / SCP)<br>
+    MRPI 2.0 = MRPI × (III ventricolo / corni frontali)</div>`
+  },
+  {
+    title: 'Come si eseguono le misure',
+    body: `<p>Servono sei misure, su piani diversi della stessa acquisizione volumetrica
+    (clicca l'immagine per ingrandirla):</p>
+    <img class="tut-figure" src="../assets/img/mrpi-misure.jpg" onclick="openGuide()"
+         alt="Sezioni RM con le misure per MRPI e MRPI 2.0">
+    <div class="tut-figcaption">a aree di mesencefalo e ponte · b MCP · c SCP · d corni frontali · e III ventricolo · f angolo interpeduncolare</div>
+    <p style="margin-top:.7rem">La linea che separa mesencefalo e ponte sulla sagittale mediana passa
+    per l'<strong>incisura pontina superiore</strong> e il <strong>margine inferiore della lamina
+    quadrigemina</strong>: è la scelta di quella linea a determinare gran parte della variabilità
+    dell'indice.</p>
+    <div class="tut-tip">Il III ventricolo si misura come media di tre misure sull'assiale a livello
+    delle commissure anteriore e posteriore.</div>`
+  },
+  {
+    title: 'Inserisci i valori',
+    body: `<p>Nel pannello a sinistra, nell'ordine:</p>
+    <ul>
+      <li><strong>Aree</strong> di mesencefalo e ponte, in mm²</li>
+      <li><strong>MCP e SCP</strong> in mm, destro e sinistro: con entrambi si usa la media, con uno solo quello</li>
+      <li><strong>III ventricolo e corni frontali</strong>, che servono solo per l'MRPI 2.0</li>
+      <li><strong>Angolo interpeduncolare</strong>, facoltativo</li>
+    </ul>
+    <p>Man mano che compili, i due indici compaiono in fondo al pannello. L'MRPI si calcola con le
+    prime quattro misure; senza III ventricolo e corni frontali l'MRPI 2.0 resta vuoto.</p>`
+  },
+  {
+    title: 'Leggi il risultato',
+    body: `<p>Il referto confronta i tuoi valori con i cut-off pubblicati e con le medie di controlli,
+    idrocefalo normoteso e PSP.</p>
+    <ul>
+      <li><strong>Sotto soglia</strong> – sotto tutti i cut-off proposti</li>
+      <li><strong>Zona grigia</strong> – fra la soglia bassa della PSP-P e quella classica</li>
+      <li><strong>Sopra soglia</strong> – oltre il cut-off principale</li>
+    </ul>
+    <div class="tut-warn">Attenzione all'idrocefalo normoteso: alza MRPI e MRPI 2.0 quanto la PSP, e
+    nella casistica di riferimento i due gruppi non sono distinguibili con questi indici. L'angolo
+    interpeduncolare è l'unica delle tre misure che li separa — vale la pena inserirlo.</div>
+    <div class="tut-tip">Usa <em>Copia Testo per PACS</em> per esportare misure, rapporti, indici e cut-off in plain-text.</div>`
+  }
+];
+
+initTutorial(TUTORIAL_STEPS);
+
+function resetAll() {
+  ['midbrain','pons','mcp-r','mcp-l','scp-r','scp-l','v3','fh','ipa'].forEach(function (id) {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('live-index').style.display = 'none';
+  document.getElementById('output-panel').innerHTML =
+    '<div class="placeholder" id="placeholder-msg">Inserisci le aree di mesencefalo e ponte e gli spessori dei peduncoli, poi premi <strong>Calcola</strong>.</div>';
+}
+</script>
+</body>
+</html>

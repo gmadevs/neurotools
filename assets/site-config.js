@@ -78,6 +78,14 @@ window.SITE_TOOLS = [
   }
 
   ,{
+    id: "mrpi",
+    title: "MRPI e MRPI 2.0",
+    description: "Indici RM di parkinsonismo per il sospetto di paralisi sopranucleare progressiva, con i cut-off pubblicati e le medie per gruppo",
+    url: "tools/mrpi.html",
+    category: "Neurodegenerativo"
+  }
+
+  ,{
     id: "boston-caa-v2",
     title: "Boston CAA v2.0",
     description: "Classificazione dell'angiopatia amiloide cerebrale (CAA) secondo i Boston Criteria 2.0",

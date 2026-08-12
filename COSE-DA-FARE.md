@@ -32,12 +32,14 @@ contorno ricopiato dentro ogni file.
 - [x] copia negli appunti → `assets/report-actions.js`
 - [x] macchinario del tutorial → `assets/tutorial.js` (−370 righe)
 - [ ] **scheletro del referto**: `.report-card`, `.report-actions`, stato
-      vuoto. Presente in 5 tool su 7.
-- [ ] **tabella dei centili**: 4 tool su 7 disegnano la stessa tabella.
-- [ ] **`diagnosis-box`**: 4 tool su 7, stessa struttura e stesse classi.
+      vuoto. Presente in 6 tool su 8.
+- [ ] **tabella dei centili**: 4 tool su 8 disegnano la stessa tabella.
+- [ ] **`diagnosis-box`**: 4 tool su 8, stessa struttura e stesse classi.
 - [ ] Arrivare a un **template per un nuovo strumento**: un tool nuovo
       dovrebbe essere i suoi dati normativi e la sua logica, non 800 righe di
-      contorno.
+      contorno. L'MRPI ne è la prova al costo pieno: 250 righe di CSS del
+      contorno (modale tutorial, modale guida, tabelle, badge) ricopiate prima
+      di scrivere una riga di calcolo.
 
 ## Quando il catalogo cresce
 
@@ -62,7 +64,7 @@ Da decidere **verso i 15 strumenti**, non prima:
       mentre si compila un modulo lungo. Due barre impilate significano
       perdere quella — quindi barra di navigazione solo sulle pagine di
       navigazione, non dentro i tool.
-- [ ] Tassonomia delle categorie. Oggi sono 3; a 30 strumenti dipende da
+- [ ] Tassonomia delle categorie. Oggi sono 4; a 30 strumenti dipende da
       *quali* saranno. Sono stringhe in `site-config.js`, rinominabili quando
       si vuole: nessuna fretta.
 - [ ] Preferiti: hanno senso quando trovare uno strumento diventa un problema.
@@ -72,10 +74,22 @@ Da decidere **verso i 15 strumenti**, non prima:
 - [x] Ogni campo ha un nome accessibile (erano 58 senza) e i nomi sono univoci
       (17 erano duplicati: "PSV" compariva due volte senza distinguere ACA da
       MCA, "Chiusa" otto volte).
+- [ ] **Contrasto del pulsante "Copia Testo per PACS" al buio.** `.btn-copy` è
+      `#fff` su `var(--ok)`, e al buio `--ok` diventa un verde chiaro
+      (`#7ed3a6`): bianco su verde chiaro sta intorno a 1.8:1, sotto ogni
+      soglia. Riguarda tutti e otto gli strumenti, che ricopiano la stessa
+      regola, quindi la correzione va fatta una volta in `base.css` — testo
+      scuro sul verde chiaro al buio, non un verde diverso: il colore è il
+      segnale che l'azione è andata a buon fine. Stessa verifica su
+      `.btn-copy.copied` (`#555`) e su `.btn-copy:hover` (`#145a38`), che sono
+      valori fissi e al buio non seguono il tema.
 - [ ] Le etichette corte restano corte: "Anteriore", "Media", "Posteriore" si
       capiscono solo con l'intestazione di gruppo sopra. Dove non basta si è
       usato `aria-label`, ma la strada pulita sarebbe `fieldset`/`legend` per
-      i gruppi di misure.
+      i gruppi di misure. **Attenzione:** in un `fieldset` con `display: grid`
+      la `legend` non diventa una cella della griglia — resta la casella
+      speciale del browser e la disposizione salta. Nelle righe destro/sinistro
+      di `mrpi.html` per questo è rimasto `div` + `aria-label`.
 - [ ] Provare davvero con TalkBack su Android, non solo con i controlli
       automatici.
 
