@@ -32,14 +32,18 @@ contorno ricopiato dentro ogni file.
 - [x] copia negli appunti → `assets/report-actions.js`
 - [x] macchinario del tutorial → `assets/tutorial.js` (−370 righe)
 - [ ] **scheletro del referto**: `.report-card`, `.report-actions`, stato
-      vuoto. Presente in 6 tool su 8.
-- [ ] **tabella dei centili**: 4 tool su 8 disegnano la stessa tabella.
-- [ ] **`diagnosis-box`**: 4 tool su 8, stessa struttura e stesse classi.
+      vuoto. Presente in 7 tool su 9.
+- [ ] **tabella dei centili**: 4 tool su 9 disegnano la stessa tabella.
+- [ ] **`diagnosis-box`**: 4 tool su 9, stessa struttura e stesse classi.
+- [ ] **modale della guida alle misure**: MRPI e stenosi carotidea hanno lo
+      stesso `.guide-overlay` con le stesse tre funzioni, e cambia solo cosa
+      c'è dentro. È il candidato più maturo: due copie identiche appena nate.
 - [ ] Arrivare a un **template per un nuovo strumento**: un tool nuovo
       dovrebbe essere i suoi dati normativi e la sua logica, non 800 righe di
       contorno. L'MRPI ne è la prova al costo pieno: 250 righe di CSS del
       contorno (modale tutorial, modale guida, tabelle, badge) ricopiate prima
-      di scrivere una riga di calcolo.
+      di scrivere una riga di calcolo. La stenosi carotidea le ha ricopiate
+      una seconda volta: il costo non è più un aneddoto, è la regola.
 
 ## Quando il catalogo cresce
 

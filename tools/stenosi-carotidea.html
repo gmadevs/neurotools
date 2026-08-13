@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="it" data-root="..">
+<head>
+<link rel="stylesheet" href="../assets/nav.css">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/site-config.js"></script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/app.js"></script>
+<script src="../assets/tutorial.js"></script>
+<script src="../assets/report-actions.js"></script>
+<script src="../assets/mobile-result.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Stenosi carotidea – NASCET, ECST e stenosi d'area</title>
+<meta name="description" content="Calcolo del grado di stenosi carotidea con i metodi NASCET, ECST, area e metodo quadratico, con conversione fra NASCET ed ECST">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Neuro-tools">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Stenosi carotidea — Neuro-tools">
+<meta property="og:description" content="Calcolo del grado di stenosi carotidea con i metodi NASCET, ECST, area e metodo quadratico, con conversione fra NASCET ed ECST">
+<meta property="og:url" content="https://gmadevs.github.io/neurotools/tools/stenosi-carotidea.html">
+<meta property="og:image" content="https://gmadevs.github.io/neurotools/assets/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo Neuro-tools: uno scudo con un encefalo e strumenti di misura">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#10141a">
+<style>
+/* ── INPUT ── */
+.letter-row {
+    display: grid;
+    grid-template-columns: 1.6rem 1fr;
+    gap: .55rem;
+    align-items: start;
+  }
+.letter-row .letter {
+    font-family: var(--mono); font-size: var(--fs-md); font-weight: 700;
+    color: var(--accent-ink); line-height: 2.4; text-align: center;
+  }
+.live-index {
+    display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap;
+    padding: .55rem .8rem; margin-top: .75rem;
+    background: var(--neutral-bg); border: 1px solid var(--accent-light); border-radius: 6px;
+  }
+.live-index .li-label {
+    font-size: var(--fs-xs); color: var(--accent-ink); font-weight: 600;
+    font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em;
+  }
+.live-index .li-value {
+    font-family: var(--mono); font-size: var(--fs-lg); font-weight: 600; color: var(--ink);
+  }
+.actions { display: flex; gap: .75rem; margin-top: 1.2rem; }
+.btn {
+    padding: .55rem 1.2rem; border-radius: 6px;
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .04em; cursor: pointer; border: none; transition: opacity .15s;
+  }
+.btn:hover { opacity: .85; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
+/* ── OUTPUT ── */
+.result-block {
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: 8px; padding: 1.2rem 1.4rem;
+  }
+.result-status {
+    display: inline-block; font-family: var(--mono); font-size: var(--fs-sm);
+    font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: .4rem 1.1rem; border-radius: 99px; margin-bottom: .8rem;
+    background: var(--neutral-bg); color: var(--neutral);
+  }
+.result-status.ok     { background: var(--ok-bg);   color: var(--ok); }
+.result-status.warn   { background: var(--mid-bg);  color: var(--mid); }
+.result-status.danger { background: var(--warn-bg); color: var(--warn); }
+.result-main {
+    font-family: var(--mono); font-size: var(--fs-2xl); font-weight: 600;
+    line-height: 1.2; letter-spacing: -.01em; margin-bottom: .5rem; color: var(--ink);
+  }
+.result-copy {
+    font-size: var(--fs-sm); color: var(--muted); line-height: 1.55; margin-bottom: .4rem;
+  }
+.metrics-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.metrics-table th {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
+    text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+    padding: .4rem .6rem; text-align: left; border-bottom: 1px solid var(--rule);
+  }
+.metrics-table td {
+    padding: .5rem .6rem; border-bottom: 1px solid var(--rule);
+    font-family: var(--mono); font-size: var(--fs-sm);
+  }
+.metrics-table tr:last-child td { border-bottom: none; }
+.metrics-table tr.is-index td { background: var(--neutral-bg); font-weight: 600; }
+.badge {
+    display: inline-block; padding: .15rem .5rem; border-radius: 4px;
+    font-size: var(--fs-xs); font-weight: 700; font-family: var(--mono);
+    text-transform: uppercase; letter-spacing: .04em;
+  }
+.badge-ok     { background: var(--ok-bg);   color: var(--ok); }
+.badge-warn   { background: var(--mid-bg);  color: var(--mid); }
+.badge-danger { background: var(--warn-bg); color: var(--warn); }
+.badge-na     { background: var(--paper);   color: var(--muted); }
+.ref-note {
+    font-size: var(--fs-xs); color: var(--muted); margin-top: .8rem; line-height: 1.5;
+  }
+.caveat-box {
+    background: var(--mid-bg); border-left: 3px solid var(--mid);
+    padding: .8rem 1rem; border-radius: 0 5px 5px 0;
+    font-size: var(--fs-sm); color: var(--ink); line-height: 1.55;
+  }
+.caveat-box + .caveat-box { margin-top: .8rem; }
+.caveat-box strong { color: var(--mid); }
+.placeholder {
+    text-align: center; color: var(--muted); font-size: var(--fs-sm);
+    padding: 3rem 1rem; font-style: italic;
+  }
+.btn-copy {
+    padding: .55rem 1.2rem; background: var(--ok); border: none; color: #fff;
+    border-radius: 5px; font-family: var(--mono); font-size: var(--fs-xs);
+    font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    cursor: pointer; transition: background .2s;
+  }
+.btn-copy:hover { background: #145a38; }
+.btn-copy.copied { background: #555; }
+.btn-print {
+    padding: .55rem 1.1rem; background: transparent; border: 1px solid var(--accent);
+    color: var(--accent-ink); border-radius: 5px; font-family: var(--mono);
+    font-size: var(--fs-xs); font-weight: 600; letter-spacing: .05em;
+    text-transform: uppercase; cursor: pointer; transition: all .15s;
+  }
+.btn-print:hover { background: var(--accent); color: #fff; }
+.report-actions { display: flex; gap: .7rem; margin-top: 1.4rem; align-items: center; }
+/* ── SCHEMA DELLE MISURE ── */
+.section-label.with-action {
+    display: flex; align-items: baseline; justify-content: space-between; gap: .5rem;
+  }
+.btn-guide {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent-ink); background: var(--accent-light);
+    border: 1px solid var(--accent-light); border-radius: 3px; padding: .18rem .45rem;
+    cursor: pointer; transition: background .15s; flex-shrink: 0;
+  }
+.btn-guide:hover { background: var(--neutral-bg); }
+.schema-inline {
+    border: 1px solid var(--rule); border-radius: 6px; background: var(--card);
+    padding: .5rem; margin-bottom: .7rem;
+  }
+/* max-height: nel pannello stretto il disegno, se lasciato riempire la
+   larghezza, diventerebbe alto mezzo schermo e spingerebbe i campi fuori
+   dalla prima schermata. */
+.schema-inline svg { display: block; width: 100%; height: auto; max-height: 330px; }
+/* Anche nella modale serve un tetto: sotto i 900px le due colonne diventano
+   una, e senza limite il disegno riempirebbe la larghezza spingendo la
+   legenda — cioè il testo che spiega le lettere — fuori dalla schermata. */
+.guide-body svg { display: block; width: 100%; height: auto; max-height: 58vh; margin: 0 auto; }
+.schema-caption {
+    font-size: var(--fs-xs); color: var(--muted); text-align: center;
+    line-height: 1.45; margin-top: .2rem;
+  }
+/* Il disegno è generato in mm "veri" solo nel senso dei rapporti: le lettere
+   sono quelle della Fig. 1 del lavoro di riferimento, e sono l'unico ponte fra
+   lo schema e i campi qui sotto. Evidenziare il segmento mentre si compila il
+   campo è ciò che rende lo schema utile invece che decorativo. */
+.svg-vaso  { fill: var(--neutral-bg); stroke: var(--muted); stroke-width: 2; }
+.svg-placca { fill: var(--muted); fill-opacity: .55; stroke: var(--muted); stroke-width: 1.5; }
+.svg-nome  { font-family: var(--mono); font-size: 13px; fill: var(--muted); }
+.svg-mis line, .svg-mis polyline { stroke: var(--accent-ink); stroke-width: 2; fill: none; }
+.svg-mis polygon { fill: var(--accent-ink); }
+.svg-mis text { font-family: var(--mono); font-size: 16px; font-weight: 700; fill: var(--accent-ink); }
+.svg-mis { transition: opacity .15s; cursor: pointer; }
+.svg-mis.is-active line, .svg-mis.is-active polyline { stroke: var(--warn); stroke-width: 3; }
+.svg-mis.is-active polygon { fill: var(--warn); }
+.svg-mis.is-active text { fill: var(--warn); }
+.schema-ha-attivo .svg-mis:not(.is-active) { opacity: .3; }
+.guide-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.6); z-index: 1100;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+.guide-overlay.open { display: flex; }
+.guide-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 880px;
+    max-height: 92vh; display: flex; flex-direction: column;
+    box-shadow: 0 16px 48px rgba(0,0,0,.3); overflow: hidden;
+  }
+.guide-head {
+    background: var(--accent); color: #fff; padding: 1.1rem 1.4rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+.guide-head h2 {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+.guide-body { padding: 1.4rem 1.6rem 1.6rem; overflow-y: auto; }
+.guide-grid { display: grid; grid-template-columns: 300px 1fr; gap: 1.6rem; align-items: start; }
+.guide-legend div {
+    display: flex; gap: .55rem; align-items: baseline;
+    padding: .42rem 0; border-bottom: 1px solid var(--rule);
+    font-size: var(--fs-sm); line-height: 1.45; cursor: pointer;
+  }
+.guide-legend div:hover b { text-decoration: underline; }
+.guide-legend b {
+    font-family: var(--mono); color: var(--accent-ink); font-size: var(--fs-md);
+    min-width: 1.1rem; flex-shrink: 0;
+  }
+.guide-formula {
+    margin-top: 1.2rem; padding: .8rem 1rem; background: var(--neutral-bg);
+    border-radius: 6px; font-family: var(--mono); font-size: var(--fs-sm);
+    line-height: 1.9; color: var(--ink);
+  }
+.guide-credit {
+    margin-top: 1.2rem; padding-top: .9rem; border-top: 1px solid var(--rule);
+    font-size: var(--fs-xs); color: var(--muted); font-style: italic; line-height: 1.55;
+  }
+.guide-credit a { color: var(--muted); }
+/* ── TUTORIAL MODAL ── */
+.tutorial-header {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  }
+.tutorial-header h2 {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+.tutorial-close {
+    background: none; border: none; color: rgba(255,255,255,.7);
+    font-size: var(--fs-xl); cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+  }
+.tutorial-close:hover { color: #fff; }
+.tutorial-steps-bar {
+    display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
+    background: var(--paper); border-bottom: 1px solid var(--rule);
+  }
+.step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+.step-dot.active { background: var(--accent); }
+.step-dot.done { background: var(--ok); }
+.tutorial-steps-bar, .tutorial-header, .tutorial-footer { flex-shrink: 0; }
+.step-number {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: .5rem;
+  }
+.tutorial-body h3 {
+    font-family: var(--mono); font-size: var(--fs-md); font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+  }
+.tutorial-body p { font-size: var(--fs-sm); line-height: 1.65; color: var(--muted); margin-bottom: .6rem; }
+.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: var(--fs-sm); line-height: 1.7; color: var(--muted); }
+.tut-tip {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: var(--fs-sm); color: var(--accent-ink); margin-top: .8rem;
+  }
+.tut-warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: var(--fs-sm); color: var(--warn); margin-top: .8rem;
+  }
+.tutorial-footer {
+    padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
+    justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
+  }
+.tutorial-skip {
+    font-size: var(--fs-xs); color: var(--muted); cursor: pointer;
+    background: none; border: none; padding: 0; transition: color .15s;
+  }
+.tutorial-nav { display: flex; gap: .6rem; }
+.btn-tut-prev, .btn-tut-next {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
+    letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
+  }
+.btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: var(--muted); }
+.btn-tut-prev:hover { border-color: var(--accent-ink); color: var(--accent-ink); }
+.btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+.btn-tut-next:hover { background: #143d57; }
+.btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+.btn-tut-next.finish:hover { background: #145a38; }
+@media (max-width: 900px) {
+  .guide-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Stenosi carotidea</h1>
+  <span>NASCET, ECST e stenosi d'area — schema delle misure da Mihai et al., JMRI 2012
+    <a class="badge-link" href="https://doi.org/10.1002/jmri.22839" target="_blank" rel="noopener">DOI</a>
+  </span>
+  <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
+</header>
+
+<!-- ── TUTORIAL MODAL ── -->
+<div class="tutorial-overlay" id="tutorialOverlay" onclick="handleOverlayClick(event)">
+  <div class="tutorial-modal">
+    <div class="tutorial-header">
+      <h2>Come usare il tool</h2>
+      <button class="tutorial-close" onclick="closeTutorial()">&#10005;</button>
+    </div>
+    <div class="tutorial-steps-bar" id="stepBar"></div>
+    <div class="tutorial-body" id="tutorialBody"></div>
+    <div class="tutorial-footer">
+      <button class="tutorial-skip" onclick="closeTutorial()">Chiudi</button>
+      <div class="tutorial-nav">
+        <button class="btn-tut-prev" id="btnPrev" onclick="tutStep(-1)">&#8592; Indietro</button>
+        <button class="btn-tut-next" id="btnNext" onclick="tutStep(1)">Avanti &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── GUIDA ALLE MISURE ── -->
+<div class="guide-overlay" id="guideOverlay" onclick="handleGuideOverlayClick(event)">
+  <div class="guide-modal">
+    <div class="guide-head">
+      <h2>Guida alle misure</h2>
+      <button class="tutorial-close" onclick="closeGuide()">&#10005;</button>
+    </div>
+    <div class="guide-body">
+      <div class="guide-grid">
+        <div id="schema-guida"></div>
+        <div>
+          <div class="guide-legend" id="legenda">
+            <div data-mis="A"><b>A</b><span><strong>Arteria carotide comune</strong>, a valle della biforcazione, in tratto indenne. Non entra in NASCET né in ECST: serve al metodo CC e a riconoscere il collasso dell'ACI.</span></div>
+            <div data-mis="B"><b>B</b><span><strong>Arteria carotide esterna</strong>. Misura ancillare: un'ACI distale più piccola dell'ACE omolaterale è una delle spie della quasi-occlusione.</span></div>
+            <div data-mis="C"><b>C</b><span><strong>ACI distale in tratto sano</strong>, dove le pareti tornano parallele. È il riferimento del <strong>NASCET</strong>.</span></div>
+            <div data-mis="D"><b>D</b><span><strong>Lume residuo minimo</strong> nel punto di massima stenosi. È il numeratore di tutti i metodi.</span></div>
+            <div data-mis="E"><b>E</b><span><strong>Parete esterna del vaso</strong> allo stesso livello di D, cioè il calibro che il vaso avrebbe senza placca. È il riferimento dell'<strong>ECST</strong>.</span></div>
+          </div>
+          <div class="guide-formula">
+            NASCET % = (C − D) / C × 100<br>
+            ECST % = (E − D) / E × 100<br>
+            Area % = (area totale − area del lume) / area totale × 100
+          </div>
+          <div class="guide-credit">
+            Schema ridisegnato a partire dalla Figura 1 di Mihai G, Winner MW, Raman SV et al.,
+            <em>Assessment of carotid stenosis using three-dimensional T2-weighted dark blood imaging:
+            initial experience</em>, J Magn Reson Imaging 2012;35(2):449–455, doi:10.1002/jmri.22839
+            (manoscritto d'autore ad accesso libero su PubMed Central). Il disegno è originale:
+            del lavoro sono ripresi la posizione delle misure e le lettere che le identificano,
+            non l'illustrazione.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="workspace">
+  <!-- ── INPUT PANEL ── -->
+  <div class="input-panel">
+
+    <div class="section-block">
+      <div class="section-label with-action">
+        <span>Schema delle misure</span>
+        <button class="btn-guide" onclick="openGuide()" title="Ingrandisci lo schema">&#9635; Ingrandisci</button>
+      </div>
+      <div class="schema-inline" id="schema-pannello"></div>
+      <div class="schema-caption">Tocca una lettera, o entra in un campo, per vedere dove si misura.</div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Sede</div>
+      <div class="field-grid">
+        <div class="form-group">
+          <label for="lato">Lato</label>
+          <select id="lato">
+            <option value="">—</option>
+            <option value="destra">Destra</option>
+            <option value="sinistra">Sinistra</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sede">Sede della stenosi</label>
+          <select id="sede">
+            <option value="">—</option>
+            <option value="bulbo / ACI prossimale">Bulbo / ACI prossimale</option>
+            <option value="ACI">ACI</option>
+            <option value="ACC">ACC</option>
+            <option value="ACE">ACE</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Diametri (mm)</div>
+
+      <div class="letter-row">
+        <span class="letter" aria-hidden="true">D</span>
+        <div class="form-group">
+          <label for="d">Lume residuo alla stenosi</label>
+          <input type="number" id="d" min="0" max="20" step="0.1" placeholder="mm" inputmode="decimal">
+          <div class="hint">Diametro minore nel punto di massima stenosi. 0 = occlusione.</div>
+        </div>
+      </div>
+
+      <div class="letter-row">
+        <span class="letter" aria-hidden="true">C</span>
+        <div class="form-group">
+          <label for="c">ACI distale — riferimento NASCET</label>
+          <input type="number" id="c" min="0.1" max="20" step="0.1" placeholder="mm" inputmode="decimal">
+          <div class="hint">Dove le pareti tornano parallele, oltre il bulbo</div>
+        </div>
+      </div>
+
+      <div class="letter-row">
+        <span class="letter" aria-hidden="true">E</span>
+        <div class="form-group">
+          <label for="e">Vaso alla stenosi — riferimento ECST</label>
+          <input type="number" id="e" min="0.1" max="25" step="0.1" placeholder="mm" inputmode="decimal">
+          <div class="hint">Parete esterna, allo stesso livello di D. Sulle tecniche lumenografiche (DSA, angio-RM con mdc) è stimato.</div>
+        </div>
+      </div>
+
+      <div class="letter-row">
+        <span class="letter" aria-hidden="true">A</span>
+        <div class="form-group">
+          <label for="a">ACC (facoltativo)</label>
+          <input type="number" id="a" min="0.1" max="25" step="0.1" placeholder="mm" inputmode="decimal">
+          <div class="hint">Abilita il metodo CC, utile quando l'ACI distale è collassata</div>
+        </div>
+      </div>
+
+      <div class="letter-row">
+        <span class="letter" aria-hidden="true">B</span>
+        <div class="form-group">
+          <label for="b">ACE (facoltativo)</label>
+          <input type="number" id="b" min="0.1" max="20" step="0.1" placeholder="mm" inputmode="decimal">
+          <div class="hint">Solo come termine di paragone per l'ACI distale</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Aree (facoltative, mm²)</div>
+      <div class="form-group">
+        <label for="area-lume">Area del lume alla stenosi</label>
+        <input type="number" id="area-lume" min="0" max="400" step="0.1" placeholder="mm²" inputmode="decimal">
+      </div>
+      <div class="form-group">
+        <label for="area-tot">Area totale del vaso alla stenosi</label>
+        <input type="number" id="area-tot" min="0.1" max="400" step="0.1" placeholder="mm²" inputmode="decimal">
+        <div class="hint">Contorno della parete esterna: richiede una tecnica che la mostri (dark blood, ecografia, TC)</div>
+      </div>
+    </div>
+
+    <div class="live-index" id="live-index" style="display:none">
+      <span class="li-label">NASCET</span>
+      <span class="li-value" id="live-nascet">—</span>
+      <span class="li-label">ECST</span>
+      <span class="li-value" id="live-ecst">—</span>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="calculate()">Calcola</button>
+      <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+  <!-- ── OUTPUT PANEL ── -->
+  <div class="output-panel" id="output-panel">
+    <div class="placeholder" id="placeholder-msg">
+      Inserisci il lume residuo <strong>D</strong> e almeno un diametro di riferimento
+      (<strong>C</strong> per il NASCET, <strong>E</strong> per l'ECST), poi premi <strong>Calcola</strong>.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   SCHEMA DELLE MISURE
+   --------------------------------------------------------------------------
+   Il disegno è generato da qui e non è un'immagine: così sta in due posti
+   (pannello e modale) senza duplicare il markup, segue il tema chiaro/scuro
+   con le stesse variabili del resto del sito e resta nitido a ogni zoom.
+   Le proporzioni sono schematiche: il vaso serve a dire DOVE si misura, non
+   quanto misura.
+
+   Le lettere sono quelle della Fig. 1 di Mihai et al. 2012 — sono l'unico
+   ponte fra il disegno e i campi del modulo, ed è il motivo per cui compaiono
+   anche a sinistra di ogni input.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Frecce a due punte, orientabili: B è perpendicolare all'asse dell'ACE, che è
+   obliqua, e una freccia orizzontale lì misurerebbe un diametro più largo del
+   vero. Le punte sono triangoli disegnati a mano invece che marker SVG, perché
+   il contenuto di un <marker> non eredita il colore dall'elemento che lo usa e
+   l'evidenziazione non lo raggiungerebbe. */
+function freccia(x1, y1, x2, y2) {
+  var dx = x2 - x1, dy = y2 - y1;
+  var len = Math.sqrt(dx * dx + dy * dy);
+  var ux = dx / len, uy = dy / len;   /* lungo la freccia */
+  var nx = -uy, ny = ux;              /* perpendicolare, per la base delle punte */
+  var p = 6, w = 4;
+  var r = function (n) { return Math.round(n * 10) / 10; };
+
+  var b1x = x1 + ux * p, b1y = y1 + uy * p;
+  var b2x = x2 - ux * p, b2y = y2 - uy * p;
+
+  return '<line x1="' + r(b1x) + '" y1="' + r(b1y) + '" x2="' + r(b2x) + '" y2="' + r(b2y) + '"></line>' +
+         '<polygon points="' + r(x1) + ',' + r(y1) + ' ' +
+           r(b1x + nx * w) + ',' + r(b1y + ny * w) + ' ' +
+           r(b1x - nx * w) + ',' + r(b1y - ny * w) + '"></polygon>' +
+         '<polygon points="' + r(x2) + ',' + r(y2) + ' ' +
+           r(b2x + nx * w) + ',' + r(b2y + ny * w) + ' ' +
+           r(b2x - nx * w) + ',' + r(b2y - ny * w) + '"></polygon>';
+}
+
+var MISURE = [
+  { l: 'A', x1: 100, y1: 360, x2: 150, y2: 360, lx: 125, ly: 350, anc: 'middle' },
+  { l: 'B', x1: 79,  y1: 144, x2: 103, y2: 136, lx: 70,  ly: 148, anc: 'end'    },
+  { l: 'C', x1: 147, y1: 70,  x2: 179, y2: 70,  lx: 163, ly: 60,  anc: 'middle' },
+  { l: 'D', x1: 137, y1: 171, x2: 156, y2: 171, lx: 231, ly: 155, anc: 'start',
+    lead: '156,171 216,171 226,150' },
+  { l: 'E', x1: 134, y1: 192, x2: 175, y2: 192, lx: 231, ly: 219, anc: 'start',
+    lead: '175,192 216,192 226,214' }
+];
+
+function schemaSVG() {
+  var s = '<svg viewBox="20 14 252 394" role="img" ' +
+          'aria-label="Schema della biforcazione carotidea con le cinque misure: A sulla carotide comune, B sulla carotide esterna, C sulla carotide interna distale, D sul lume residuo alla stenosi, E sulla parete esterna allo stesso livello">';
+
+  /* Silhouette del vaso, in senso orario dal basso a sinistra: ACC, presa
+     dell'ACE a sinistra, ACI a destra, bulbo fra la forcella e l'ACC. */
+  s += '<path class="svg-vaso" d="M 100,398 L 100,292 ' +
+       'C 98,272 94,262 88,248 ' +
+       'C 82,215 74,120 64,40 L 86,32 ' +
+       'C 96,110 110,165 128,208 ' +
+       'C 138,175 145,105 148,30 L 180,30 ' +
+       'C 178,105 176,175 172,248 ' +
+       'C 168,272 152,278 150,300 L 150,398 Z"></path>';
+
+  /* Placca eccentrica sulla parete laterale dell'ACI prossimale, sopra il bulbo */
+  s += '<path class="svg-placca" d="M 174,218 C 177,190 178,160 178,128 ' +
+       'C 154,146 144,194 174,218 Z"></path>';
+
+  s += '<text class="svg-nome" x="186" y="48">ACI</text>' +
+       '<text class="svg-nome" x="58" y="26" text-anchor="end">ACE</text>' +
+       '<text class="svg-nome" x="156" y="378">ACC</text>' +
+       '<text class="svg-nome" x="215" y="252">placca</text>' +
+       '<line x1="211" y1="248" x2="176" y2="224" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"></line>';
+
+  MISURE.forEach(function (m) {
+    s += '<g class="svg-mis" data-mis="' + m.l + '">' +
+         (m.lead ? '<polyline points="' + m.lead + '" stroke-dasharray="4 3"></polyline>' : '') +
+         freccia(m.x1, m.y1, m.x2, m.y2) +
+         '<text x="' + m.lx + '" y="' + m.ly + '" text-anchor="' + m.anc + '">' + m.l + '</text>' +
+         '</g>';
+  });
+
+  return s + '</svg>';
+}
+
+['schema-pannello', 'schema-guida'].forEach(function (id) {
+  document.getElementById(id).innerHTML = schemaSVG();
+});
+
+/* Evidenziazione: una lettera alla volta, in tutte le copie dello schema. */
+function evidenzia(lettera) {
+  document.querySelectorAll('.schema-inline, #schema-guida').forEach(function (box) {
+    box.classList.toggle('schema-ha-attivo', !!lettera);
+  });
+  document.querySelectorAll('.svg-mis').forEach(function (g) {
+    g.classList.toggle('is-active', !!lettera && g.dataset.mis === lettera);
+  });
+}
+
+document.querySelectorAll('.svg-mis').forEach(function (g) {
+  g.addEventListener('click', function () {
+    evidenzia(g.classList.contains('is-active') ? null : g.dataset.mis);
+  });
+});
+
+document.querySelectorAll('#legenda div').forEach(function (riga) {
+  riga.addEventListener('mouseenter', function () { evidenzia(riga.dataset.mis); });
+  riga.addEventListener('mouseleave', function () { evidenzia(null); });
+  riga.addEventListener('click', function () { evidenzia(riga.dataset.mis); });
+});
+
+['a', 'b', 'c', 'd', 'e'].forEach(function (id) {
+  var campo = document.getElementById(id);
+  campo.addEventListener('focus', function () { evidenzia(id.toUpperCase()); });
+  campo.addEventListener('blur', function () { evidenzia(null); });
+});
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CALCOLO
+   --------------------------------------------------------------------------
+   Le tre formule sono quelle del lavoro di riferimento (formule 1–3):
+
+     NASCET = (C − D) / C        ECST = (E − D) / E        area = (Atot − Alume) / Atot
+
+   Si aggiungono due metodi che il lavoro cita nella discussione o che servono
+   quando manca un riferimento:
+
+   - metodo CC (Rothwell 1994): usa l'ACC come riferimento. Serve quando l'ACI
+     distale è collassata e il NASCET, che la usa come denominatore, crolla
+     proprio nelle stenosi più serrate.
+   - metodo quadratico (Alexandrov 1993): 1 − D²/rif². I metodi lineari
+     assumono che la stenosi esista in una sola direzione, il quadratico che
+     esista in tutte: sono i due estremi fra cui sta il valore vero.
+
+   Conversione NASCET ↔ ECST: ECST = 0.6 × NASCET + 40 (Rothwell 1994). È il
+   motivo per cui 70% NASCET e 82% ECST sono la stessa stenosi, e per cui i
+   due numeri non vanno mai confrontati fra referti senza dire quale metodo si
+   è usato.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Soglie NASCET, come nel lavoro di riferimento: lieve < 50, moderata 50–69,
+   severa > 69. Sono le categorie su cui sono costruiti i trial chirurgici. */
+const CUT_MODERATA = 50;
+const CUT_SEVERA   = 70;
+
+/* Spie descritte per la quasi-occlusione: non sono un criterio diagnostico,
+   accendono una nota. Il punto è che in quel quadro il NASCET sottostima. */
+const ACI_PICCOLA = 3.0;   /* mm, calibro dell'ACI distale */
+
+function num(id, ammettiZero) {
+  const raw = document.getElementById(id).value;
+  if (raw === '') return null;
+  const v = parseFloat(raw);
+  if (!isFinite(v)) return null;
+  return ammettiZero ? (v >= 0 ? v : null) : (v > 0 ? v : null);
+}
+
+function pct(residuo, riferimento) {
+  if (residuo === null || riferimento === null || riferimento <= 0) return null;
+  return (riferimento - residuo) / riferimento * 100;
+}
+
+function pctQuadratico(residuo, riferimento) {
+  if (residuo === null || riferimento === null || riferimento <= 0) return null;
+  return (1 - (residuo * residuo) / (riferimento * riferimento)) * 100;
+}
+
+function leggi() {
+  const d = num('d', true);
+  const c = num('c'), e = num('e'), a = num('a'), b = num('b');
+  const aLume = num('area-lume', true), aTot = num('area-tot');
+
+  const nascetRaw = pct(d, c);
+  const ecstRaw   = pct(d, e);
+  const ccRaw     = pct(d, a);
+  const areaRaw   = (aLume !== null && aTot !== null && aTot > 0)
+                    ? (aTot - aLume) / aTot * 100 : null;
+
+  /* Un lume residuo più largo del riferimento distale non è un errore: è il
+     rimodellamento positivo, e il lavoro di riferimento ne mostra un caso
+     (NASCET 0%, ECST 45%, area 78%). Si azzera e si segnala. */
+  const rimodellamento = nascetRaw !== null && nascetRaw < 0;
+
+  return {
+    d: d, c: c, e: e, a: a, b: b, aLume: aLume, aTot: aTot,
+    nascet: nascetRaw === null ? null : Math.round(Math.max(0, nascetRaw)),
+    ecst:   ecstRaw   === null ? null : Math.round(Math.max(0, ecstRaw)),
+    cc:     ccRaw     === null ? null : Math.round(Math.max(0, ccRaw)),
+    area:   areaRaw   === null ? null : Math.round(Math.max(0, areaRaw)),
+    quadC:  pctQuadratico(d, c) === null ? null : Math.round(Math.max(0, pctQuadratico(d, c))),
+    quadE:  pctQuadratico(d, e) === null ? null : Math.round(Math.max(0, pctQuadratico(d, e))),
+    rimodellamento: rimodellamento,
+    lato: document.getElementById('lato').value,
+    sede: document.getElementById('sede').value
+  };
+}
+
+function ecstDaNascet(n) { return n === null ? null : Math.round(0.6 * n + 40); }
+function nascetDaEcst(e) { return e === null ? null : Math.round((e - 40) / 0.6); }
+
+function categoria(n) {
+  if (n === null) return { cls: 'na', txt: 'n.d.' };
+  if (n >= CUT_SEVERA)   return { cls: 'danger', txt: 'Severa (≥ 70%)' };
+  if (n >= CUT_MODERATA) return { cls: 'warn',   txt: 'Moderata (50–69%)' };
+  return { cls: 'ok', txt: 'Lieve (< 50%)' };
+}
+
+function fmt(v, dec) {
+  return v === null || v === undefined ? '—' : v.toFixed(dec === undefined ? 1 : dec);
+}
+function fmtPct(v) { return v === null || v === undefined ? '—' : v + '%'; }
+function badgeHtml(cls, txt) { return '<span class="badge badge-' + cls + '">' + txt + '</span>'; }
+
+/* ── anteprima nel pannello di sinistra ────────────────────────────────── */
+
+function aggiornaLive() {
+  const d = leggi();
+  const box = document.getElementById('live-index');
+  if (d.nascet === null && d.ecst === null) { box.style.display = 'none'; return; }
+  document.getElementById('live-nascet').textContent = fmtPct(d.nascet);
+  document.getElementById('live-ecst').textContent   = fmtPct(d.ecst);
+  box.style.display = 'flex';
+}
+
+['d', 'c', 'e', 'a', 'b', 'area-lume', 'area-tot'].forEach(function (id) {
+  document.getElementById(id).addEventListener('input', aggiornaLive);
+});
+
+/* ── quasi-occlusione ──────────────────────────────────────────────────── */
+
+function spieQuasiOcclusione(d) {
+  const spie = [];
+  if (d.c !== null && d.c <= ACI_PICCOLA) {
+    spie.push('ACI distale ' + fmt(d.c) + ' mm, di calibro ridotto');
+  }
+  if (d.c !== null && d.b !== null && d.c <= d.b) {
+    spie.push('ACI distale (' + fmt(d.c) + ' mm) non più grande dell\'ACE omolaterale (' + fmt(d.b) + ' mm)');
+  }
+  if (d.a !== null && d.c !== null && d.c / d.a <= 0.5) {
+    spie.push('rapporto ACI distale / ACC ' + (d.c / d.a).toFixed(2) + ', ridotto');
+  }
+  return spie;
+}
+
+/* ── referto ───────────────────────────────────────────────────────────── */
+
+function calculate() {
+  const d = leggi();
+
+  if (d.d === null) {
+    alert('Serve il lume residuo alla stenosi (D).');
+    return;
+  }
+  if (d.c === null && d.e === null && d.a === null) {
+    alert('Serve almeno un diametro di riferimento: C per il NASCET, E per l\'ECST, A per il metodo CC.');
+    return;
+  }
+  if (d.e !== null && d.d > d.e) {
+    alert('Il lume residuo (D) non può essere più largo della parete esterna allo stesso livello (E): controlla le misure.');
+    return;
+  }
+
+  const occlusione = d.d === 0;
+
+  /* Il verdetto è sempre in NASCET, perché è la scala su cui sono definite le
+     categorie dei trial. Se il NASCET non è misurabile si usa quello convertito
+     dall'ECST, dicendolo. */
+  const nascetStimato = d.nascet === null ? nascetDaEcst(d.ecst) : null;
+  const nascetUsato   = d.nascet !== null ? d.nascet : nascetStimato;
+
+  /* Un NASCET a 0% da rimodellamento positivo non è un vaso sano, ed è
+     esattamente il caso in cui un bollino verde farebbe danno: si esce dalla
+     scala delle categorie invece di dire "lieve". */
+  const cat = occlusione        ? { cls: 'danger', txt: 'Occlusione' }
+            : d.rimodellamento  ? { cls: 'warn',   txt: 'Rimodellamento positivo' }
+            : categoria(nascetUsato);
+
+  let commento;
+  if (occlusione) {
+    commento = 'Lume residuo nullo: occlusione. Il grado percentuale non si applica, e l\'occlusione ' +
+               'non è una stenosi severa portata all\'estremo — è una categoria a parte, con implicazioni diverse.';
+  } else if (d.rimodellamento) {
+    commento = 'Il lume residuo misurato è più largo del riferimento distale: sulla scala NASCET la ' +
+               'stenosi vale 0%, e non vuol dire vaso indenne. È il quadro in cui il grado luminale ' +
+               'è meno informativo — vanno guardati ECST, stenosi d\'area e carico ateromasico.';
+  } else if (nascetUsato === null) {
+    commento = 'Con i dati inseriti non è calcolabile un valore sulla scala NASCET.';
+  } else if (nascetUsato >= CUT_SEVERA) {
+    commento = 'Stenosi severa sulla scala NASCET. È la fascia in cui i trial di endoarteriectomia hanno ' +
+               'mostrato il beneficio maggiore nei pazienti sintomatici; la decisione dipende da sintomi, ' +
+               'rischio operatorio e comorbilità, non dal solo numero.';
+  } else if (nascetUsato >= CUT_MODERATA) {
+    commento = 'Stenosi moderata sulla scala NASCET. È la fascia in cui il metodo di misura pesa di più: ' +
+               'la stessa placca misurata con ECST dà un numero molto più alto, e la differenza fra i due ' +
+               'metodi è massima proprio sotto il 50%.';
+  } else {
+    commento = 'Stenosi lieve sulla scala NASCET. Un valore basso non dice che la placca è piccola: ' +
+               'il grado luminale non è un indice di carico ateromasico né di vulnerabilità.';
+  }
+
+  const icona = cat.cls === 'ok' ? '✓' : cat.cls === 'warn' ? '⚠' : '✕';
+  const titoloSede = [d.lato ? 'Carotide ' + d.lato : '', d.sede].filter(Boolean).join(' — ');
+
+  /* ── blocco 1: verdetto ── */
+  let html = `
+    <div class="result-block">
+      <div class="section-label">Grado di stenosi${titoloSede ? ' · ' + titoloSede : ''}</div>
+      <div class="result-status ${cat.cls}">${icona} ${cat.txt}</div>
+      <div class="result-main">${occlusione ? 'Occlusione' : 'NASCET = ' + fmtPct(nascetUsato)}${nascetStimato !== null && !occlusione ? ' <span style="font-size:var(--fs-sm);color:var(--muted)">(stimato dall\'ECST)</span>' : ''}</div>
+      <div class="result-copy">${commento}</div>
+      ${d.rimodellamento ? `
+      <div class="result-copy"><strong>NASCET azzerato:</strong> il lume residuo misurato (${fmt(d.d)} mm) è maggiore
+      dell'ACI distale di riferimento (${fmt(d.c)} mm). È il quadro del rimodellamento positivo, in cui il vaso si
+      espande e il lume resta pervio nonostante la placca: il NASCET vale 0% e la placca c'è lo stesso.</div>` : ''}
+    </div>
+  `;
+
+  /* ── blocco 2: i metodi a confronto ── */
+  html += `
+    <div class="result-block">
+      <div class="section-label">Metodi a confronto</div>
+      <div class="table-scroll"><table class="metrics-table">
+        <thead>
+          <tr><th>Metodo</th><th>Riferimento</th><th>Stenosi</th></tr>
+        </thead>
+        <tbody>
+          <tr class="is-index">
+            <td><strong>NASCET</strong></td>
+            <td>C = ${fmt(d.c)} mm</td>
+            <td>${fmtPct(d.nascet)} ${d.nascet !== null ? badgeHtml(categoria(d.nascet).cls, categoria(d.nascet).txt.split(' ')[0]) : badgeHtml('na', 'n.d.')}</td>
+          </tr>
+          <tr class="is-index">
+            <td><strong>ECST</strong></td>
+            <td>E = ${fmt(d.e)} mm</td>
+            <td>${fmtPct(d.ecst)}</td>
+          </tr>
+          <tr>
+            <td>Area</td>
+            <td>${d.aTot !== null ? fmt(d.aTot) + ' mm²' : '—'}</td>
+            <td>${fmtPct(d.area)}</td>
+          </tr>
+          <tr>
+            <td>CC (carotide comune)</td>
+            <td>A = ${fmt(d.a)} mm</td>
+            <td>${fmtPct(d.cc)}</td>
+          </tr>
+          <tr>
+            <td>Quadratico su C</td>
+            <td>1 − D²/C²</td>
+            <td>${fmtPct(d.quadC)}</td>
+          </tr>
+          <tr>
+            <td>Quadratico su E</td>
+            <td>1 − D²/E²</td>
+            <td>${fmtPct(d.quadE)}</td>
+          </tr>
+        </tbody>
+      </table></div>
+      <div class="ref-note">
+        Lume residuo D = ${fmt(d.d)} mm. I metodi lineari (NASCET, ECST, CC) assumono che la stenosi
+        esista in una sola direzione, il metodo quadratico che esista in tutte: il valore vero sta fra i due.
+      </div>
+    </div>
+  `;
+
+  /* ── blocco 3: conversione fra le due scale ── */
+  const ecstAtteso = ecstDaNascet(d.nascet);
+  html += `
+    <div class="result-block">
+      <div class="section-label">Conversione fra le scale</div>
+      <div class="guide-formula" style="margin-top:0">ECST % = 0.6 × NASCET % + 40</div>
+      <div class="table-scroll" style="margin-top:.9rem"><table class="metrics-table">
+        <thead><tr><th>Scala</th><th>Misurato</th><th>Atteso dalla conversione</th></tr></thead>
+        <tbody>
+          <tr><td>NASCET</td><td>${fmtPct(d.nascet)}</td><td>${fmtPct(nascetDaEcst(d.ecst))}</td></tr>
+          <tr><td>ECST</td><td>${fmtPct(d.ecst)}</td><td>${fmtPct(ecstAtteso)}</td></tr>
+        </tbody>
+      </table></div>
+      <div class="ref-note">
+        Le due soglie che contano corrispondono: <strong>50% NASCET = 70% ECST</strong> e
+        <strong>70% NASCET = 82% ECST</strong>. Un referto che riporta "stenosi del 70%" senza dire
+        con quale metodo è ambiguo fra due situazioni cliniche diverse.
+        ${(d.nascet !== null && d.ecst !== null && Math.abs(d.ecst - ecstAtteso) >= 10)
+          ? '<br><strong>Qui misurato e atteso divergono di ' + Math.abs(d.ecst - ecstAtteso) + ' punti:</strong> la conversione è una media di popolazione e sul singolo vaso scarta, tanto più se il bulbo è ectasico o rimodellato.'
+          : ''}
+      </div>
+    </div>
+  `;
+
+  /* ── blocco 4: quasi-occlusione, quando le spie ci sono ── */
+  const spie = spieQuasiOcclusione(d);
+  if (!occlusione && spie.length) {
+    html += `
+      <div class="result-block">
+        <div class="section-label">Da verificare</div>
+        <div class="caveat-box">
+          <strong>Considerare la quasi-occlusione.</strong>
+          ${spie.length === 1 ? 'Una spia presente' : 'Spie presenti'}:
+          ${spie.map(function (s) { return s; }).join('; ')}.
+          Quando l'ACI a valle collassa, il denominatore del NASCET si riduce e la percentuale
+          <em>scende</em> proprio nelle stenosi più serrate: il numero rassicura mentre il vaso è quasi chiuso.
+          La quasi-occlusione si classifica come tale, non con una percentuale; in questo quadro il
+          metodo CC (riferimento ACC) è meno ingannevole${d.cc !== null ? ', e qui vale ' + fmtPct(d.cc) : ''}.
+        </div>
+      </div>
+    `;
+  }
+
+  /* ── blocco 5: quello che dà senso al confronto fra i metodi ── */
+  html += `
+    <div class="result-block">
+      <div class="section-label">Da tenere presente</div>
+      <div class="caveat-box">
+        <strong>I tre numeri non sono in disaccordo: misurano cose diverse.</strong>
+        Nella casistica di riferimento (15 pazienti, 30 carotidi) l'ECST è risultato sistematicamente
+        più alto del NASCET (48 ± 14% contro 24 ± 22%), e la stenosi d'area più alta di entrambi
+        (72 ± 2%). Il NASCET usa come riferimento un tratto distale sano, che è più stretto del vaso
+        alla biforcazione e fa uscire percentuali basse; l'ECST usa il calibro del vaso nel punto
+        stesso della stenosi.
+      </div>
+      <div class="caveat-box">
+        <strong>Il grado luminale non misura la placca.</strong>
+        Nel lavoro di riferimento l'area di parete — cioè il carico ateromasico — non correlava con la
+        stenosi NASCET, e solo debolmente con ECST e area. Un vaso può rimodellarsi verso l'esterno e
+        restare pervio con una placca importante: il caso illustrato aveva 0% NASCET, 45% ECST e 78% di
+        stenosi d'area.
+      </div>
+      ${d.e !== null ? `
+      <div class="caveat-box">
+        <strong>Da dove viene E.</strong> Sulle tecniche che mostrano solo il lume (DSA, angio-RM con
+        mezzo di contrasto) il calibro originale del vaso alla stenosi non si vede e va stimato: è la
+        principale fonte di variabilità dell'ECST. Le tecniche che disegnano la parete esterna —
+        dark blood, ecografia, TC — lo misurano davvero, ed è il motivo per cui in quello studio
+        l'ECST era più riproducibile fra osservatori con la sequenza T2 dark blood (r = 0.87) che
+        con l'angio-RM (r = 0.48).
+      </div>` : ''}
+    </div>
+  `;
+
+  const disclaimer = `
+    <div class="disclaimer-note">
+      <strong>Avvertenza:</strong> Referto generato automaticamente a supporto della pratica clinica: non sostituisce il giudizio del medico. I valori vanno interpretati nel contesto clinico del singolo paziente e verificati prima dell'uso.
+    </div>
+  `;
+
+  const actions = `
+    <div class="report-actions">
+      <button class="btn-copy" id="btnCopy" onclick="copyReport()">&#10003; Copia Testo per PACS</button>
+      <button class="btn-print" onclick="window.print()">Stampa / Salva PDF</button>
+    </div>
+  `;
+
+  const ph = document.getElementById('placeholder-msg');
+  if (ph) ph.remove();
+  document.getElementById('output-panel').innerHTML = html + disclaimer + actions;
+}
+
+function copyReport() {
+  const d = leggi();
+  if (d.d === null) return;
+
+  const mm  = (v) => v === null ? 'n.r.' : v.toFixed(1);
+  const pc  = (v) => v === null ? 'n.c.' : v + '%';
+  const occlusione = d.d === 0;
+  const nascetUsato = d.nascet !== null ? d.nascet : nascetDaEcst(d.ecst);
+
+  let t = 'STENOSI CAROTIDEA - NASCET, ECST e stenosi d\'area\n';
+  const intestazione = [d.lato ? 'Lato: ' + d.lato : '', d.sede ? 'Sede: ' + d.sede : ''].filter(Boolean).join('   ');
+  if (intestazione) t += intestazione + '\n';
+
+  t += '\nDIAMETRI (mm):\n';
+  t += `  A - ACC:                          ${mm(d.a)}\n`;
+  t += `  B - ACE:                          ${mm(d.b)}\n`;
+  t += `  C - ACI distale (NASCET):         ${mm(d.c)}\n`;
+  t += `  D - lume residuo alla stenosi:    ${mm(d.d)}\n`;
+  t += `  E - vaso alla stenosi (ECST):     ${mm(d.e)}\n`;
+
+  if (d.aLume !== null || d.aTot !== null) {
+    t += '\nAREE (mm2):\n';
+    t += `  Lume alla stenosi:  ${mm(d.aLume)}\n`;
+    t += `  Vaso totale:        ${mm(d.aTot)}\n`;
+  }
+
+  t += '\nGRADO DI STENOSI:\n';
+  t += `  NASCET:            ${pc(d.nascet)}${d.nascet === null && nascetUsato !== null ? '  (stimato dall\'ECST: ' + pc(nascetUsato) + ')' : ''}\n`;
+  t += `  ECST:              ${pc(d.ecst)}\n`;
+  t += `  Area:              ${pc(d.area)}\n`;
+  t += `  CC (rif. ACC):     ${pc(d.cc)}\n`;
+  t += `  Quadratico su C:   ${pc(d.quadC)}\n`;
+  t += `  Quadratico su E:   ${pc(d.quadE)}\n`;
+
+  /* Il testo per il PACS resta in ASCII: il trattino lungo delle etichette a
+     schermo, incollato in certi sistemi, diventa un carattere di sostituzione. */
+  const cat = occlusione ? 'occlusione'
+            : d.rimodellamento ? 'non classificabile (rimodellamento positivo)'
+            : categoria(nascetUsato).txt.replace('–', '-');
+  t += `\nCATEGORIA (scala NASCET): ${cat}\n`;
+  t += '  lieve < 50%  |  moderata 50-69%  |  severa >= 70%\n';
+
+  if (d.rimodellamento) {
+    t += '\nNOTA: lume residuo maggiore dell\'ACI distale di riferimento (rimodellamento positivo).\n';
+    t += 'Il NASCET e\' azzerato per convenzione; la placca resta.\n';
+  }
+
+  const spie = spieQuasiOcclusione(d);
+  if (!occlusione && spie.length) {
+    t += '\nNOTA: considerare la quasi-occlusione (' + spie.join('; ') + ').\n';
+    t += 'Con l\'ACI distale collassata il NASCET sottostima la stenosi.\n';
+  }
+
+  t += '\nCONVERSIONE (Rothwell 1994): ECST% = 0.6 x NASCET% + 40\n';
+  t += '  50% NASCET = 70% ECST   |   70% NASCET = 82% ECST\n';
+
+  t += '\n---\n';
+  t += 'Formule e schema delle misure: Mihai G et al., J Magn Reson Imaging 2012;35(2):449-455.\n';
+  t += 'NASCET: N Engl J Med 1991;325:445-53. ECST: Lancet 1998;351:1379-87.\n';
+  t += 'Conversione fra le scale: Rothwell PM et al., Stroke 1994;25:2435-9.\n';
+  t += 'Metodo quadratico: Alexandrov AV et al., Stroke 1993;24:1292-6.\n';
+
+  copiaPerPACS(t, document.getElementById('btnCopy'));
+}
+
+/* ── guida alle misure ─────────────────────────────────────────────────── */
+
+function openGuide() {
+  document.getElementById('guideOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGuide() {
+  document.getElementById('guideOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  evidenzia(null);
+}
+
+function handleGuideOverlayClick(e) {
+  if (e.target === document.getElementById('guideOverlay')) closeGuide();
+}
+
+/* ── TUTORIAL ── */
+const TUTORIAL_STEPS = [
+  {
+    title: 'Tre modi di misurare la stessa stenosi',
+    body: `<p>NASCET ed ECST misurano lo stesso restringimento con due riferimenti diversi, e danno
+    due numeri diversi. Non è un dettaglio metodologico: <strong>la stessa carotide può essere
+    "50%" o "70%"</strong> a seconda di quale si usa.</p>
+    <ul>
+      <li><strong>NASCET</strong> — riferimento: l'ACI distale sana, oltre il bulbo</li>
+      <li><strong>ECST</strong> — riferimento: il calibro del vaso nel punto stesso della stenosi</li>
+      <li><strong>Area</strong> — rapporto fra area del lume e area totale del vaso</li>
+    </ul>
+    <div class="tut-tip">Il riferimento distale del NASCET è più stretto del vaso alla biforcazione:
+    per questo il NASCET dà sempre percentuali più basse dell'ECST.</div>`
+  },
+  {
+    title: 'Le cinque misure',
+    body: `<p>Lo schema nel pannello di sinistra mostra dove si misura. Tocca una lettera per
+    evidenziarla; entrando in un campo si evidenzia da sola.</p>
+    <ul>
+      <li><strong>D</strong> — lume residuo minimo alla stenosi: serve sempre</li>
+      <li><strong>C</strong> — ACI distale, dove le pareti tornano parallele: dà il NASCET</li>
+      <li><strong>E</strong> — parete esterna allo stesso livello di D: dà l'ECST</li>
+      <li><strong>A</strong> e <strong>B</strong> — ACC e ACE, facoltative</li>
+    </ul>
+    <p>D ed E si misurano <strong>sulla stessa immagine</strong>, su una ricostruzione perpendicolare
+    all'asse del vaso.</p>
+    <div class="tut-warn">Con le tecniche che mostrano solo il lume (DSA, angio-RM con mdc) la parete
+    esterna non si vede: E va stimato, ed è lì che l'ECST perde riproducibilità.</div>`
+  },
+  {
+    title: 'Inserisci e calcola',
+    body: `<p>Bastano <strong>D</strong> e un riferimento. Con C esce il NASCET, con E l'ECST, con
+    entrambi anche il confronto fra le due scale. Le aree sono facoltative e servono alla stenosi d'area.</p>
+    <p>Man mano che compili, NASCET ed ECST compaiono in fondo al pannello.</p>
+    <div class="tut-tip">Se hai un solo riferimento, il tool converte comunque il valore sull'altra
+    scala con l'equazione di Rothwell (ECST = 0.6 × NASCET + 40), segnalando che è una stima.</div>`
+  },
+  {
+    title: 'Leggi il risultato',
+    body: `<p>Il verdetto è sempre espresso in <strong>scala NASCET</strong>, perché è quella su cui
+    sono definite le categorie dei trial chirurgici:</p>
+    <ul>
+      <li><strong>lieve</strong> &lt; 50%</li>
+      <li><strong>moderata</strong> 50–69%</li>
+      <li><strong>severa</strong> ≥ 70%</li>
+    </ul>
+    <div class="tut-warn">Due trappole che il tool segnala da solo: la <strong>quasi-occlusione</strong>,
+    in cui l'ACI a valle collassa e il NASCET scende invece di salire; e il <strong>rimodellamento
+    positivo</strong>, in cui il lume resta pervio e il NASCET vale 0% con una placca importante.</div>
+    <div class="tut-tip">Usa <em>Copia Testo per PACS</em> per esportare misure, tutti i metodi e la
+    conversione fra le scale in plain-text.</div>`
+  }
+];
+
+initTutorial(TUTORIAL_STEPS);
+
+function resetAll() {
+  ['d', 'c', 'e', 'a', 'b', 'area-lume', 'area-tot'].forEach(function (id) {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('lato').value = '';
+  document.getElementById('sede').value = '';
+  document.getElementById('live-index').style.display = 'none';
+  evidenzia(null);
+  document.getElementById('output-panel').innerHTML =
+    '<div class="placeholder" id="placeholder-msg">Inserisci il lume residuo <strong>D</strong> e almeno un diametro di riferimento (<strong>C</strong> per il NASCET, <strong>E</strong> per l\'ECST), poi premi <strong>Calcola</strong>.</div>';
+}
+</script>
+</body>
+</html>

@@ -93,6 +93,14 @@ window.SITE_TOOLS = [
     category: "Vascolare"
   }
 
+  ,{
+    id: "stenosi-carotidea",
+    title: "Stenosi carotidea",
+    description: "Grado di stenosi con i metodi NASCET, ECST, area e quadratico, con conversione fra le scale e schema delle misure",
+    url: "tools/stenosi-carotidea.html",
+    category: "Vascolare"
+  }
+
   /* Esempi per aggiungere nuovi strumenti, anche annidati:
 
   ,{
