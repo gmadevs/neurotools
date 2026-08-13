@@ -32,18 +32,33 @@ contorno ricopiato dentro ogni file.
 - [x] copia negli appunti → `assets/report-actions.js`
 - [x] macchinario del tutorial → `assets/tutorial.js` (−370 righe)
 - [ ] **scheletro del referto**: `.report-card`, `.report-actions`, stato
-      vuoto. Presente in 7 tool su 9.
-- [ ] **tabella dei centili**: 4 tool su 9 disegnano la stessa tabella.
-- [ ] **`diagnosis-box`**: 4 tool su 9, stessa struttura e stesse classi.
-- [ ] **modale della guida alle misure**: MRPI e stenosi carotidea hanno lo
-      stesso `.guide-overlay` con le stesse tre funzioni, e cambia solo cosa
-      c'è dentro. È il candidato più maturo: due copie identiche appena nate.
+      vuoto. Presente in 8 tool su 10.
+- [ ] **tabella dei centili**: 4 tool su 10 disegnano la stessa tabella.
+- [ ] **`diagnosis-box`**: 4 tool su 10, stessa struttura e stesse classi.
+- [ ] **modale della guida**: `.guide-overlay` con le stesse tre funzioni sta
+      ormai in **4 tool** (biometria fetale, MRPI, stenosi carotidea, ASPECTS)
+      e cambia solo cosa c'è dentro. È il candidato più maturo, e il più
+      trascurato: era già duplicato prima che ne aggiungessi altri due.
 - [ ] Arrivare a un **template per un nuovo strumento**: un tool nuovo
       dovrebbe essere i suoi dati normativi e la sua logica, non 800 righe di
       contorno. L'MRPI ne è la prova al costo pieno: 250 righe di CSS del
       contorno (modale tutorial, modale guida, tabelle, badge) ricopiate prima
       di scrivere una riga di calcolo. La stenosi carotidea le ha ricopiate
-      una seconda volta: il costo non è più un aneddoto, è la regola.
+      una seconda volta e l'ASPECTS una terza: il costo non è più un aneddoto,
+      è la regola.
+
+## Strumenti da fare
+
+- [ ] **pc-ASPECTS** (circolo posteriore, punteggio su 10 con pesi diversi:
+      2 punti per mesencefalo e ponte, 1 per talami, cervelletto e territori
+      della cerebrale posteriore). Il macchinario dell'ASPECTS — mappa a
+      poligoni, clic con tolleranza sul più vicino, elenco di caselle
+      sincronizzato — vale identico: cambiano le sagome e il fatto che le
+      regioni non valgono tutte un punto.
+      Attenzione a una differenza: il pc-ASPECTS ha regioni **su entrambi i
+      lati** (talami e cervelletto si contano a destra e a sinistra), quindi
+      il mezzo emisfero dell'ASPECTS lì non si applica e il disegno torna a
+      essere una sezione intera.
 
 ## Quando il catalogo cresce
 

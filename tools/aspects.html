@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="it" data-root="..">
+<head>
+<link rel="stylesheet" href="../assets/nav.css">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/site-config.js"></script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/app.js"></script>
+<script src="../assets/tutorial.js"></script>
+<script src="../assets/report-actions.js"></script>
+<script src="../assets/mobile-result.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ASPECTS – Alberta Stroke Program Early CT Score</title>
+<meta name="description" content="Calcolo interattivo dell'ASPECTS: mappa cliccabile delle 10 regioni del territorio della cerebrale media sui due livelli assiali">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Neuro-tools">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="ASPECTS — Neuro-tools">
+<meta property="og:description" content="Calcolo interattivo dell'ASPECTS: mappa cliccabile delle 10 regioni del territorio della cerebrale media sui due livelli assiali">
+<meta property="og:url" content="https://gmadevs.github.io/neurotools/tools/aspects.html">
+<meta property="og:image" content="https://gmadevs.github.io/neurotools/assets/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo Neuro-tools: uno scudo con un encefalo e strumenti di misura">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#10141a">
+<style>
+/* ── PALCO DELLA MAPPA ──────────────────────────────────────────────────────
+   La mappa non è un'illustrazione di corredo: è il comando principale, e
+   dentro il pannello da 400px le regioni profonde sarebbero larghe una decina
+   di pixel. Prende quindi tutta la larghezza, sopra il workspace, che qui
+   perde il min-height a piena schermata perché non è più la prima cosa.
+   ------------------------------------------------------------------------ */
+.workspace { min-height: 0; }
+.stage {
+    background: var(--card); border-bottom: 1px solid var(--rule);
+    padding: var(--sp-6) var(--sp-6) var(--sp-5);
+  }
+.stage-bar {
+    display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+    max-width: 860px; margin: 0 auto var(--sp-5);
+  }
+.punteggio { display: flex; align-items: baseline; gap: .5rem; }
+.punteggio .num {
+    font-family: var(--mono); font-size: 2.7rem; font-weight: 600;
+    line-height: 1; letter-spacing: -.02em; color: var(--ink);
+  }
+.punteggio .den { font-family: var(--mono); font-size: var(--fs-lg); color: var(--muted); }
+.punteggio .lab {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink);
+    align-self: center; margin-right: .1rem;
+  }
+.punteggio.ok     .num { color: var(--ok); }
+.punteggio.warn   .num { color: var(--mid); }
+.punteggio.danger .num { color: var(--warn); }
+.seg-wrap { display: flex; align-items: center; gap: .5rem; }
+.seg-label {
+    font-family: var(--mono); font-size: var(--fs-xs); color: var(--muted);
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.seg button {
+    background: var(--paper); color: var(--muted); border: none;
+    padding: .5rem .9rem; font-family: var(--mono); font-size: var(--fs-xs);
+    font-weight: 700; letter-spacing: .05em; cursor: pointer; transition: all .15s;
+  }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button.on { background: var(--accent); color: #fff; }
+.stage-note { font-size: var(--fs-xs); color: var(--muted); line-height: 1.45; }
+/* Con un solo emisfero il riquadro è alto e stretto: lasciarlo riempire la
+   pagina lo farebbe alto il doppio dello schermo. Il tetto è in larghezza, ed
+   è calibrato perché su desktop la mappa resti alta quanto prima. */
+.mappa { max-width: 580px; margin: 0 auto; }
+.mappa svg { display: block; width: 100%; height: auto; }
+.mappa-caption {
+    max-width: 860px; margin: .6rem auto 0; text-align: center;
+    font-size: var(--fs-xs); color: var(--muted); line-height: 1.5;
+  }
+/* Tavolozza da TC, indipendente da quella del sito: in tema chiaro il liquor
+   deve restare più scuro del parenchima e l'osso più chiaro, e con le
+   variabili di base.css uno dei due si invertiva passando al tema scuro. */
+.mappa {
+    --osso: #f4f6f9; --parenchima: #dfe4ea; --liquor: #b6bec9; --nuclei: #cdd4dc; --bordo: #8d95a1;
+    --reg-linea: #1b4f72; --reg-pieno: rgba(27,79,114,.13); --reg-sopra: rgba(27,79,114,.28);
+    --reg-colpita: rgba(139,37,0,.42); --reg-colpita-linea: #8b2500;
+    --reg-testo: #24303d;
+  }
+@media (prefers-color-scheme: dark) {
+  .mappa {
+    --osso: #46505f; --parenchima: #2b3441; --liquor: #171d26; --nuclei: #333d4c; --bordo: #7d8695;
+    --reg-linea: #8ec5f0; --reg-pieno: rgba(142,197,240,.14); --reg-sopra: rgba(142,197,240,.3);
+    --reg-colpita: rgba(255,158,136,.36); --reg-colpita-linea: #ff9e88;
+    --reg-testo: #e6e9ee;
+  }
+}
+.cranio { fill: var(--osso); stroke: var(--bordo); stroke-width: 1.2; }
+.encefalo { fill: var(--parenchima); stroke: none; }
+.liquor { fill: var(--liquor); stroke: none; }
+/* Il talamo è disegnato ma non è cliccabile: non fa parte delle dieci regioni,
+   e serve a riconoscere che si sta guardando il piano gangliare. */
+.nucleo { fill: var(--nuclei); stroke: var(--bordo); stroke-width: .8; stroke-dasharray: 3 2; }
+.falce { stroke: var(--bordo); stroke-width: 1.2; }
+.slice-titolo {
+    font-family: var(--mono); font-size: 9px; font-weight: 600;
+    fill: var(--reg-testo); text-anchor: middle;
+  }
+.orient { font-family: var(--mono); font-size: 8px; fill: var(--bordo); }
+/* ancorata a sinistra e non centrata: "talamo" centrato dentro una sagoma
+   larga 22 unità sborda di là dalla mediana e sembra un'altra cosa */
+.struttura-lab { font-family: var(--mono); font-size: 7px; fill: var(--bordo); text-anchor: start; }
+.reg-g polygon {
+    fill: var(--reg-pieno); stroke: var(--reg-linea); stroke-width: 1.4;
+    transition: fill .12s;
+  }
+.reg-g text {
+    font-family: var(--mono); font-weight: 700; fill: var(--reg-linea);
+    text-anchor: middle; pointer-events: none;
+  }
+.reg-guida { stroke: var(--reg-linea); stroke-width: 1; stroke-dasharray: 3 2; fill: none; }
+.reg-g.colpita .reg-guida { stroke: var(--reg-colpita-linea); }
+.mappa:not(.senza-hover) .reg-g:hover polygon { fill: var(--reg-sopra); }
+.reg-g.colpita polygon { fill: var(--reg-colpita); stroke: var(--reg-colpita-linea); stroke-width: 2; }
+.reg-g.colpita text { fill: var(--reg-colpita-linea); }
+/* ── ELENCO DELLE REGIONI ── */
+.check {
+    display: flex; align-items: flex-start; gap: .7rem;
+    padding: .5rem .7rem; border: 1px solid var(--rule); border-radius: 6px;
+    background: var(--paper); margin-bottom: .4rem; cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+.check:hover { border-color: var(--accent-ink); background: var(--accent-light); }
+.check.colpita { border-color: var(--warn); background: var(--warn-bg); }
+.check input[type="checkbox"] {
+    width: 1.4rem; height: 1.4rem; margin-top: 1px;
+    accent-color: var(--accent-ink); flex-shrink: 0; cursor: pointer;
+  }
+.check-code {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 700;
+    color: var(--accent-ink); min-width: 1.8rem; flex-shrink: 0;
+  }
+.check.colpita .check-code { color: var(--warn); }
+.check-label { font-size: var(--fs-sm); color: var(--ink); line-height: 1.4; }
+.actions { display: flex; gap: .75rem; margin-top: 1.2rem; }
+.btn {
+    padding: .55rem 1.2rem; border-radius: 6px;
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .04em; cursor: pointer; border: none; transition: opacity .15s;
+  }
+.btn:hover { opacity: .85; }
+.btn-secondary { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
+/* ── OUTPUT ── */
+.result-block {
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: 8px; padding: 1.2rem 1.4rem;
+  }
+.result-status {
+    display: inline-block; font-family: var(--mono); font-size: var(--fs-sm);
+    font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: .4rem 1.1rem; border-radius: 99px; margin-bottom: .8rem;
+    background: var(--neutral-bg); color: var(--neutral);
+  }
+.result-status.ok     { background: var(--ok-bg);   color: var(--ok); }
+.result-status.warn   { background: var(--mid-bg);  color: var(--mid); }
+.result-status.danger { background: var(--warn-bg); color: var(--warn); }
+.result-main {
+    font-family: var(--mono); font-size: var(--fs-2xl); font-weight: 600;
+    line-height: 1.2; letter-spacing: -.01em; margin-bottom: .5rem; color: var(--ink);
+  }
+.result-copy {
+    font-size: var(--fs-sm); color: var(--muted); line-height: 1.55; margin-bottom: .4rem;
+  }
+.chip-riga { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0 .2rem; }
+.chip {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 700;
+    padding: .22rem .55rem; border-radius: 4px;
+    background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn);
+  }
+.chip.pulita { background: var(--paper); color: var(--muted); border-color: var(--rule); font-weight: 400; }
+.livello-riga { margin-bottom: .7rem; }
+.livello-riga .titolo {
+    font-family: var(--mono); font-size: var(--fs-xs); color: var(--muted);
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+.metrics-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.metrics-table th {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
+    text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+    padding: .4rem .6rem; text-align: left; border-bottom: 1px solid var(--rule);
+  }
+.metrics-table td {
+    padding: .5rem .6rem; border-bottom: 1px solid var(--rule);
+    font-family: var(--mono); font-size: var(--fs-sm);
+  }
+.metrics-table tr:last-child td { border-bottom: none; }
+.metrics-table tr.qui td { background: var(--neutral-bg); font-weight: 600; }
+.ref-note { font-size: var(--fs-xs); color: var(--muted); margin-top: .8rem; line-height: 1.5; }
+.caveat-box {
+    background: var(--mid-bg); border-left: 3px solid var(--mid);
+    padding: .8rem 1rem; border-radius: 0 5px 5px 0;
+    font-size: var(--fs-sm); color: var(--ink); line-height: 1.55;
+  }
+.caveat-box + .caveat-box { margin-top: .8rem; }
+.caveat-box strong { color: var(--mid); }
+.btn-copy {
+    padding: .55rem 1.2rem; background: var(--ok); border: none; color: #fff;
+    border-radius: 5px; font-family: var(--mono); font-size: var(--fs-xs);
+    font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    cursor: pointer; transition: background .2s;
+  }
+.btn-copy:hover { background: #145a38; }
+.btn-copy.copied { background: #555; }
+.btn-print {
+    padding: .55rem 1.1rem; background: transparent; border: 1px solid var(--accent);
+    color: var(--accent-ink); border-radius: 5px; font-family: var(--mono);
+    font-size: var(--fs-xs); font-weight: 600; letter-spacing: .05em;
+    text-transform: uppercase; cursor: pointer; transition: all .15s;
+  }
+.btn-print:hover { background: var(--accent); color: #fff; }
+.report-actions { display: flex; gap: .7rem; margin-top: 1.4rem; align-items: center; }
+/* ── GUIDA ── */
+.section-label.with-action {
+    display: flex; align-items: baseline; justify-content: space-between; gap: .5rem;
+  }
+.btn-guide {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent-ink); background: var(--accent-light);
+    border: 1px solid var(--accent-light); border-radius: 3px; padding: .18rem .45rem;
+    cursor: pointer; transition: background .15s; flex-shrink: 0;
+  }
+.btn-guide:hover { background: var(--neutral-bg); }
+.guide-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.6); z-index: 1100;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+.guide-overlay.open { display: flex; }
+.guide-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 780px;
+    max-height: 92vh; display: flex; flex-direction: column;
+    box-shadow: 0 16px 48px rgba(0,0,0,.3); overflow: hidden;
+  }
+.guide-head {
+    background: var(--accent); color: #fff; padding: 1.1rem 1.4rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+.guide-head h2 {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+.guide-body { padding: 1.4rem 1.6rem 1.6rem; overflow-y: auto; }
+.guide-body h3 {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    color: var(--accent-ink); margin: 1.2rem 0 .5rem; letter-spacing: .04em;
+  }
+.guide-body h3:first-child { margin-top: 0; }
+.guide-body p, .guide-body li { font-size: var(--fs-sm); color: var(--ink); line-height: 1.6; }
+.guide-body p { margin-bottom: .6rem; }
+.guide-body ul { margin: .3rem 0 .7rem 1.1rem; }
+.guide-body li { margin-bottom: .25rem; }
+.guide-credit {
+    margin-top: 1.2rem; padding-top: .9rem; border-top: 1px solid var(--rule);
+    font-size: var(--fs-xs); color: var(--muted); font-style: italic; line-height: 1.55;
+  }
+/* ── TUTORIAL MODAL ── */
+.tutorial-header {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  }
+.tutorial-header h2 {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+.tutorial-close {
+    background: none; border: none; color: rgba(255,255,255,.7);
+    font-size: var(--fs-xl); cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+  }
+.tutorial-close:hover { color: #fff; }
+.tutorial-steps-bar {
+    display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
+    background: var(--paper); border-bottom: 1px solid var(--rule);
+  }
+.step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+.step-dot.active { background: var(--accent); }
+.step-dot.done { background: var(--ok); }
+.tutorial-steps-bar, .tutorial-header, .tutorial-footer { flex-shrink: 0; }
+.step-number {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: .5rem;
+  }
+.tutorial-body h3 {
+    font-family: var(--mono); font-size: var(--fs-md); font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+  }
+.tutorial-body p { font-size: var(--fs-sm); line-height: 1.65; color: var(--muted); margin-bottom: .6rem; }
+.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: var(--fs-sm); line-height: 1.7; color: var(--muted); }
+.tut-tip {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: var(--fs-sm); color: var(--accent-ink); margin-top: .8rem;
+  }
+.tut-warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: var(--fs-sm); color: var(--warn); margin-top: .8rem;
+  }
+.tutorial-footer {
+    padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
+    justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
+  }
+.tutorial-skip {
+    font-size: var(--fs-xs); color: var(--muted); cursor: pointer;
+    background: none; border: none; padding: 0; transition: color .15s;
+  }
+.tutorial-nav { display: flex; gap: .6rem; }
+.btn-tut-prev, .btn-tut-next {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
+    letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
+  }
+.btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: var(--muted); }
+.btn-tut-prev:hover { border-color: var(--accent-ink); color: var(--accent-ink); }
+.btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+.btn-tut-next:hover { background: #143d57; }
+.btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+.btn-tut-next.finish:hover { background: #145a38; }
+/* Impilate, le sezioni prendono tutta la larghezza: è lì che si guadagnano i
+   pixel sulle regioni piccole, ed è il motivo per cui si disegna un emisfero
+   solo. La mappa diventa più alta dello schermo, quindi il punteggio si
+   attacca in alto: scorrendo verso la corona radiata deve restare visibile. */
+@media (max-width: 560px) {
+  /* il tetto serve anche qui: una sezione sola larga quanto un tablet
+     porterebbe le sigle delle regioni a 40px, più del titolo della pagina */
+  .mappa { max-width: 400px; }
+  .stage-bar {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--card); border-bottom: 1px solid var(--rule);
+    padding: var(--sp-3) 0; margin-bottom: var(--sp-3);
+  }
+}
+@media (max-width: 640px) {
+  .stage { padding: var(--sp-5) var(--sp-4); }
+  .punteggio .num { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ASPECTS</h1>
+  <span>Alberta Stroke Program Early CT Score — Barber et al., Lancet 2000
+    <a class="badge-link" href="https://pubmed.ncbi.nlm.nih.gov/10905241/" target="_blank" rel="noopener">PubMed</a>
+  </span>
+  <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
+</header>
+
+<!-- ── TUTORIAL MODAL ── -->
+<div class="tutorial-overlay" id="tutorialOverlay" onclick="handleOverlayClick(event)">
+  <div class="tutorial-modal">
+    <div class="tutorial-header">
+      <h2>Come usare il tool</h2>
+      <button class="tutorial-close" onclick="closeTutorial()">&#10005;</button>
+    </div>
+    <div class="tutorial-steps-bar" id="stepBar"></div>
+    <div class="tutorial-body" id="tutorialBody"></div>
+    <div class="tutorial-footer">
+      <button class="tutorial-skip" onclick="closeTutorial()">Chiudi</button>
+      <div class="tutorial-nav">
+        <button class="btn-tut-prev" id="btnPrev" onclick="tutStep(-1)">&#8592; Indietro</button>
+        <button class="btn-tut-next" id="btnNext" onclick="tutStep(1)">Avanti &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── GUIDA AL PUNTEGGIO ── -->
+<div class="guide-overlay" id="guideOverlay" onclick="handleGuideOverlayClick(event)">
+  <div class="guide-modal">
+    <div class="guide-head">
+      <h2>Come si assegna il punteggio</h2>
+      <button class="tutorial-close" onclick="closeGuide()">&#10005;</button>
+    </div>
+    <div class="guide-body">
+      <h3>Il conteggio</h3>
+      <p>Si parte da <strong>10</strong> e si sottrae <strong>1 punto per ogni regione</strong> del
+      territorio della cerebrale media che mostra alterazione ischemica precoce. Una regione vale un
+      punto sola, che sia interessata per intero o solo in parte: l'ASPECTS conta <em>quante</em>
+      regioni, non <em>quanto</em> volume.</p>
+
+      <h3>Su quali immagini</h3>
+      <p>Le dieci regioni stanno su due piani assiali:</p>
+      <ul>
+        <li><strong>Livello dei nuclei della base</strong> — tutte le sezioni in cui si vedono
+        talamo e nuclei della base. Qui stanno <strong>C, IC, L, I, M1, M2, M3</strong>.</li>
+        <li><strong>Livello della corona radiata</strong> — le sezioni subito superiori, dove i
+        nuclei non si vedono più. Qui stanno <strong>M4, M5, M6</strong>, cioè le tre regioni
+        corticali immediatamente sopra M1, M2 e M3.</li>
+      </ul>
+      <p>Una regione va giudicata su <strong>più sezioni contigue</strong>: un'alterazione visibile
+      su una sola immagine è, molto spesso, volume parziale.</p>
+
+      <h3>Cosa conta come alterazione precoce</h3>
+      <ul>
+        <li><strong>Ipodensità parenchimale</strong> e perdita della differenziazione fra sostanza
+        grigia e bianca — è il reperto su cui si basa il punteggio.</li>
+        <li>Il <strong>rigonfiamento focale isolato</strong> (solchi compressi senza ipodensità)
+        secondo le indicazioni successive del gruppo ASPECTS non va sottratto: identifica tessuto
+        ancora recuperabile, non nucleo infartuale.</li>
+        <li>Le alterazioni <strong>croniche</strong> — esiti, leucoaraiosi, lacune vecchie — non si
+        contano: l'ASPECTS misura l'ischemia acuta.</li>
+      </ul>
+
+      <h3>Le dieci regioni</h3>
+      <ul>
+        <li><strong>C</strong> — nucleo caudato</li>
+        <li><strong>IC</strong> — capsula interna</li>
+        <li><strong>L</strong> — nucleo lentiforme</li>
+        <li><strong>I</strong> — corteccia insulare (il "nastro insulare")</li>
+        <li><strong>M1</strong> — corteccia anteriore della cerebrale media</li>
+        <li><strong>M2</strong> — corteccia laterale al nastro insulare</li>
+        <li><strong>M3</strong> — corteccia posteriore della cerebrale media</li>
+        <li><strong>M4, M5, M6</strong> — le tre corrispondenti al livello della corona radiata,
+        immediatamente sopra M1, M2 e M3</li>
+      </ul>
+      <p><strong>Il talamo non si conta.</strong> È disegnato sulla mappa solo come punto di
+      riferimento per riconoscere il livello giusto: non è una delle dieci regioni.</p>
+
+      <div class="guide-credit">
+        Punteggio e definizione delle regioni: Barber PA, Demchuk AM, Zhang J, Buchan AM,
+        <em>Validity and reliability of a quantitative computed tomography score in predicting
+        outcome of hyperacute stroke before thrombolytic therapy</em>, Lancet 2000;355(9216):1670–1674.
+        Lo schema è un disegno originale: la disposizione delle regioni è quella descritta dagli
+        autori, non è la riproduzione di un'illustrazione pubblicata.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PALCO: MAPPA CLICCABILE ── -->
+<div class="stage">
+  <div class="stage-bar">
+    <div class="punteggio" id="punteggio">
+      <span class="lab">ASPECTS</span>
+      <span class="num" id="score">10</span>
+      <span class="den">/ 10</span>
+    </div>
+    <div class="seg-wrap">
+      <span class="seg-label">Emisfero</span>
+      <div class="seg" role="group" aria-label="Emisfero interessato">
+        <button type="button" id="lato-sx" class="on" aria-label="Emisfero sinistro"
+                onclick="setLato('sinistra')">SX</button>
+        <button type="button" id="lato-dx" aria-label="Emisfero destro"
+                onclick="setLato('destra')">DX</button>
+      </div>
+    </div>
+    <button class="btn-guide" onclick="openGuide()" title="Regole del punteggio">&#9635; Come si conta</button>
+    <div class="stage-note" id="conteggio-nota">Nessuna regione segnata.</div>
+  </div>
+
+  <!-- La mappa è aria-hidden e comandata solo dal puntatore: il percorso
+       accessibile e da tastiera è l'elenco di caselle qui sotto, che tiene lo
+       stesso stato. Due controlli per lo stesso dato, non due stati. -->
+  <div class="mappa" id="mappa" aria-hidden="true"></div>
+  <div class="mappa-caption">
+    Tocca una regione per segnarla come alterata. È disegnato <strong>solo l'emisfero da
+    refertare</strong>: il selettore lo specchia secondo la convenzione radiologica, per cui la
+    destra del paziente sta a sinistra dell'immagine.
+  </div>
+</div>
+
+<div class="workspace">
+  <!-- ── INPUT PANEL ── -->
+  <div class="input-panel">
+    <div class="section-block">
+      <div class="section-label with-action">
+        <span>Regioni alterate</span>
+        <button class="btn-guide" onclick="openGuide()">&#9635; Regole</button>
+      </div>
+      <div class="hint" style="margin-bottom:.7rem">
+        Stesso stato della mappa: si può usare l'uno o l'altra.
+      </div>
+      <div class="section-label">Livello dei nuclei della base</div>
+      <div id="elenco-gangliare"></div>
+      <div class="section-label" style="margin-top:1.1rem">Livello della corona radiata</div>
+      <div id="elenco-sovragangliare"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="azzera()">Azzera</button>
+    </div>
+  </div>
+
+  <!-- ── OUTPUT PANEL ── -->
+  <div class="output-panel" id="output-panel"></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   MAPPA DELLE DIECI REGIONI
+   --------------------------------------------------------------------------
+   Il disegno è generato qui e non è un'immagine: segue il tema, resta nitido
+   a ogni zoom, e soprattutto ogni regione è un oggetto con un suo stato, che
+   è tutto il punto di questo strumento.
+
+   Le regioni sono POLIGONI, non path con curve. Non è una scorciatoia: le
+   coordinate vanno specchiate quando si passa all'emisfero destro e vanno
+   interrogate a ogni clic per sapere dove si è toccato. Su una lista di punti
+   entrambe le cose sono tre righe; su un path con curve di Bézier sarebbero
+   un parser.
+
+   Si disegna SOLO l'emisfero da refertare. L'emisfero controlaterale non porta
+   nessuna informazione — non ci sono regioni da segnare — e si prendeva metà
+   della larghezza disponibile: togliendolo, a parità di schermo, ogni regione
+   raddoppia. Sul telefono l'insula passa da 13 a 22 pixel di lato.
+
+   Il selettore dell'emisfero specchia il disegno, non lo ridisegna: la
+   convenzione radiologica vuole la destra del paziente a sinistra
+   dell'immagine, e con un solo emisfero è l'unico modo per dirlo.
+
+   Le due sezioni sono affiancate su schermo largo e impilate su schermo
+   stretto, dove ciascuna prende tutta la larghezza.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Le coordinate delle sagome sono scritte con la mediana a x=120: è così che
+   sono state verificate, e restano tali. Il riquadro della sezione contiene
+   però solo l'emisfero, quindi al momento di collocarle si passa alla
+   distanza dalla mediana — che è anche ciò che rende la specchiatura una
+   sottrazione invece che una matrice. */
+var MEDIANA = 120;
+var SLICE_W = 138, SLICE_H = 310, TITOLO_H = 24, MARG = 10;
+
+/* Sotto questa soglia le due sezioni si impilano e ciascuna prende la
+   larghezza intera. Deve stare in un posto solo: la stessa soglia è nel CSS,
+   e se le due divergono si ottiene un disegno affiancato con lo stile di
+   quello impilato. */
+var SOGLIA_IMPILA = '(max-width: 560px)';
+
+/* Bande corticali: settori di corona ellittica. Gli angoli sono in gradi, 0 =
+   laterale, negativi in avanti. I tre archi lasciano un piccolo intervallo fra
+   loro perché due bande contigue senza stacco si leggono come una sola. */
+function banda(a1, a2, rIn, rOut, geo) {
+  var pts = [], n = 16, i, a;
+  for (i = 0; i <= n; i++) {
+    a = (a1 + (a2 - a1) * i / n) * Math.PI / 180;
+    pts.push([geo.cx + geo.rx * rOut * Math.cos(a), geo.cy + geo.ry * rOut * Math.sin(a)]);
+  }
+  for (i = n; i >= 0; i--) {
+    a = (a1 + (a2 - a1) * i / n) * Math.PI / 180;
+    pts.push([geo.cx + geo.rx * rIn * Math.cos(a), geo.cy + geo.ry * rIn * Math.sin(a)]);
+  }
+  return pts;
+}
+
+var GEO = {
+  g: { cx: 120, cy: 140, rx: 104, ry: 130, rIn: 0.70, rOut: 0.965 },
+  s: { cx: 120, cy: 140, rx: 96,  ry: 120, rIn: 0.68, rOut: 0.965 }
+};
+
+/* Titoli corti: il riquadro di una sezione è largo 138 unità, e per esteso
+   ("Livello dei nuclei della base") il testo ne occupa il doppio, finendo
+   sopra quello della sezione accanto. Per esteso restano nel pannello e nel
+   referto, dove c'è la riga intera. */
+var LIVELLI = {
+  g: 'Nuclei della base',
+  s: 'Corona radiata'
+};
+
+/* Le profonde sono disegnate a mano: sono forme anatomiche, non settori.
+   Le coordinate sono verificate una a una perché non si sovrappongano — due
+   poligoni accavallati renderebbero ambiguo il clic. */
+var REGIONI = [
+  { id: 'C',  liv: 'g', nome: 'Nucleo caudato',
+    poly: [[134,101],[145,106],[148,124],[144,136],[137,132],[133,113]], lab: [140,119], fs: 11 },
+  /* La capsula interna è larga una decina di unità: un'etichetta di due
+     caratteri dentro la sagoma finirebbe sopra il lentiforme. Esce, con una
+     linea di richiamo, nello spazio libero davanti al caudato. */
+  { id: 'IC', liv: 'g', nome: 'Capsula interna',
+    poly: [[151,103],[161,107],[155,137],[166,164],[156,168],[147,137]],
+    lab: [156,86], guida: [[156,90],[158,112]], fs: 11 },
+  { id: 'L',  liv: 'g', nome: 'Nucleo lentiforme',
+    poly: [[162,112],[175,121],[179,141],[173,158],[165,160],[160,136]], lab: [169,140], fs: 11 },
+  { id: 'I',  liv: 'g', nome: 'Corteccia insulare',
+    poly: [[180,118],[189,121],[190,144],[185,168],[176,166],[181,142]], lab: [184,146], fs: 10 },
+  { id: 'M1', liv: 'g', nome: 'Corteccia MCA anteriore',            arco: [-70, -33], fs: 11 },
+  { id: 'M2', liv: 'g', nome: 'Corteccia MCA laterale all\'insula', arco: [-28, 26],  fs: 11 },
+  { id: 'M3', liv: 'g', nome: 'Corteccia MCA posteriore',           arco: [32, 62],   fs: 11 },
+  { id: 'M4', liv: 's', nome: 'Corteccia MCA anteriore, sopra M1',  arco: [-70, -33], fs: 11 },
+  { id: 'M5', liv: 's', nome: 'Corteccia MCA laterale, sopra M2',   arco: [-28, 26],  fs: 11 },
+  { id: 'M6', liv: 's', nome: 'Corteccia MCA posteriore, sopra M3', arco: [32, 62],   fs: 11 }
+];
+
+/* Strutture non contate: servono a riconoscere il livello giusto. Il talamo in
+   particolare è il modo per capire se si sta guardando il piano gangliare — ed
+   è anche l'errore classico, perché non fa parte delle dieci regioni. */
+var ANATOMIA = {
+  g: [
+    { cls: 'liquor', poly: [[123,95],[130,101],[133,120],[130,131],[126,126],[122,103]] },
+    /* del III ventricolo, che sta sulla mediana, si disegna la metà che cade
+       nell'emisfero rappresentato: appoggiata alla falce, come nella realtà */
+    { cls: 'liquor', poly: [[120,140],[124,140],[124,168],[120,168]] },
+    { cls: 'liquor', poly: [[130,180],[138,188],[141,206],[134,210],[128,194]] },
+    { cls: 'nucleo', poly: [[127,143],[141,146],[147,165],[139,178],[129,174],[125,156]],
+      lab: 'talamo', labPos: [128,166] }
+  ],
+  s: [
+    { cls: 'liquor', poly: [[125,108],[133,118],[137,150],[131,166],[125,150],[122,116]] }
+  ]
+};
+
+function poligono(r, geo) {
+  return r.poly ? r.poly : banda(r.arco[0], r.arco[1], geo.rIn, geo.rOut, geo);
+}
+
+function centroide(pts) {
+  var sx = 0, sy = 0;
+  pts.forEach(function (p) { sx += p[0]; sy += p[1]; });
+  return [sx / pts.length, sy / pts.length];
+}
+
+/* ── stato ─────────────────────────────────────────────────────────────── */
+
+var colpite = {};                 /* id → true */
+var lato = 'sinistra';
+var disposte = [];                /* poligoni in coordinate finali, per il clic */
+
+function nColpite() { return Object.keys(colpite).length; }
+function punteggio() { return 10 - nColpite(); }
+
+/* ── disegno ───────────────────────────────────────────────────────────── */
+
+function pts2str(pts) {
+  return pts.map(function (p) {
+    return (Math.round(p[0] * 10) / 10) + ',' + (Math.round(p[1] * 10) / 10);
+  }).join(' ');
+}
+
+/* Specchiatura e traslazione in un colpo solo: le coordinate finali servono
+   anche al test del clic, quindi conviene calcolarle una volta sola invece di
+   affidarle a un transform SVG che poi andrebbe invertito. */
+function collocaFn(dx, dy, specchia) {
+  return function (p) {
+    var lat = p[0] - MEDIANA;    /* 0 = mediana, positivo = verso l'esterno */
+    var x = specchia ? (SLICE_W - MARG - lat) : (MARG + lat);
+    return [x + dx, p[1] + dy];
+  };
+}
+
+/* Mezza ellisse: l'arco va da polo frontale a polo occipitale passando per il
+   lato, e si chiude da solo sulla mediana, dove cos vale zero. */
+function mezzaEllisse(geo, k) {
+  var pts = [], n = 40, i, a;
+  for (i = 0; i <= n; i++) {
+    a = -Math.PI / 2 + i / n * Math.PI;
+    pts.push([geo.cx + geo.rx * k * Math.cos(a), geo.cy + geo.ry * k * Math.sin(a)]);
+  }
+  return pts;
+}
+
+function disegnaSlice(liv, dx, dy, specchia) {
+  var geo = GEO[liv];
+  var colloca = collocaFn(dx, dy + TITOLO_H, specchia);
+  var s = '';
+
+  s += '<text class="slice-titolo" x="' + (dx + SLICE_W / 2) + '" y="' + (dy + 14) + '">' +
+       LIVELLI[liv] + '</text>';
+
+
+  s += '<polygon class="cranio" points="' + pts2str(mezzaEllisse(geo, 1.09).map(colloca)) + '"></polygon>';
+  s += '<polygon class="encefalo" points="' + pts2str(mezzaEllisse(geo, 1).map(colloca)) + '"></polygon>';
+
+  /* La falce: senza, il taglio dritto sulla mediana sembra un errore di
+     ritaglio invece che il piano interemisferico. */
+  var falceA = colloca([MEDIANA, geo.cy - geo.ry * 0.99]);
+  var falceB = colloca([MEDIANA, geo.cy + geo.ry * 0.99]);
+  s += '<line class="falce" x1="' + falceA[0] + '" y1="' + falceA[1] +
+       '" x2="' + falceB[0] + '" y2="' + falceB[1] + '"></line>';
+
+  ANATOMIA[liv].forEach(function (a) {
+    s += '<polygon class="' + a.cls + '" points="' + pts2str(a.poly.map(colloca)) + '"></polygon>';
+    if (a.lab) {
+      var p = colloca(a.labPos);
+      s += '<text class="struttura-lab" x="' + p[0] + '" y="' + p[1] + '">' + a.lab + '</text>';
+    }
+  });
+
+  REGIONI.filter(function (r) { return r.liv === liv; }).forEach(function (r) {
+    var pts = poligono(r, geo).map(colloca);
+    var lab = colloca(r.lab || centroide(poligono(r, geo)));
+    disposte.push({ id: r.id, pts: pts });
+    var guida = '';
+    if (r.guida) {
+      var a = colloca(r.guida[0]), b = colloca(r.guida[1]);
+      guida = '<line class="reg-guida" x1="' + a[0] + '" y1="' + a[1] +
+              '" x2="' + b[0] + '" y2="' + b[1] + '"></line>';
+    }
+    s += '<g class="reg-g' + (colpite[r.id] ? ' colpita' : '') + '" data-reg="' + r.id + '">' +
+         '<polygon points="' + pts2str(pts) + '"></polygon>' + guida +
+         '<text x="' + lab[0] + '" y="' + (lab[1] + r.fs / 3) + '" style="font-size:' + r.fs + 'px">' +
+         r.id + '</text></g>';
+  });
+
+  /* Un solo marcatore, sul bordo esterno: con un emisfero soltanto è lui a
+     dire da che parte si sta guardando. Segue la specchiatura, perché è la
+     sua posizione nell'immagine a portare l'informazione. */
+  var mk = colloca([MEDIANA + 118, geo.cy]);
+  s += '<text class="orient" x="' + mk[0] + '" y="' + mk[1] +
+       '" text-anchor="middle">' + (lato === 'destra' ? 'D' : 'S') + '</text>';
+
+  return s;
+}
+
+function disegna() {
+  var impilato = window.matchMedia(SOGLIA_IMPILA).matches;
+  var specchia = lato === 'destra';
+  disposte = [];
+
+  var vb, corpo;
+  if (impilato) {
+    vb = '0 0 ' + SLICE_W + ' ' + (SLICE_H * 2 + 16);
+    corpo = disegnaSlice('g', 0, 0, specchia) + disegnaSlice('s', 0, SLICE_H + 16, specchia);
+  } else {
+    vb = '0 0 ' + (SLICE_W * 2 + 20) + ' ' + SLICE_H;
+    corpo = disegnaSlice('g', 0, 0, specchia) + disegnaSlice('s', SLICE_W + 20, 0, specchia);
+  }
+
+  document.getElementById('mappa').innerHTML =
+    '<svg viewBox="' + vb + '" id="svg-mappa">' + corpo + '</svg>';
+}
+
+/* ── clic ──────────────────────────────────────────────────────────────────
+   Il test non si ferma al poligono. L'insula è larga 9 unità: su un telefono
+   sono 13 pixel, contro i 48 che il resto del sito considera la soglia
+   utilizzabile al tocco. Un tocco che cade vicino a una regione, e non dentro
+   nessun'altra, viene quindi attribuito alla più vicina entro una tolleranza.
+   Il criterio resta deterministico — vince sempre e solo la più vicina — e
+   allarga il bersaglio senza allargare il disegno.
+   ------------------------------------------------------------------------ */
+
+var TOLLERANZA = 14;   /* unità di viewBox */
+
+function dentroPoligono(x, y, pts) {
+  var dentro = false, i, j, xi, yi, xj, yj;
+  for (i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    xi = pts[i][0]; yi = pts[i][1]; xj = pts[j][0]; yj = pts[j][1];
+    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) dentro = !dentro;
+  }
+  return dentro;
+}
+
+function distanzaSegmento(x, y, a, b) {
+  var dx = b[0] - a[0], dy = b[1] - a[1];
+  var len2 = dx * dx + dy * dy;
+  var t = len2 === 0 ? 0 : ((x - a[0]) * dx + (y - a[1]) * dy) / len2;
+  t = Math.max(0, Math.min(1, t));
+  var px = a[0] + t * dx, py = a[1] + t * dy;
+  return Math.sqrt((x - px) * (x - px) + (y - py) * (y - py));
+}
+
+function distanzaPoligono(x, y, pts) {
+  var min = Infinity;
+  for (var i = 0; i < pts.length; i++) {
+    min = Math.min(min, distanzaSegmento(x, y, pts[i], pts[(i + 1) % pts.length]));
+  }
+  return min;
+}
+
+function regioneAl(x, y) {
+  var i, d;
+  for (i = 0; i < disposte.length; i++) {
+    if (dentroPoligono(x, y, disposte[i].pts)) return disposte[i].id;
+  }
+  var vicina = null, minD = TOLLERANZA;
+  for (i = 0; i < disposte.length; i++) {
+    d = distanzaPoligono(x, y, disposte[i].pts);
+    if (d < minD) { minD = d; vicina = disposte[i].id; }
+  }
+  return vicina;
+}
+
+document.getElementById('mappa').addEventListener('click', function (ev) {
+  var svg = document.getElementById('svg-mappa');
+  if (!svg) return;
+  var box = svg.getBoundingClientRect();
+  var vb = svg.viewBox.baseVal;
+  /* il viewBox è mappato sul riquadro senza margini: la scala è la stessa sui
+     due assi perché il rapporto di forma coincide */
+  var x = (ev.clientX - box.left) / box.width * vb.width;
+  var y = (ev.clientY - box.top) / box.height * vb.height;
+  var id = regioneAl(x, y);
+  if (id) commuta(id);
+});
+
+/* ── elenco di caselle ─────────────────────────────────────────────────── */
+
+function costruisciElenco() {
+  ['g', 's'].forEach(function (liv) {
+    var box = document.getElementById(liv === 'g' ? 'elenco-gangliare' : 'elenco-sovragangliare');
+    box.innerHTML = REGIONI.filter(function (r) { return r.liv === liv; }).map(function (r) {
+      return '<label class="check" id="check-' + r.id + '">' +
+             /* autocomplete="off" da solo non basta — provato: Chrome
+                ripristina lo stesso le caselle create via innerHTML. La
+                pulizia vera è nel gestore di pageshow, in fondo al file. */
+             '<input type="checkbox" autocomplete="off" id="cb-' + r.id +
+             '" aria-label="' + r.id + ' — ' + r.nome + '">' +
+             '<span class="check-code">' + r.id + '</span>' +
+             '<span class="check-label">' + r.nome + '</span></label>';
+    }).join('');
+  });
+  REGIONI.forEach(function (r) {
+    document.getElementById('cb-' + r.id).addEventListener('change', function () {
+      commuta(r.id, this.checked);
+    });
+  });
+}
+
+/* ── stato e aggiornamento ─────────────────────────────────────────────── */
+
+function commuta(id, forza) {
+  var nuovo = forza === undefined ? !colpite[id] : forza;
+  if (nuovo) colpite[id] = true; else delete colpite[id];
+  aggiorna();
+}
+
+function aggiorna() {
+  REGIONI.forEach(function (r) {
+    var on = !!colpite[r.id];
+    var g = document.querySelector('.reg-g[data-reg="' + r.id + '"]');
+    if (g) g.classList.toggle('colpita', on);
+    var cb = document.getElementById('cb-' + r.id);
+    if (cb) cb.checked = on;
+    var lab = document.getElementById('check-' + r.id);
+    if (lab) lab.classList.toggle('colpita', on);
+  });
+
+  var p = punteggio();
+  document.getElementById('score').textContent = p;
+  document.getElementById('punteggio').className = 'punteggio ' + fascia(p).cls;
+
+  var n = nColpite();
+  document.getElementById('conteggio-nota').textContent =
+    n === 0 ? 'Nessuna regione segnata.'
+            : n + (n === 1 ? ' regione segnata' : ' regioni segnate') + ' su 10.';
+
+  referto();
+}
+
+function setLato(l) {
+  lato = l;
+  document.getElementById('lato-sx').classList.toggle('on', l === 'sinistra');
+  document.getElementById('lato-dx').classList.toggle('on', l === 'destra');
+  disegna();
+  aggiorna();
+}
+
+function azzera() {
+  colpite = {};
+  aggiorna();
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LETTURA DEL PUNTEGGIO
+   --------------------------------------------------------------------------
+   Le fasce sono quelle che si trovano nei lavori, ma vanno dette per quello
+   che sono: soglie di arruolamento negli studi, non confini biologici. La
+   soglia ≥ 6 viene dai trial di trombectomia della prima ondata; gli studi del
+   2022-2023 sul nucleo esteso hanno mostrato beneficio anche fra 3 e 5, ed è
+   il motivo per cui qui un ASPECTS basso non viene presentato come una
+   preclusione.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+function fascia(p) {
+  if (p >= 8) return { cls: 'ok',     txt: 'Alterazioni assenti o limitate' };
+  if (p >= 6) return { cls: 'warn',   txt: 'Alterazioni intermedie' };
+  return { cls: 'danger', txt: 'Alterazioni estese' };
+}
+
+function elencoRegioni(liv) {
+  return REGIONI.filter(function (r) { return r.liv === liv && colpite[r.id]; });
+}
+
+function referto() {
+  var p = punteggio();
+  var f = fascia(p);
+  var n = nColpite();
+  var emisfero = lato === 'destra' ? 'destro' : 'sinistro';
+  var gang = elencoRegioni('g'), sovra = elencoRegioni('s');
+
+  var commento;
+  if (n === 0) {
+    commento = 'Nessuna regione segnata: ASPECTS 10, cioè nessuna alterazione ischemica precoce ' +
+               'nel territorio della cerebrale media. Un ASPECTS di 10 nelle primissime ore è ' +
+               'frequente anche in presenza di occlusione di grosso vaso — la TC senza contrasto ' +
+               'può essere ancora muta, e il punteggio non sostituisce lo studio vascolare.';
+  } else if (p === 0) {
+    commento = 'Tutte e dieci le regioni sono interessate: alterazione ischemica precoce estesa ' +
+               'all\'intero territorio della cerebrale media.';
+  } else if (p >= 8) {
+    commento = 'Alterazioni precoci limitate a poche regioni. È la fascia in cui gli studi hanno ' +
+               'riportato gli esiti migliori dopo riperfusione.';
+  } else if (p >= 6) {
+    commento = 'Fascia intermedia. Nella casistica originale un ASPECTS ≤ 7 si associava a esito ' +
+               'funzionale peggiore e a più emorragie sintomatiche dopo trombolisi endovenosa.';
+  } else {
+    commento = 'Alterazioni estese. Questa fascia era criterio di esclusione nei primi trial di ' +
+               'trombectomia, ma gli studi sul nucleo esteso del 2022–2023 hanno mostrato un ' +
+               'beneficio del trattamento anche fra 3 e 5 in pazienti selezionati: è un dato che ' +
+               'pesa nella decisione, non che la chiude.';
+  }
+
+  function chip(r) { return '<span class="chip">' + r.id + '</span>'; }
+
+  var html = `
+    <div class="result-block">
+      <div class="section-label">Punteggio</div>
+      <div class="result-status ${f.cls}">${f.cls === 'ok' ? '✓' : f.cls === 'warn' ? '⚠' : '✕'} ${f.txt}</div>
+      <div class="result-main">ASPECTS = ${p}/10</div>
+      <div class="result-copy">Emisfero ${emisfero} · ${n === 0 ? 'nessuna regione alterata' :
+        n + (n === 1 ? ' regione alterata' : ' regioni alterate')}.</div>
+      <div class="result-copy">${commento}</div>
+    </div>
+  `;
+
+  html += `
+    <div class="result-block">
+      <div class="section-label">Regioni</div>
+      <div class="livello-riga">
+        <div class="titolo">Livello dei nuclei della base</div>
+        <div class="chip-riga">${gang.length ? gang.map(chip).join('') :
+          '<span class="chip pulita">nessuna</span>'}</div>
+      </div>
+      <div class="livello-riga">
+        <div class="titolo">Livello della corona radiata</div>
+        <div class="chip-riga">${sovra.length ? sovra.map(chip).join('') :
+          '<span class="chip pulita">nessuna</span>'}</div>
+      </div>
+      ${n ? '<div class="ref-note">' +
+        gang.concat(sovra).map(function (r) { return '<strong>' + r.id + '</strong> ' + r.nome; }).join(' · ') +
+        '</div>' : ''}
+    </div>
+  `;
+
+  html += `
+    <div class="result-block">
+      <div class="section-label">Come si legge il punteggio</div>
+      <div class="table-scroll"><table class="metrics-table">
+        <thead><tr><th>ASPECTS</th><th>Cosa se ne dice in letteratura</th></tr></thead>
+        <tbody>
+          <tr class="${p >= 8 ? 'qui' : ''}"><td>8 – 10</td><td>alterazioni precoci limitate; esiti migliori dopo riperfusione</td></tr>
+          <tr class="${p >= 6 && p < 8 ? 'qui' : ''}"><td>6 – 7</td><td>≤ 7 associato a esito peggiore e più emorragie sintomatiche dopo trombolisi ev (Barber 2000)</td></tr>
+          <tr class="${p >= 3 && p < 6 ? 'qui' : ''}"><td>3 – 5</td><td>escluso dai primi trial di trombectomia; beneficio poi dimostrato in pazienti selezionati (SELECT2, ANGEL-ASPECT, RESCUE-Japan LIMIT, 2022–2023)</td></tr>
+          <tr class="${p < 3 ? 'qui' : ''}"><td>0 – 2</td><td>nucleo molto esteso; dati di beneficio scarsi</td></tr>
+        </tbody>
+      </table></div>
+      <div class="ref-note">
+        La soglia <strong>ASPECTS ≥ 6</strong> che si trova nelle indicazioni alla trombectomia è un
+        criterio di arruolamento dei trial della prima ondata, non un confine biologico: il punteggio
+        è ordinale e un 5 e un 6 distano quanto un 9 e un 10.
+      </div>
+    </div>
+  `;
+
+  html += `
+    <div class="result-block">
+      <div class="section-label">Da tenere presente</div>
+      <div class="caveat-box">
+        <strong>Conta le regioni, non il volume.</strong>
+        Le dieci regioni non hanno la stessa dimensione: M2 e M5 sono grandi, il caudato è piccolo,
+        e ciascuno vale un punto. Due ASPECTS uguali possono corrispondere a volumi di nucleo molto
+        diversi, ed è la ragione per cui il punteggio non sostituisce la stima volumetrica quando
+        questa è disponibile.
+      </div>
+      <div class="caveat-box">
+        <strong>Vale per la cerebrale media, e per l'ischemia acuta.</strong>
+        Il territorio della cerebrale anteriore e della posteriore non entra nel conteggio: per il
+        circolo posteriore esiste un punteggio distinto (pc-ASPECTS). Gli esiti vecchi, la
+        leucoaraiosi e le lacune croniche non si sottraggono.
+      </div>
+      <div class="caveat-box">
+        <strong>La concordanza fra osservatori non è alta.</strong>
+        Il reperto da riconoscere è una differenza di densità di pochi HU, e cambia con la finestra
+        di visualizzazione e con il tempo trascorso dall'esordio. Un ASPECTS letto su TC senza
+        contrasto, su TC di perfusione o su diffusione RM non dà lo stesso numero.
+      </div>
+    </div>
+  `;
+
+  var disclaimer = `
+    <div class="disclaimer-note">
+      <strong>Avvertenza:</strong> Referto generato automaticamente a supporto della pratica clinica: non sostituisce il giudizio del medico. I valori vanno interpretati nel contesto clinico del singolo paziente e verificati prima dell'uso.
+    </div>
+  `;
+
+  var actions = `
+    <div class="report-actions">
+      <button class="btn-copy" id="btnCopy" onclick="copyReport()">&#10003; Copia Testo per PACS</button>
+      <button class="btn-print" onclick="window.print()">Stampa / Salva PDF</button>
+    </div>
+  `;
+
+  document.getElementById('output-panel').innerHTML = html + disclaimer + actions;
+}
+
+function copyReport() {
+  var p = punteggio();
+  var gang = elencoRegioni('g'), sovra = elencoRegioni('s');
+  var emisfero = lato === 'destra' ? 'destro' : 'sinistro';
+
+  var t = 'ASPECTS - Alberta Stroke Program Early CT Score\n';
+  t += 'Emisfero: ' + emisfero + '\n\n';
+  t += 'PUNTEGGIO: ' + p + '/10\n\n';
+
+  t += 'REGIONI CON ALTERAZIONE ISCHEMICA PRECOCE:\n';
+  if (!gang.length && !sovra.length) {
+    t += '  nessuna\n';
+  } else {
+    t += '  Livello nuclei della base:  ' +
+         (gang.length ? gang.map(function (r) { return r.id; }).join(', ') : 'nessuna') + '\n';
+    t += '  Livello corona radiata:     ' +
+         (sovra.length ? sovra.map(function (r) { return r.id; }).join(', ') : 'nessuna') + '\n\n';
+    gang.concat(sovra).forEach(function (r) {
+      t += '  ' + (r.id + ':').padEnd(5) + ' ' + r.nome + '\n';
+    });
+  }
+
+  t += '\nREGIONI ASPECTS: C caudato, IC capsula interna, L lentiforme, I insula,\n';
+  t += 'M1-M3 corteccia MCA al livello dei nuclei, M4-M6 alla corona radiata.\n';
+  t += 'Il talamo non fa parte del punteggio.\n';
+
+  t += '\nNOTA: il punteggio conta quante regioni sono interessate, non il volume;\n';
+  t += 'le dieci regioni non hanno la stessa dimensione. Vale per il territorio\n';
+  t += 'della cerebrale media; per il circolo posteriore si usa il pc-ASPECTS.\n';
+
+  t += '\n---\n';
+  t += 'Barber PA et al., Lancet 2000;355(9216):1670-4.\n';
+
+  copiaPerPACS(t, document.getElementById('btnCopy'));
+}
+
+/* ── guida ─────────────────────────────────────────────────────────────── */
+
+function openGuide() {
+  document.getElementById('guideOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGuide() {
+  document.getElementById('guideOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleGuideOverlayClick(e) {
+  if (e.target === document.getElementById('guideOverlay')) closeGuide();
+}
+
+/* ── TUTORIAL ── */
+var TUTORIAL_STEPS = [
+  {
+    title: 'Che cos\'è l\'ASPECTS',
+    body: `<p>Un punteggio da <strong>10 a 0</strong> che descrive quanto del territorio della
+    <strong>cerebrale media</strong> mostra già alterazione ischemica precoce sulla TC senza
+    contrasto, nell'ictus iperacuto.</p>
+    <p>Si parte da 10 e si toglie <strong>un punto per ogni regione alterata</strong>, su dieci
+    regioni predefinite. 10 = nessuna alterazione, 0 = tutto il territorio interessato.</p>
+    <div class="tut-tip">Nasce per rendere confrontabile fra osservatori un giudizio che altrimenti
+    resterebbe "ischemia precoce estesa" — un'espressione che vuol dire cose diverse per persone
+    diverse.</div>`
+  },
+  {
+    title: 'Come si usa la mappa',
+    body: `<p>In alto ci sono le due sezioni assiali su cui si conta: il <strong>livello dei nuclei
+    della base</strong> e il <strong>livello della corona radiata</strong>, subito sopra. È
+    disegnato <strong>solo l'emisfero da refertare</strong>: l'altro non ha regioni da segnare, e
+    toglierlo lascia il doppio dello spazio a quelle che contano.</p>
+    <p><strong>Tocca una regione</strong> per segnarla come alterata: diventa rossa e il punteggio
+    cala. Toccala di nuovo per toglierla.</p>
+    <ul>
+      <li>Le regioni strette — insula e capsula interna — si prendono anche toccando lì vicino</li>
+      <li>L'elenco di caselle nel pannello a sinistra ha lo stesso stato: si può usare l'uno o l'altro</li>
+      <li>Il selettore <em>Emisfero SX / DX</em> specchia il disegno secondo la convenzione
+      radiologica (la destra del paziente sta a sinistra dell'immagine)</li>
+    </ul>
+    <div class="tut-tip">Il <strong>talamo</strong> è disegnato tratteggiato ma non è cliccabile:
+    serve solo a riconoscere il livello giusto, e non fa parte delle dieci regioni.</div>`
+  },
+  {
+    title: 'Che cosa si conta',
+    body: `<p>Si sottrae il punto quando c'è <strong>ipodensità parenchimale</strong> o perdita
+    della differenziazione fra sostanza grigia e bianca. Una regione vale un punto solo, che sia
+    interessata tutta o in parte.</p>
+    <ul>
+      <li>Giudica la regione su <strong>più sezioni contigue</strong>: su una sola immagine è spesso volume parziale</li>
+      <li>Il <strong>rigonfiamento focale isolato</strong>, senza ipodensità, non si sottrae</li>
+      <li>Gli <strong>esiti vecchi</strong> e la leucoaraiosi non si contano</li>
+    </ul>
+    <div class="tut-warn">Le dieci regioni non hanno la stessa dimensione: M2 ed M5 sono ampie, il
+    caudato è piccolo, e valgono un punto ciascuna. L'ASPECTS conta quante regioni, non quanto
+    volume.</div>`
+  },
+  {
+    title: 'Leggi il risultato',
+    body: `<p>Il referto si aggiorna a ogni tocco, con le regioni interessate divise per livello e
+    il confronto con le fasce riportate in letteratura.</p>
+    <p>La soglia <strong>≥ 6</strong> che si incontra nelle indicazioni alla trombectomia è un
+    criterio di arruolamento dei primi trial: gli studi sul nucleo esteso hanno poi mostrato
+    beneficio anche fra 3 e 5 in pazienti selezionati.</p>
+    <div class="tut-tip">Usa <em>Copia Testo per PACS</em> per esportare punteggio, regioni e note
+    in plain-text.</div>`
+  }
+];
+
+initTutorial(TUTORIAL_STEPS);
+
+/* ── avvio ─────────────────────────────────────────────────────────────── */
+
+costruisciElenco();
+disegna();
+aggiorna();
+
+/* Il passaggio affiancato ↔ impilato cambia le coordinate finali, che servono
+   al test del clic: va ridisegnato, non solo riformattato via CSS. */
+var mqImpilato = window.matchMedia(SOGLIA_IMPILA);
+var suCambio = function () { disegna(); aggiorna(); };
+if (mqImpilato.addEventListener) mqImpilato.addEventListener('change', suCambio);
+else if (mqImpilato.addListener) mqImpilato.addListener(suCambio);
+
+/* Si riparte sempre da 10.
+   --------------------------------------------------------------------------
+   Ricaricando la pagina il browser ripristina le caselle spuntate, e il
+   ripristino fa scattare l'evento change: il punteggio del paziente
+   precedente ricompare da solo, con la mappa già colorata e nessuna traccia
+   del perché. Su uno strumento che si usa uno dopo l'altro in pronto
+   soccorso è l'errore peggiore possibile, perché non sembra un errore.
+
+   autocomplete="off" sulle caselle non è bastato (Chrome le ripristina lo
+   stesso). pageshow scatta dopo il ripristino — anche tornando indietro con
+   la cache di navigazione — ed è quindi l'unico punto in cui azzerare vale. */
+window.addEventListener('pageshow', function () {
+  colpite = {};
+  aggiorna();
+});
+
+/* Su schermo tattile l'evidenziazione al passaggio resta appiccicata dopo il
+   tocco e si confonde con lo stato "colpita". */
+if (window.matchMedia('(pointer: coarse)').matches) {
+  document.getElementById('mappa').classList.add('senza-hover');
+}
+</script>
+</body>
+</html>

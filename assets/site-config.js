@@ -94,6 +94,14 @@ window.SITE_TOOLS = [
   }
 
   ,{
+    id: "aspects",
+    title: "ASPECTS",
+    description: "Punteggio ASPECTS nell'ictus acuto, con mappa cliccabile delle 10 regioni del territorio della cerebrale media",
+    url: "tools/aspects.html",
+    category: "Vascolare"
+  }
+
+  ,{
     id: "stenosi-carotidea",
     title: "Stenosi carotidea",
     description: "Grado di stenosi con i metodi NASCET, ECST, area e quadratico, con conversione fra le scale e schema delle misure",
