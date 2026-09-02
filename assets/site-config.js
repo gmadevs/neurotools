@@ -61,6 +61,15 @@ window.SITE_TOOLS = [
   }
 
   ,{
+    id: "verme-tronco-bambini",
+    title: "Verme e tronco (bambini)",
+    description: "Centili RM di verme cerebellare e tronco encefalico da 3 mesi a 15 anni, per età e sesso",
+    url: "tools/verme-tronco-bambini.html",
+    category: "Neuroradiologia Pediatrica",
+    subcategory: "Risonanza Magnetica"
+  }
+
+  ,{
     id: "phvd",
     title: "PHVD Monitor",
     description: "Monitoraggio della dilatazione ventricolare post-emorragica (PHVD) nel prematuro",
