@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="it" data-root="..">
+<head>
+<link rel="stylesheet" href="../assets/nav.css">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/site-config.js"></script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/app.js"></script>
+<script src="../assets/tutorial.js"></script>
+<script src="../assets/report-actions.js"></script>
+<script src="../assets/mobile-result.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Biometria della fossa posteriore – valori normali RM</title>
+<meta name="description" content="Valori di riferimento RM per tronco encefalico, verme cerebellare e peduncoli, per fascia d'età dal neonato all'anziano">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Neuro-tools">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Biometria fossa posteriore — Neuro-tools">
+<meta property="og:description" content="Valori di riferimento RM per tronco encefalico, verme cerebellare e peduncoli, per fascia d'età dal neonato all'anziano">
+<meta property="og:url" content="https://gmadevs.github.io/neurotools/tools/fossa-posteriore-adulto.html">
+<meta property="og:image" content="https://gmadevs.github.io/neurotools/assets/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo Neuro-tools: uno scudo con un encefalo e strumenti di misura">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#14181f">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#10141a">
+<style>
+/* ── INPUT ── */
+.num-row {
+    display: grid;
+    grid-template-columns: 1.7rem 1fr;
+    gap: .5rem;
+    align-items: start;
+  }
+.num-row .num {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 700;
+    color: var(--accent-ink); line-height: 2.9; text-align: center;
+  }
+.num-row.poco .num { color: var(--mid); }
+/* La pallina accanto alle misure poco riproducibili: nel lavoro di
+   riferimento cinque misure hanno un ICC interosservatore sotto 0.5, e gli
+   autori stessi citano la raccomandazione di non usarle in clinica. È
+   l'informazione più utile del tool, quindi sta accanto al campo e non solo
+   in fondo al referto. */
+.flag-icc {
+    display: inline-block; margin-left: .3rem; font-family: var(--mono);
+    font-size: var(--fs-xs); font-weight: 700; color: var(--mid);
+    background: var(--mid-bg); border-radius: 3px; padding: 0 .3rem;
+  }
+.live-index {
+    display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap;
+    padding: .55rem .8rem; margin-top: .75rem;
+    background: var(--neutral-bg); border: 1px solid var(--accent-light); border-radius: 6px;
+  }
+.live-index .li-label {
+    font-size: var(--fs-xs); color: var(--accent-ink); font-weight: 600;
+    font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em;
+  }
+.live-index .li-value {
+    font-family: var(--mono); font-size: var(--fs-md); font-weight: 600; color: var(--ink);
+  }
+.actions { display: flex; gap: .75rem; margin-top: 1.2rem; }
+.btn {
+    padding: .55rem 1.2rem; border-radius: 6px;
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .04em; cursor: pointer; border: none; transition: opacity .15s;
+  }
+.btn:hover { opacity: .85; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
+/* ── OUTPUT ── */
+.result-block {
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: 8px; padding: 1.2rem 1.4rem;
+  }
+.result-status {
+    display: inline-block; font-family: var(--mono); font-size: var(--fs-sm);
+    font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: .4rem 1.1rem; border-radius: 99px; margin-bottom: .8rem;
+    background: var(--neutral-bg); color: var(--neutral);
+  }
+.result-status.ok     { background: var(--ok-bg);   color: var(--ok); }
+.result-status.warn   { background: var(--mid-bg);  color: var(--mid); }
+.result-status.danger { background: var(--warn-bg); color: var(--warn); }
+.result-main {
+    font-family: var(--mono); font-size: var(--fs-xl); font-weight: 600;
+    line-height: 1.25; letter-spacing: -.01em; margin-bottom: .5rem; color: var(--ink);
+  }
+.result-copy {
+    font-size: var(--fs-sm); color: var(--muted); line-height: 1.55; margin-bottom: .4rem;
+  }
+.metrics-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.metrics-table th {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
+    letter-spacing: .02em; color: var(--muted);
+    padding: .4rem .5rem; text-align: left; border-bottom: 1px solid var(--rule);
+  }
+.metrics-table td {
+    padding: .45rem .5rem; border-bottom: 1px solid var(--rule);
+    font-family: var(--mono); font-size: var(--fs-sm);
+  }
+.metrics-table tr:last-child td { border-bottom: none; }
+.metrics-table td.nome { font-family: var(--sans); }
+.metrics-table tr.sezione td {
+    font-family: var(--mono); font-size: var(--fs-xs); letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent-ink); background: var(--neutral-bg);
+  }
+.badge {
+    display: inline-block; padding: .15rem .5rem; border-radius: 4px;
+    font-size: var(--fs-xs); font-weight: 700; font-family: var(--mono);
+    letter-spacing: .02em; white-space: nowrap;
+  }
+.badge-ok     { background: var(--ok-bg);   color: var(--ok); }
+.badge-warn   { background: var(--mid-bg);  color: var(--mid); }
+.badge-danger { background: var(--warn-bg); color: var(--warn); }
+.badge-na     { background: var(--paper);   color: var(--muted); }
+.ref-note {
+    font-size: var(--fs-xs); color: var(--muted); margin-top: .8rem; line-height: 1.5;
+  }
+.caveat-box {
+    background: var(--mid-bg); border-left: 3px solid var(--mid);
+    padding: .8rem 1rem; border-radius: 0 5px 5px 0;
+    font-size: var(--fs-sm); color: var(--ink); line-height: 1.55;
+  }
+.caveat-box strong { color: var(--mid); }
+.placeholder {
+    text-align: center; color: var(--muted); font-size: var(--fs-sm);
+    padding: 3rem 1rem; font-style: italic;
+  }
+.btn-copy {
+    padding: .55rem 1.2rem; background: var(--ok); border: none; color: #fff;
+    border-radius: 5px; font-family: var(--mono); font-size: var(--fs-xs);
+    font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    cursor: pointer; transition: background .2s;
+  }
+.btn-copy:hover { background: #145a38; }
+.btn-copy.copied { background: #555; }
+.btn-print {
+    padding: .55rem 1.1rem; background: transparent; border: 1px solid var(--accent);
+    color: var(--accent-ink); border-radius: 5px; font-family: var(--mono);
+    font-size: var(--fs-xs); font-weight: 600; letter-spacing: .05em;
+    text-transform: uppercase; cursor: pointer; transition: all .15s;
+  }
+.btn-print:hover { background: var(--accent); color: #fff; }
+.report-actions { display: flex; gap: .7rem; margin-top: 1.4rem; align-items: center; }
+/* ── SCHEMI DELLE MISURE ── */
+.section-label.with-action {
+    display: flex; align-items: baseline; justify-content: space-between; gap: .5rem;
+  }
+.btn-guide {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent-ink); background: var(--accent-light);
+    border: 1px solid var(--accent-light); border-radius: 3px; padding: .18rem .45rem;
+    cursor: pointer; transition: background .15s; flex-shrink: 0;
+  }
+.btn-guide:hover { background: var(--neutral-bg); }
+.schema-inline {
+    border: 1px solid var(--rule); border-radius: 6px; background: var(--card);
+    padding: .5rem; margin-bottom: .5rem;
+  }
+.schema-inline svg { display: block; width: 100%; height: auto; max-height: 300px; }
+.guide-body svg { display: block; width: 100%; height: auto; max-height: 52vh; margin: 0 auto; }
+.schema-caption {
+    font-size: var(--fs-xs); color: var(--muted); text-align: center;
+    line-height: 1.45; margin-top: .2rem; margin-bottom: .7rem;
+  }
+/* Disegno originale e schematico, ma in scala: 1 mm ≈ 2.2 unità SVG, con le
+   proporzioni prese dalle medie del giovane adulto. Serve a far riconoscere
+   il piano e il livello, non a misurarci sopra. */
+.svg-tronco { fill: var(--neutral-bg); stroke: var(--muted); stroke-width: 1.6; }
+.svg-tectum { fill: var(--neutral-bg); stroke: var(--muted); stroke-width: 1.2; opacity: .85; }
+.svg-verme  { fill: var(--neutral-bg); stroke: var(--muted); stroke-width: 1.6; }
+.svg-v4     { fill: var(--accent-light); stroke: var(--muted); stroke-width: 1; }
+.svg-ped    { fill: var(--accent-light); stroke: var(--muted); stroke-width: 1.2; }
+.svg-folia  { fill: none; stroke: var(--muted); stroke-width: .8; opacity: .5; }
+.svg-oba    { stroke: var(--muted); stroke-width: .9; stroke-dasharray: 4 3; fill: none; opacity: .8; }
+.svg-nome   { font-family: var(--mono); font-size: 7px; fill: var(--muted); }
+.svg-mis line, .svg-mis polyline { stroke: var(--accent-ink); stroke-width: 1.4; fill: none; }
+.svg-mis polygon { fill: var(--accent-ink); }
+.svg-mis text { font-family: var(--mono); font-size: 9px; font-weight: 700; fill: var(--accent-ink); }
+.svg-mis { transition: opacity .15s; cursor: pointer; }
+.svg-mis.is-active line, .svg-mis.is-active polyline { stroke: var(--warn); stroke-width: 2.2; }
+.svg-mis.is-active polygon { fill: var(--warn); }
+.svg-mis.is-active text { fill: var(--warn); }
+.schema-ha-attivo .svg-mis:not(.is-active) { opacity: .22; }
+/* ── MODALE DELLA GUIDA ── */
+.guide-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,20,35,.6); z-index: 1100;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+.guide-overlay.open { display: flex; }
+.guide-modal {
+    background: var(--card); border-radius: 10px; width: 100%; max-width: 940px;
+    max-height: 92vh; display: flex; flex-direction: column;
+    box-shadow: 0 16px 48px rgba(0,0,0,.3); overflow: hidden;
+  }
+.guide-head {
+    background: var(--accent); color: #fff; padding: 1.1rem 1.4rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+.guide-head h2 {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+.guide-body { padding: 1.4rem 1.6rem 1.6rem; overflow-y: auto; }
+.guide-grid { display: grid; grid-template-columns: 300px 1fr; gap: 1.6rem; align-items: start; }
+.guide-legend div {
+    display: flex; gap: .55rem; align-items: baseline;
+    padding: .38rem 0; border-bottom: 1px solid var(--rule);
+    font-size: var(--fs-sm); line-height: 1.45; cursor: pointer;
+  }
+.guide-legend div:hover b { text-decoration: underline; }
+.guide-legend b {
+    font-family: var(--mono); color: var(--accent-ink); font-size: var(--fs-sm);
+    min-width: 1.4rem; flex-shrink: 0;
+  }
+.guide-sub {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink);
+    margin: 1.1rem 0 .3rem;
+  }
+.guide-sub:first-child { margin-top: 0; }
+.guide-credit {
+    margin-top: 1.2rem; padding-top: .9rem; border-top: 1px solid var(--rule);
+    font-size: var(--fs-xs); color: var(--muted); font-style: italic; line-height: 1.55;
+  }
+.guide-credit a { color: var(--muted); }
+/* ── TUTORIAL MODAL ── */
+.tutorial-header {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  }
+.tutorial-header h2 {
+    font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+.tutorial-close {
+    background: none; border: none; color: rgba(255,255,255,.7);
+    font-size: var(--fs-xl); cursor: pointer; line-height: 1; padding: 0 .2rem; transition: color .15s;
+  }
+.tutorial-close:hover { color: #fff; }
+.tutorial-steps-bar {
+    display: flex; gap: .4rem; padding: 1rem 1.5rem .6rem;
+    background: var(--paper); border-bottom: 1px solid var(--rule);
+  }
+.step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+.step-dot.active { background: var(--accent); }
+.step-dot.done { background: var(--ok); }
+.tutorial-steps-bar, .tutorial-header, .tutorial-footer { flex-shrink: 0; }
+.step-number {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: .5rem;
+  }
+.tutorial-body h3 {
+    font-family: var(--mono); font-size: var(--fs-md); font-weight: 600; color: var(--ink); margin-bottom: .7rem;
+  }
+.tutorial-body p { font-size: var(--fs-sm); line-height: 1.65; color: var(--muted); margin-bottom: .6rem; }
+.tutorial-body ul { margin: .4rem 0 .6rem 1.1rem; font-size: var(--fs-sm); line-height: 1.7; color: var(--muted); }
+.tut-tip {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: var(--fs-sm); color: var(--accent-ink); margin-top: .8rem;
+  }
+.tut-warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn);
+    padding: .6rem .9rem; border-radius: 0 4px 4px 0;
+    font-size: var(--fs-sm); color: var(--warn); margin-top: .8rem;
+  }
+.tutorial-footer {
+    padding: 1rem 1.5rem 1.2rem; display: flex; align-items: center;
+    justify-content: space-between; border-top: 1px solid var(--rule); gap: .8rem;
+  }
+.tutorial-skip {
+    font-size: var(--fs-xs); color: var(--muted); cursor: pointer;
+    background: none; border: none; padding: 0; transition: color .15s;
+  }
+.tutorial-nav { display: flex; gap: .6rem; }
+.btn-tut-prev, .btn-tut-next {
+    font-family: var(--mono); font-size: var(--fs-xs); font-weight: 600;
+    letter-spacing: .05em; padding: .5rem 1.1rem; border-radius: 5px; cursor: pointer; transition: all .15s;
+  }
+.btn-tut-prev { background: transparent; border: 1px solid var(--rule); color: var(--muted); }
+.btn-tut-prev:hover { border-color: var(--accent-ink); color: var(--accent-ink); }
+.btn-tut-next { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+.btn-tut-next:hover { background: #143d57; }
+.btn-tut-next.finish { background: var(--ok); border-color: var(--ok); }
+.btn-tut-next.finish:hover { background: #145a38; }
+@media (max-width: 900px) {
+  .guide-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Biometria fossa posteriore</h1>
+  <span>Valori normali RM di tronco, verme e peduncoli — Metwally et al., BJR 2021
+    <a class="badge-link" href="https://doi.org/10.1259/bjr.20201353" target="_blank" rel="noopener">DOI</a>
+  </span>
+  <button class="btn-info" onclick="openTutorial()" title="Come si usa questo tool">?</button>
+</header>
+
+<!-- ── TUTORIAL MODAL ── -->
+<div class="tutorial-overlay" id="tutorialOverlay" onclick="handleOverlayClick(event)">
+  <div class="tutorial-modal">
+    <div class="tutorial-header">
+      <h2>Come usare il tool</h2>
+      <button class="tutorial-close" onclick="closeTutorial()">&#10005;</button>
+    </div>
+    <div class="tutorial-steps-bar" id="stepBar"></div>
+    <div class="tutorial-body" id="tutorialBody"></div>
+    <div class="tutorial-footer">
+      <button class="tutorial-skip" onclick="closeTutorial()">Chiudi</button>
+      <div class="tutorial-nav">
+        <button class="btn-tut-prev" id="btnPrev" onclick="tutStep(-1)">&#8592; Indietro</button>
+        <button class="btn-tut-next" id="btnNext" onclick="tutStep(1)">Avanti &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── GUIDA ALLE MISURE ── -->
+<div class="guide-overlay" id="guideOverlay" onclick="handleGuideOverlayClick(event)">
+  <div class="guide-modal">
+    <div class="guide-head">
+      <h2>Guida alle misure</h2>
+      <button class="tutorial-close" onclick="closeGuide()">&#10005;</button>
+    </div>
+    <div class="guide-body">
+      <div class="guide-grid">
+        <div>
+          <div id="schema-guida-sag"></div>
+          <div class="schema-caption">Sagittale mediana T1</div>
+          <div id="schema-guida-ax"></div>
+          <div class="schema-caption">Assiali T2</div>
+        </div>
+        <div>
+          <div class="guide-sub">Le linee di Oba</div>
+          <div class="ref-note" style="margin-top:0">
+            La segmentazione del tronco segue il metodo di Oba, modificato dagli autori con una quarta linea.
+            <strong>I</strong> è il margine superiore del mesencefalo e unisce il corpo mammillare al margine
+            superiore della lamina quadrigemina; <strong>II</strong> separa mesencefalo e ponte e unisce
+            l'incisura pontina superiore al margine inferiore della lamina quadrigemina; <strong>III</strong>
+            separa ponte e bulbo, parallela a II, per l'incisura pontina inferiore; <strong>IV</strong> è
+            parallela a III al livello del forame magno.
+          </div>
+          <div class="guide-sub">Sagittale mediana</div>
+          <div class="guide-legend" id="legenda-sag"></div>
+          <div class="guide-sub">Assiali</div>
+          <div class="guide-legend" id="legenda-ax"></div>
+          <div class="guide-credit">
+            Disegno originale. Del lavoro di Metwally MI, Basha MAA, AbdelHamid GA et al.,
+            <em>Neuroanatomical MRI study: reference values for the measurements of brainstem, cerebellar
+            vermis, and peduncles</em>, Br J Radiol 2021;94(1120):20201353, doi:10.1259/bjr.20201353, sono
+            ripresi la definizione e la posizione delle misure, non le figure: l'articolo non è distribuito
+            con una licenza che ne consenta la riproduzione.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="workspace">
+  <!-- ── INPUT PANEL ── -->
+  <div class="input-panel">
+
+    <div class="section-block">
+      <div class="section-label with-action">
+        <span>Schemi delle misure</span>
+        <button class="btn-guide" onclick="openGuide()" title="Ingrandisci gli schemi">&#9635; Ingrandisci</button>
+      </div>
+      <div class="schema-inline" id="schema-sag"></div>
+      <div class="schema-caption">Sagittale mediana T1 — misure 1–11</div>
+      <div class="schema-inline" id="schema-ax"></div>
+      <div class="schema-caption">Assiali T2 — misure 12–17. Tocca un numero, o entra in un campo, per vedere dove si misura.</div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Paziente</div>
+      <div class="form-group">
+        <label for="eta">Età (anni)</label>
+        <input type="number" id="eta" min="0" max="110" step="0.1" placeholder="anni" inputmode="decimal">
+        <div class="hint" id="hint-fascia">I valori di riferimento sono per fasce d'età: 0–1, 1–12, 12–18, 18–40, 40–60, ≥ 60 anni.</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Sagittale mediana (mm)</div>
+      <div id="campi-sag"></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Assiali (mm)</div>
+      <div id="campi-ax"></div>
+      <div class="hint">Si compila solo quello che si è misurato: il referto riporta le misure inserite e i
+      rapporti che ne derivano.</div>
+    </div>
+
+    <div class="live-index" id="live-index" style="display:none">
+      <span class="li-label">Fuori da ±2 DS</span>
+      <span class="li-value" id="live-testo">—</span>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="calculate()">Calcola</button>
+      <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+  <!-- ── OUTPUT PANEL ── -->
+  <div class="output-panel" id="output-panel">
+    <div class="placeholder" id="placeholder-msg">
+      Indica l'età, inserisci almeno una misura e premi <strong>Calcola</strong>.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   DATI NORMATIVI
+   --------------------------------------------------------------------------
+   Tabella 2 di Metwally et al., Br J Radiol 2021;94:20201353 — medie ± DS e
+   intervalli osservati (minimo–massimo) su 565 esami normali, divisi in sei
+   fasce d'età.
+
+   Nell'articolo tutte le misure sono in centimetri tranne lo spessore del
+   peduncolo cerebellare superiore, in millimetri. Qui sono tutte in
+   millimetri: si misura in millimetri sul PACS, e mescolare due unità nello
+   stesso modulo è il tipo di dettaglio che produce errori di un fattore
+   dieci. I rapporti restano adimensionali.
+
+   L'ICC riportato è quello interosservatore (Tabella 3). Sotto 0.5 la misura
+   è marcata come poco riproducibile: sono cinque, e gli autori stessi
+   richiamano la raccomandazione di Raininko di non usare in clinica le
+   misure inaffidabili.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const FASCE = [
+  { id: 0, etichetta: '0–1 anno',    breve: '0–1 a',   test: function (e) { return e <= 1; } },
+  { id: 1, etichetta: '1–12 anni',   breve: '1–12 a',  test: function (e) { return e <= 12; } },
+  { id: 2, etichetta: '12–18 anni',  breve: '12–18 a', test: function (e) { return e <= 18; } },
+  { id: 3, etichetta: '18–40 anni',  breve: '18–40 a', test: function (e) { return e < 40; } },
+  { id: 4, etichetta: '40–60 anni',  breve: '40–60 a', test: function (e) { return e < 60; } },
+  { id: 5, etichetta: '60 anni e più', breve: '≥ 60 a', test: function () { return true; } }
+];
+
+/* media, DS, min, max per ciascuna delle sei fasce. */
+const MISURE = [
+  { id: 'apMid', n: 1, piano: 'sag', nome: 'Diametro AP del mesencefalo', sigla: 'AP mesencefalo',
+    hint: 'Dalla superficie anteriore a quella posteriore del mesencefalo', icc: 0.961,
+    v: [[12.8,1.1,11,15],[16.1,1.5,11,19.6],[17.5,1.9,15,23],[17.7,1.4,13.4,24],[17.0,1.6,12,24],[15.6,1.1,12.2,18]] },
+
+  { id: 'vMid', n: 2, piano: 'sag', nome: 'Diametro verticale del mesencefalo', sigla: 'V mesencefalo',
+    hint: 'Dalla superficie superiore alla giunzione ponto-mesencefalica, parallelo all\'asse maggiore del mesencefalo', icc: 0.803,
+    v: [[10.4,1.7,8,14.5],[12.7,1.8,8.9,18],[13.7,1.3,11.7,16.5],[14.0,1.4,10,18.9],[13.3,1.4,9.8,20],[12.1,1.2,9,15]] },
+
+  { id: 'apTec', n: 3, piano: 'sag', nome: 'Diametro AP del tetto', sigla: 'AP tetto',
+    hint: 'A metà fra collicolo superiore e inferiore', icc: 0.875,
+    v: [[3.0,0.8,2,4.8],[3.7,0.6,2.5,5],[4.0,0.4,3,4.8],[4.0,0.7,2.3,6.3],[3.8,0.6,2.5,6],[3.5,0.5,2.8,5]] },
+
+  { id: 'vTec', n: 4, piano: 'sag', nome: 'Diametro verticale del tetto', sigla: 'V tetto',
+    hint: 'Dal collicolo superiore al margine inferiore del collicolo inferiore, parallelo all\'asse del tetto', icc: 0.944,
+    v: [[9.5,1.0,7.5,11.5],[12.3,1.5,9,17],[13.1,1.3,10.5,15],[13.3,1.4,10,18],[13.1,1.5,10,18],[12.0,1.0,10,15]] },
+
+  { id: 'apPons', n: 5, piano: 'sag', nome: 'Diametro AP del ponte', sigla: 'AP ponte',
+    hint: 'Dalla superficie anteriore del basis pontis alla superficie posteriore del tegmento, perpendicolare all\'asse del IV ventricolo', icc: 0.891,
+    v: [[14.5,2.2,11,20],[20.4,2.0,15,25],[21.5,1.1,19,24],[22.3,1.5,19.5,26],[22.3,1.5,19,26],[21.7,1.4,19,25]] },
+
+  { id: 'vPons', n: 6, piano: 'sag', nome: 'Diametro verticale del ponte', sigla: 'V ponte',
+    hint: 'Dall\'incisura pontina superiore a quella inferiore, parallelo all\'asse maggiore del ponte', icc: 0.809,
+    v: [[14.8,3.0,10.7,20.5],[21.7,3.1,10.6,28],[23.3,2.1,20.6,30],[24.0,2.0,19,28.8],[24.0,2.1,20,29],[23.4,1.9,20.7,28]] },
+
+  { id: 'apBasis', n: 7, piano: 'sag', nome: 'Diametro AP del basis pontis', sigla: 'AP basis pontis',
+    hint: 'Dalla superficie ventrale del basis pontis a quella dorsale', icc: 0.893,
+    v: [[11.0,1.4,9,14],[13.3,1.2,11,15],[15.4,0.8,14,17],[16.1,1.1,14,19],[15.8,1.1,14,19],[15.4,1.3,14.5,17.5]] },
+
+  { id: 'apMedPM', n: 8, piano: 'sag', nome: 'Diametro AP del bulbo alla giunzione ponto-bulbare', sigla: 'AP bulbo (giunz. ponto-bulbare)',
+    hint: 'Dalla superficie anteriore a quella posteriore del bulbo, al livello della giunzione ponto-bulbare', icc: 0.417,
+    v: [[9.2,1.8,6,12.6],[13.0,1.4,8,16],[14.5,0.8,13,16],[13.8,1.4,10,18],[13.4,1.1,11,17],[12.4,1.1,10,15]] },
+
+  { id: 'apMedCM', n: 9, piano: 'sag', nome: 'Diametro AP del bulbo alla giunzione bulbo-midollare', sigla: 'AP bulbo (forame magno)',
+    hint: 'Dalla superficie anteriore a quella posteriore del bulbo, al livello del forame magno', icc: 0.429,
+    v: [[8.0,1.2,6,10.9],[11.1,1.3,6,14],[12.5,1.2,10,15],[12.0,1.2,8.6,15],[11.5,1.3,8,14.5],[10.7,1.1,8,14]] },
+
+  { id: 'hVermis', n: 10, piano: 'sag', nome: 'Altezza del verme cerebellare', sigla: 'Altezza verme',
+    hint: 'Lunghezza cranio-caudale del verme, esclusa la tonsilla cerebellare', icc: 0.789,
+    v: [[30.0,7.0,20,40],[42.0,4.2,28,49.8],[43.0,2.0,40,48],[45.0,3.8,36,57],[46.0,3.8,38,55],[42.0,3.2,35,50]] },
+
+  { id: 'apVermis', n: 11, piano: 'sag', nome: 'Diametro AP del verme cerebellare', sigla: 'AP verme',
+    hint: 'Dalla superficie posteriore del verme alla superficie interna del fastigio, perpendicolare all\'asse del IV ventricolo', icc: 0.353,
+    v: [[19.0,4.2,12,25],[26.7,4.0,10,38],[28.0,2.1,22,30],[28.0,4.1,20,40],[26.0,4.2,20,40],[23.6,2.7,20,30]] },
+
+  { id: 'tMid', n: 12, piano: 'ax', nome: 'Diametro trasverso del mesencefalo', sigla: 'T mesencefalo',
+    hint: 'Al livello del collicolo superiore, fra le porzioni esterne dei peduncoli cerebrali', icc: 0.390,
+    v: [[24.0,3.5,17,30],[30.0,3.5,21,38],[32.5,2.3,27,37.8],[32.8,3.1,24,39.7],[32.5,3.1,25,40],[30.0,3.7,25,40]] },
+
+  { id: 'scp', n: 13, piano: 'ax', nome: 'Spessore del peduncolo cerebellare superiore', sigla: 'SCP',
+    hint: 'Al livello del collicolo inferiore', icc: 0.455,
+    v: [[1.0,0.24,0.5,1.7],[1.8,0.45,0.9,3],[2.0,0.32,1,2.4],[2.3,0.38,2,4],[2.2,0.43,2,4],[2.2,0.46,1.2,4]] },
+
+  { id: 'tPons', n: 14, piano: 'ax', nome: 'Diametro trasverso del ponte', sigla: 'T ponte',
+    hint: 'Al livello immediatamente posteriore all\'emergenza del nervo trigemino', icc: 0.908,
+    v: [[19.1,4.7,12.2,30],[29.0,4.5,18,38],[31.3,5.0,20,43],[32.8,3.6,22,43],[33.2,3.5,28,44],[31.4,4.1,26.8,42]] },
+
+  { id: 'mcp', n: 15, piano: 'ax', nome: 'Spessore del peduncolo cerebellare medio', sigla: 'MCP',
+    hint: 'Al livello del nervo trigemino', icc: 0.877,
+    v: [[9.2,1.8,6.8,12.8],[13.4,1.6,9,17],[15.0,2.0,13,20],[15.0,1.9,10,23],[14.0,2.1,10,22],[13.0,1.8,9,17]] },
+
+  { id: 'tMed', n: 16, piano: 'ax', nome: 'Diametro trasverso del bulbo', sigla: 'T bulbo',
+    hint: 'Al livello del nucleo olivare inferiore', icc: 0.923,
+    v: [[9.6,1.5,7.5,13],[13.3,1.5,8,16],[14.6,1.8,10.3,18],[14.0,1.8,9.6,18],[13.6,1.9,9.5,18],[11.9,1.6,9,15]] },
+
+  { id: 'icp', n: 17, piano: 'ax', nome: 'Spessore del peduncolo cerebellare inferiore', sigla: 'ICP',
+    hint: 'Al livello della connessione fra cervelletto e bulbo', icc: 0.924,
+    v: [[3.6,1.1,2,6],[5.5,1.4,2,7],[6.7,1.1,4,8],[6.0,1.2,3.3,9],[6.0,1.2,3,8],[5.0,1.2,2,7]] }
+];
+
+/* I rapporti si calcolano dalle misure inserite; le medie sono quelle
+   pubblicate, che sono medie di rapporti e quindi non coincidono con il
+   rapporto delle medie. */
+const RAPPORTI = [
+  { id: 'tectal', nome: 'Rapporto del tetto', formula: 'V tetto / AP tetto',
+    num: 'vTec', den: 'apTec',
+    v: [[3.29,0.87,2,4.5],[3.31,0.72,1.8,5.6],[3.16,0.43,2.5,4.3],[3.40,0.64,2,5.4],[3.50,0.65,2,5.4],[3.40,0.62,2.4,5]] },
+
+  { id: 'basis', nome: 'Rapporto del basis pontis', formula: 'V ponte / AP basis pontis',
+    num: 'vPons', den: 'apBasis',
+    v: [[1.40,0.13,1.23,1.62],[1.78,0.18,1.5,2],[1.58,0.12,1.36,1.75],[1.54,0.14,1.3,1.85],[1.55,0.09,1.4,1.78],[1.54,0.16,1.3,1.66]] },
+
+  { id: 'ponsMid', nome: 'Ponte / mesencefalo', formula: 'AP ponte / AP mesencefalo',
+    num: 'apPons', den: 'apMid',
+    v: [[1.13,0.13,0.9,1.4],[1.25,0.11,1,1.6],[1.23,0.10,1,1.4],[1.28,0.14,1,1.9],[1.35,0.17,1.1,2.1],[1.38,0.16,1.2,2.4]] },
+
+  { id: 'ponsMed1', nome: 'Ponte / bulbo 1', formula: 'AP ponte / AP bulbo alla giunzione ponto-bulbare',
+    num: 'apPons', den: 'apMedPM',
+    v: [[1.60,0.23,1.27,2],[1.56,0.18,1.27,1.96],[1.47,0.13,1.26,1.7],[1.60,0.15,1,2],[1.70,0.15,1.3,2],[1.74,0.15,1.5,2]] },
+
+  { id: 'ponsMed2', nome: 'Ponte / bulbo 2', formula: 'AP ponte / AP bulbo al forame magno',
+    num: 'apPons', den: 'apMedCM',
+    v: [[1.79,0.24,1.4,2.4],[1.82,0.21,1.2,2.4],[1.72,0.23,1.4,2.3],[1.86,0.19,1.4,2.68],[1.95,0.23,1.6,2.8],[2.00,0.21,1.6,2.75]] }
+];
+
+const PER_ID = {};
+MISURE.forEach(function (m) { PER_ID[m.id] = m; });
+
+const ICC_BASSO = 0.5;
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MODULO
+   ══════════════════════════════════════════════════════════════════════════ */
+
+function campoHtml(m) {
+  var poco = m.icc < ICC_BASSO;
+  return '<div class="num-row' + (poco ? ' poco' : '') + '">' +
+    '<span class="num" aria-hidden="true">' + m.n + '</span>' +
+    '<div class="form-group">' +
+      '<label for="' + m.id + '">' + m.nome +
+        (poco ? '<span class="flag-icc" title="Riproducibilità bassa nel lavoro di riferimento">ICC ' + m.icc.toFixed(2) + '</span>' : '') +
+      '</label>' +
+      '<input type="number" id="' + m.id + '" min="0" max="120" step="0.1" placeholder="mm" inputmode="decimal">' +
+      '<div class="hint">' + m.hint + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+document.getElementById('campi-sag').innerHTML =
+  MISURE.filter(function (m) { return m.piano === 'sag'; }).map(campoHtml).join('');
+document.getElementById('campi-ax').innerHTML =
+  MISURE.filter(function (m) { return m.piano === 'ax'; }).map(campoHtml).join('');
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CALCOLO
+   ══════════════════════════════════════════════════════════════════════════ */
+
+function num(id) {
+  var el = document.getElementById(id);
+  if (!el || el.value === '') return null;
+  var v = parseFloat(el.value);
+  return (isFinite(v) && v > 0) ? v : null;
+}
+
+function fasciaDi(eta) {
+  if (eta === null) return null;
+  for (var i = 0; i < FASCE.length; i++) if (FASCE[i].test(eta)) return FASCE[i];
+  return FASCE[FASCE.length - 1];
+}
+
+function leggi() {
+  var raw = document.getElementById('eta').value;
+  var eta = raw === '' ? null : parseFloat(raw);
+  if (eta !== null && (!isFinite(eta) || eta < 0)) eta = null;
+  var valori = {};
+  MISURE.forEach(function (m) { valori[m.id] = num(m.id); });
+  return { eta: eta, fascia: fasciaDi(eta), valori: valori };
+}
+
+/* z = (valore − media) / DS della fascia. Il lavoro pubblica medie e
+   deviazioni standard, non centili: |z| < 2 non è "il 95° centile", è
+   l'intervallo che contiene il 95% dei soggetti *se* la distribuzione è
+   gaussiana. Gli autori hanno verificato la normalità con Kolmogorov-Smirnov,
+   quindi l'assunzione è la loro; resta un'assunzione. */
+function valuta(media, ds, min, max, v) {
+  var z = ds > 0 ? (v - media) / ds : null;
+  var cls;
+  if (z === null) cls = 'na';
+  else if (Math.abs(z) <= 2) cls = 'ok';
+  else if (Math.abs(z) <= 3) cls = 'warn';
+  else cls = 'danger';
+  return { z: z, cls: cls, fuoriRange: (v < min || v > max) };
+}
+
+function esitiMisure(d) {
+  if (!d.fascia) return [];
+  return MISURE.filter(function (m) { return d.valori[m.id] !== null; }).map(function (m) {
+    var r = m.v[d.fascia.id];
+    var e = valuta(r[0], r[1], r[2], r[3], d.valori[m.id]);
+    return { m: m, valore: d.valori[m.id], media: r[0], ds: r[1], min: r[2], max: r[3],
+             z: e.z, cls: e.cls, fuoriRange: e.fuoriRange };
+  });
+}
+
+function esitiRapporti(d) {
+  if (!d.fascia) return [];
+  var out = [];
+  RAPPORTI.forEach(function (r) {
+    var a = d.valori[r.num], b = d.valori[r.den];
+    if (a === null || b === null) return;
+    var v = a / b;
+    var ref = r.v[d.fascia.id];
+    var e = valuta(ref[0], ref[1], ref[2], ref[3], v);
+    out.push({ r: r, valore: v, media: ref[0], ds: ref[1], min: ref[2], max: ref[3],
+               z: e.z, cls: e.cls, fuoriRange: e.fuoriRange });
+  });
+  return out;
+}
+
+function fmt(v, dec) {
+  if (v === null || v === undefined) return '—';
+  return v.toFixed(dec === undefined ? 1 : dec);
+}
+
+function fmtZ(z) {
+  if (z === null || z === undefined) return '—';
+  return (z >= 0 ? '+' : '−') + Math.abs(z).toFixed(1);
+}
+
+function esitoTesto(cls) {
+  if (cls === 'ok') return 'entro ±2 DS';
+  if (cls === 'warn') return '2–3 DS';
+  if (cls === 'danger') return '> 3 DS';
+  return 'n.d.';
+}
+
+function badgeHtml(cls, txt) {
+  return '<span class="badge badge-' + cls + '">' + txt + '</span>';
+}
+
+/* ── anteprima nel pannello di sinistra ────────────────────────────────── */
+
+function aggiornaLive() {
+  var d = leggi();
+  var box = document.getElementById('live-index');
+  var hint = document.getElementById('hint-fascia');
+
+  hint.textContent = d.fascia
+    ? 'Fascia di riferimento: ' + d.fascia.etichetta + '.'
+    : 'I valori di riferimento sono per fasce d\'età: 0–1, 1–12, 12–18, 18–40, 40–60, ≥ 60 anni.';
+
+  var tutti = esitiMisure(d).concat(esitiRapporti(d));
+  if (!tutti.length) { box.style.display = 'none'; return; }
+
+  var fuori = tutti.filter(function (e) { return e.cls === 'warn' || e.cls === 'danger'; });
+  document.getElementById('live-testo').textContent =
+    fuori.length ? fuori.length + ' su ' + tutti.length : 'nessuna (' + tutti.length + ' voci)';
+  box.style.display = 'flex';
+}
+
+document.getElementById('eta').addEventListener('input', aggiornaLive);
+MISURE.forEach(function (m) {
+  document.getElementById(m.id).addEventListener('input', aggiornaLive);
+});
+
+/* ══════════════════════════════════════════════════════════════════════════
+   REFERTO
+   ══════════════════════════════════════════════════════════════════════════ */
+
+function rigaMisura(e) {
+  var poco = e.m.icc < ICC_BASSO;
+  return '<tr>' +
+    '<td class="nome">' + e.m.n + ' · ' + e.m.sigla + (poco ? ' <span class="flag-icc">ICC ' + e.m.icc.toFixed(2) + '</span>' : '') + '</td>' +
+    '<td><strong>' + fmt(e.valore) + '</strong></td>' +
+    '<td>' + fmt(e.media) + ' ± ' + fmt(e.ds, e.ds < 1 ? 2 : 1) + '</td>' +
+    '<td>' + fmt(e.min) + '–' + fmt(e.max) + '</td>' +
+    '<td>' + fmtZ(e.z) + '</td>' +
+    '<td>' + badgeHtml(e.cls, esitoTesto(e.cls)) + '</td>' +
+    '</tr>';
+}
+
+function rigaRapporto(e) {
+  return '<tr>' +
+    '<td class="nome">' + e.r.nome + '<br><span class="ref-note" style="margin:0">' + e.r.formula + '</span></td>' +
+    '<td><strong>' + fmt(e.valore, 2) + '</strong></td>' +
+    '<td>' + fmt(e.media, 2) + ' ± ' + fmt(e.ds, 2) + '</td>' +
+    '<td>' + fmt(e.min, 2) + '–' + fmt(e.max, 2) + '</td>' +
+    '<td>' + fmtZ(e.z) + '</td>' +
+    '<td>' + badgeHtml(e.cls, esitoTesto(e.cls)) + '</td>' +
+    '</tr>';
+}
+
+function calculate() {
+  var d = leggi();
+
+  if (d.eta === null) { alert('Indicare l\'età del paziente: i valori di riferimento cambiano per fascia.'); return; }
+
+  var mis = esitiMisure(d);
+  if (!mis.length) { alert('Inserire almeno una misura.'); return; }
+  var rap = esitiRapporti(d);
+  var tutti = mis.concat(rap);
+
+  var oltre3 = tutti.filter(function (e) { return e.cls === 'danger'; });
+  var fra23  = tutti.filter(function (e) { return e.cls === 'warn'; });
+
+  var cls, titolo, commento;
+  if (oltre3.length) {
+    cls = 'danger';
+    titolo = oltre3.length + (oltre3.length === 1 ? ' voce oltre 3 DS' : ' voci oltre 3 DS');
+    commento = 'Scostamento marcato dalla media della fascia d\'età. Prima di attribuirgli un significato ' +
+               'conviene ricontrollare il piano e il livello di misura, e verificare che la voce non sia ' +
+               'fra quelle a bassa riproducibilità.';
+  } else if (fra23.length) {
+    cls = 'warn';
+    titolo = fra23.length + (fra23.length === 1 ? ' voce fra 2 e 3 DS' : ' voci fra 2 e 3 DS');
+    commento = 'Valori ai margini della distribuzione normale per età. In una casistica di 565 soggetti ' +
+               'sani qualche misura oltre le 2 DS è attesa: conta di più il quadro d\'insieme della singola voce.';
+  } else {
+    cls = 'ok';
+    titolo = 'Tutte le voci entro ±2 DS';
+    commento = 'Misure e rapporti compatibili con i valori medi della fascia d\'età. L\'intervallo ±2 DS non ' +
+               'è un criterio diagnostico: è la dispersione osservata in un gruppo di soggetti con RM normale.';
+  }
+
+  var icona = cls === 'ok' ? '✓' : cls === 'warn' ? '⚠' : '✕';
+
+  var html = '' +
+    '<div class="result-block">' +
+      '<div class="section-label">Esito</div>' +
+      '<div class="result-status ' + cls + '">' + icona + ' ' + (cls === 'ok' ? 'Nei limiti' : 'Da rivedere') + '</div>' +
+      '<div class="result-main">' + titolo + '</div>' +
+      '<div class="result-copy">' + commento + '</div>' +
+      '<div class="ref-note">Riferimenti per la fascia <strong>' + d.fascia.etichetta + '</strong> ' +
+        '(età indicata: ' + fmt(d.eta, d.eta % 1 ? 1 : 0) + ' anni). ' +
+        mis.length + (mis.length === 1 ? ' misura inserita' : ' misure inserite') +
+        (rap.length ? ', ' + rap.length + (rap.length === 1 ? ' rapporto calcolato' : ' rapporti calcolati') : '') + '.</div>' +
+    '</div>';
+
+  html += '' +
+    '<div class="result-block">' +
+      '<div class="section-label">Misure</div>' +
+      '<div class="table-scroll"><table class="metrics-table">' +
+        '<thead><tr><th>Misura</th><th>mm</th><th>Media ± DS</th><th>Range</th><th>z</th><th>Esito</th></tr></thead>' +
+        '<tbody>' + mis.map(rigaMisura).join('') + '</tbody>' +
+      '</table></div>' +
+      '<div class="ref-note">' +
+        'Media ± deviazione standard e intervallo osservato (minimo–massimo) nella fascia d\'età, in millimetri. ' +
+        'La colonna <em>z</em> è lo scostamento dalla media in deviazioni standard. Nell\'articolo tutte le ' +
+        'misure sono in centimetri tranne il peduncolo cerebellare superiore, in millimetri: qui sono state ' +
+        'riportate tutte a millimetri.' +
+      '</div>' +
+    '</div>';
+
+  if (rap.length) {
+    html += '' +
+      '<div class="result-block">' +
+        '<div class="section-label">Rapporti</div>' +
+        '<div class="table-scroll"><table class="metrics-table">' +
+          '<thead><tr><th>Rapporto</th><th>Valore</th><th>Media ± DS</th><th>Range</th><th>z</th><th>Esito</th></tr></thead>' +
+          '<tbody>' + rap.map(rigaRapporto).join('') + '</tbody>' +
+        '</table></div>' +
+        '<div class="ref-note">' +
+          'I rapporti sono calcolati dalle misure inserite; le medie pubblicate sono medie di rapporti, e ' +
+          'quindi non coincidono con il rapporto fra le medie. Il rapporto del tetto è l\'unico che nel lavoro ' +
+          'non cambia significativamente con l\'età (p = 0.061).' +
+          (d.fascia.id === 1 && rap.some(function (e) { return e.r.id === 'basis'; })
+            ? ' <strong>Attenzione</strong>: nella fascia 1–12 anni la media pubblicata del rapporto del basis ' +
+              'pontis (1.78) non è coerente con il rapporto fra le medie delle due misure che lo compongono ' +
+              '(21.7 / 13.3 ≈ 1.63), mentre nelle altre fasce lo è. È riportata come pubblicata.'
+            : '') +
+        '</div>' +
+      '</div>';
+  }
+
+  var pocoUsate = mis.filter(function (e) { return e.m.icc < ICC_BASSO; });
+
+  html += '' +
+    '<div class="result-block">' +
+      '<div class="section-label">Da tenere presente</div>' +
+      '<div class="caveat-box">' +
+        '<strong>Cinque misure su diciassette non sono riproducibili.</strong> ' +
+        'Nel lavoro di riferimento l\'accordo fra due osservatori era da buono a eccellente per quasi tutte le ' +
+        'misure, ma crollava sotto 0.5 per il diametro trasverso del mesencefalo (0.39), i due diametri AP del ' +
+        'bulbo (0.42 e 0.43), il diametro AP del verme (0.35) e lo spessore del peduncolo cerebellare superiore ' +
+        '(0.46). Gli autori stessi richiamano la raccomandazione di non usare in clinica le misure inaffidabili.' +
+        (pocoUsate.length
+          ? ' In questo referto ' + (pocoUsate.length === 1 ? 'la voce interessata è' : 'le voci interessate sono') +
+            ': ' + pocoUsate.map(function (e) { return e.m.sigla; }).join(', ') + '.'
+          : ' Nessuna delle misure inserite rientra in questo gruppo.') +
+      '</div>' +
+      '<div class="result-copy" style="margin-top:.9rem">' +
+        '<strong>Sesso.</strong> Il lavoro trova una differenza significativa fra maschi e femmine solo per tre ' +
+        'misure — AP del basis pontis, AP del bulbo al forame magno e altezza del verme, tutte più alte nei ' +
+        'maschi — ma non pubblica le medie separate per sesso. I riferimenti qui usati sono quelli complessivi, ' +
+        'e per queste tre misure vanno letti con un margine in più.' +
+      '</div>' +
+      '<div class="ref-note">' +
+        '565 esami RM a 1.5T da tre centri, età da 23 giorni a 69 anni, selezionati retrospettivamente fra ' +
+        'quelli con anatomia e segnale normali. Sono valori di riferimento anatomici di una singola casistica: ' +
+        'servono a distinguere il fisiologico dal patologico a colpo d\'occhio, non a fare una diagnosi.' +
+      '</div>' +
+    '</div>';
+
+  var disclaimer =
+    '<div class="disclaimer-note">' +
+      '<strong>Avvertenza:</strong> Referto generato automaticamente a supporto della pratica clinica: non ' +
+      'sostituisce il giudizio del medico. I valori vanno interpretati nel contesto clinico del singolo ' +
+      'paziente e verificati prima dell\'uso.' +
+    '</div>';
+
+  var actions =
+    '<div class="report-actions">' +
+      '<button class="btn-copy" id="btnCopy" onclick="copyReport()">&#10003; Copia Testo per PACS</button>' +
+      '<button class="btn-print" onclick="window.print()">Stampa / Salva PDF</button>' +
+    '</div>';
+
+  var ph = document.getElementById('placeholder-msg');
+  if (ph) ph.remove();
+  document.getElementById('output-panel').innerHTML = html + disclaimer + actions;
+}
+
+function copyReport() {
+  var d = leggi();
+  if (d.eta === null) return;
+  var mis = esitiMisure(d);
+  if (!mis.length) return;
+  var rap = esitiRapporti(d);
+
+  var t = 'Biometria della fossa posteriore - RM\n\n';
+  /* Il testo per il PACS resta in ASCII: en-dash e simboli tipografici non
+     sopravvivono a tutti i visualizzatori di referto. */
+  t += 'Eta: ' + fmt(d.eta, d.eta % 1 ? 1 : 0) + ' anni (fascia di riferimento ' +
+       d.fascia.etichetta.replace('≥', '>=').replace('–', '-') + ')\n';
+  t += '\nMISURE (mm) - valore, media +/- DS e range della fascia:\n';
+
+  mis.forEach(function (e) {
+    t += '  ' + (e.m.sigla + ' ').padEnd(32, '.') + ' ' + e.valore.toFixed(1).padStart(5) +
+         '   norma ' + e.media.toFixed(1) + ' +/- ' + e.ds.toFixed(e.ds < 1 ? 2 : 1) +
+         ' (' + e.min + '-' + e.max + ')   z ' + fmtZ(e.z).replace('−', '-') +
+         (e.m.icc < ICC_BASSO ? '   [ICC ' + e.m.icc.toFixed(2) + ']' : '') + '\n';
+  });
+
+  if (rap.length) {
+    t += '\nRAPPORTI:\n';
+    rap.forEach(function (e) {
+      t += '  ' + (e.r.nome + ' ').padEnd(32, '.') + ' ' + e.valore.toFixed(2).padStart(5) +
+           '   norma ' + e.media.toFixed(2) + ' +/- ' + e.ds.toFixed(2) +
+           ' (' + e.min + '-' + e.max + ')   z ' + fmtZ(e.z).replace('−', '-') + '\n';
+    });
+  }
+
+  var fuori = mis.concat(rap).filter(function (e) { return e.cls !== 'ok'; });
+  t += '\nESITO: ';
+  if (!fuori.length) {
+    t += 'tutte le voci entro +/-2 DS dalla media della fascia d\'eta.\n';
+  } else {
+    t += fuori.length + (fuori.length === 1 ? ' voce oltre 2 DS: ' : ' voci oltre 2 DS: ') +
+         fuori.map(function (e) { return (e.m ? e.m.sigla : e.r.nome) + ' (z ' + fmtZ(e.z).replace('−', '-') + ')'; }).join(', ') + '.\n';
+  }
+
+  var pocoUsate = mis.filter(function (e) { return e.m.icc < ICC_BASSO; });
+  if (pocoUsate.length) {
+    t += '\nNOTA: misure a bassa riproducibilita\' nel lavoro di riferimento (ICC interosservatore < 0.5),\n';
+    t += 'da interpretare con cautela: ' + pocoUsate.map(function (e) { return e.m.sigla; }).join(', ') + '.\n';
+  }
+
+  t += '\n---\n';
+  t += 'Metwally MI, Basha MAA, AbdelHamid GA et al. Neuroanatomical MRI study: reference values\n';
+  t += 'for the measurements of brainstem, cerebellar vermis, and peduncles.\n';
+  t += 'Br J Radiol 2021;94(1120):20201353. doi:10.1259/bjr.20201353\n';
+
+  copiaPerPACS(t, document.getElementById('btnCopy'));
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SCHEMI DELLE MISURE
+   ══════════════════════════════════════════════════════════════════════════ */
+
+function freccia(x1, y1, x2, y2) {
+  var dx = x2 - x1, dy = y2 - y1, L = Math.sqrt(dx * dx + dy * dy) || 1;
+  var ux = dx / L, uy = dy / L, nx = -uy, ny = ux, p = 4, w = 2.1;
+  var r = function (n) { return Math.round(n * 10) / 10; };
+  var b1x = x1 + ux * p, b1y = y1 + uy * p;
+  var b2x = x2 - ux * p, b2y = y2 - uy * p;
+
+  return '<line x1="' + r(b1x) + '" y1="' + r(b1y) + '" x2="' + r(b2x) + '" y2="' + r(b2y) + '"></line>' +
+         '<polygon points="' + r(x1) + ',' + r(y1) + ' ' +
+           r(b1x + nx * w) + ',' + r(b1y + ny * w) + ' ' +
+           r(b1x - nx * w) + ',' + r(b1y - ny * w) + '"></polygon>' +
+         '<polygon points="' + r(x2) + ',' + r(y2) + ' ' +
+           r(b2x + nx * w) + ',' + r(b2y + ny * w) + ' ' +
+           r(b2x - nx * w) + ',' + r(b2y - ny * w) + '"></polygon>';
+}
+
+/* ── sagittale mediana ─────────────────────────────────────────────────── */
+
+var TRONCO = 'M 112,74 C 111,84 110,94 110,103 ' +
+  'C 104,108 96,119 95,134 C 95,146 97,152 100,157 ' +
+  'C 103,161 105,170 106,180 L 106,214 L 132,214 ' +
+  'C 132,192 133,172 134,161 C 137,158 139,157 140,154 ' +
+  'C 139,141 141,119 147,100 C 154,98 159,90 158,82 ' +
+  'C 157,72 152,66 146,64 Z';
+
+var TECTUM = 'M 144,68 C 148,80 148,90 147,100 ' +
+  'C 154,98 159,90 158,82 C 157,72 152,66 146,64 Z';
+
+var VERME = 'M 158,150 C 150,132 148,116 152,106 ' +
+  'C 157,95 167,88 177,88 C 189,88 198,93 205,102 ' +
+  'C 214,114 221,128 222,145 C 223,161 215,178 201,187 ' +
+  'C 189,195 173,192 166,180 C 161,171 158,160 158,150 Z';
+
+var V4 = 'M 147,100 C 141,119 139,141 140,154 C 146,153 152,152 158,150 ' +
+  'C 150,132 148,116 152,106 C 150,103 148,101 147,100 Z';
+
+var FOLIA = [
+  'M 159,136 Q 176,120 190,100',
+  'M 158,154 Q 185,144 208,118',
+  'M 161,168 Q 191,164 218,143',
+  'M 166,180 Q 189,182 211,167',
+  'M 154,120 Q 166,106 174,95'
+];
+
+/* Le quattro linee di Oba, nella versione modificata dagli autori. */
+var OBA = [
+  { d: 'M 104,72 L 152,64',   l: 'I',   lx: 102, ly: 71 },
+  { d: 'M 104,103 L 152,98',  l: 'II',  lx: 102, ly: 102 },
+  { d: 'M 94,159 L 143,154',  l: 'III', lx: 93,  ly: 164 },
+  { d: 'M 100,214 L 138,210', l: 'IV',  lx: 98,  ly: 220 }
+];
+
+var MIS_SAG = [
+  { n: 1,  x1: 110, y1: 92,  x2: 158, y2: 87,  lx: 78,  ly: 90,  anc: 'end',    lead: '108,92 84,90' },
+  { n: 2,  x1: 123, y1: 70,  x2: 118, y2: 101, lx: 120, ly: 58,  anc: 'middle', lead: '123,70 121,62' },
+  { n: 3,  x1: 147, y1: 84,  x2: 158, y2: 83,  lx: 206, ly: 58,  anc: 'middle', lead: '159,82 200,61' },
+  { n: 4,  x1: 145, y1: 70,  x2: 149, y2: 99,  lx: 176, ly: 56,  anc: 'middle', lead: '146,68 172,59' },
+  { n: 5,  x1: 95,  y1: 131, x2: 142, y2: 128, lx: 78,  ly: 120, anc: 'end',    lead: '95,131 84,122' },
+  { n: 6,  x1: 108, y1: 105, x2: 100, y2: 156, lx: 78,  ly: 138, anc: 'end',    lead: '104,131 84,136' },
+  { n: 7,  x1: 95,  y1: 140, x2: 129, y2: 137, lx: 78,  ly: 156, anc: 'end',    lead: '95,141 84,154' },
+  { n: 8,  x1: 101, y1: 162, x2: 136, y2: 160, lx: 78,  ly: 180, anc: 'end',    lead: '101,163 84,178' },
+  { n: 9,  x1: 106, y1: 206, x2: 132, y2: 206, lx: 78,  ly: 202, anc: 'end',    lead: '106,206 84,203' },
+  { n: 10, x1: 186, y1: 87,  x2: 186, y2: 192, lx: 186, ly: 79,  anc: 'middle' },
+  { n: 11, x1: 159, y1: 150, x2: 221, y2: 146, lx: 236, ly: 148, anc: 'start',  lead: '221,146 231,147' }
+];
+
+function schemaSagSVG() {
+  var s = '<svg viewBox="58 44 194 186" role="img" ' +
+          'aria-label="Schema di una sezione sagittale mediana del tronco encefalico e del verme cerebellare, ' +
+          'con le linee di Oba che separano mesencefalo, ponte e bulbo e le undici misure sagittali numerate">';
+
+  s += '<path class="svg-tronco" d="' + TRONCO + '"></path>';
+  s += '<path class="svg-tectum" d="' + TECTUM + '"></path>';
+  s += '<path class="svg-verme" d="' + VERME + '"></path>';
+  FOLIA.forEach(function (f) { s += '<path class="svg-folia" d="' + f + '"></path>'; });
+  s += '<path class="svg-v4" d="' + V4 + '"></path>';
+
+  OBA.forEach(function (o) {
+    s += '<path class="svg-oba" d="' + o.d + '"></path>' +
+         '<text class="svg-nome" x="' + o.lx + '" y="' + o.ly + '" text-anchor="end">' + o.l + '</text>';
+  });
+
+  s += '<text class="svg-nome" x="212" y="204" text-anchor="middle">verme</text>';
+
+  MIS_SAG.forEach(function (m) {
+    s += '<g class="svg-mis" data-mis="' + m.n + '">' +
+         (m.lead ? '<polyline points="' + m.lead + '" stroke-dasharray="3 2"></polyline>' : '') +
+         freccia(m.x1, m.y1, m.x2, m.y2) +
+         '<text x="' + m.lx + '" y="' + m.ly + '" text-anchor="' + m.anc + '">' + m.n + '</text>' +
+         '</g>';
+  });
+
+  return s + '</svg>';
+}
+
+/* ── assiali ───────────────────────────────────────────────────────────── */
+
+var AX_MESENCEFALO = 'M 100,20 C 92,16 84,17 79,22 C 72,20 62,24 57,32 ' +
+  'C 50,44 54,58 66,66 C 78,74 92,76 100,72 C 108,76 122,74 134,66 ' +
+  'C 146,58 150,44 143,32 C 138,24 128,20 121,22 C 116,17 108,16 100,20 Z';
+
+var AX_ISTMO = 'M 100,104 C 88,100 74,105 68,114 C 61,124 64,138 76,145 ' +
+  'C 86,151 96,152 100,149 C 104,152 114,151 124,145 C 136,138 139,124 132,114 ' +
+  'C 126,105 112,100 100,104 Z';
+
+var AX_SCP = [
+  'M 82,132 C 88,138 94,143 99,146 L 97,151 C 90,148 83,142 78,136 Z',
+  'M 118,132 C 112,138 106,143 101,146 L 103,151 C 110,148 117,142 122,136 Z'
+];
+
+var AX_PONTE = 'M 100,180 C 78,180 58,190 51,204 C 45,218 53,233 70,239 ' +
+  'C 80,243 90,244 100,244 C 110,244 120,243 130,239 C 147,233 155,218 149,204 ' +
+  'C 142,190 122,180 100,180 Z';
+
+var AX_MCP = [
+  'M 52,196 C 40,199 32,210 35,222 C 38,232 47,238 56,237 C 49,226 47,209 52,196 Z',
+  'M 148,196 C 160,199 168,210 165,222 C 162,232 153,238 144,237 C 151,226 153,209 148,196 Z'
+];
+
+var AX_V4 = 'M 86,244 L 100,230 L 114,244 Z';
+
+var AX_BULBO = 'M 100,268 C 90,268 80,272 75,280 C 68,282 64,290 67,297 ' +
+  'C 70,305 79,309 86,307 C 90,311 95,313 100,313 C 105,313 110,311 114,307 ' +
+  'C 121,309 130,305 133,297 C 136,290 132,282 125,280 C 120,272 110,268 100,268 Z';
+
+var AX_ICP = [
+  'M 78,296 C 82,301 87,305 92,307 L 90,312 C 83,310 77,305 73,300 Z',
+  'M 122,296 C 118,301 113,305 108,307 L 110,312 C 117,310 123,305 127,300 Z'
+];
+
+var MIS_AX = [
+  { n: 12, x1: 56,  y1: 44,  x2: 144, y2: 44,  lx: 100, ly: 12,  anc: 'middle', lead: '100,44 100,18' },
+  { n: 13, x1: 79,  y1: 133, x2: 74,  y2: 139, lx: 44,  ly: 128, anc: 'end',    lead: '76,136 50,130' },
+  { n: 14, x1: 50,  y1: 210, x2: 150, y2: 210, lx: 100, ly: 172, anc: 'middle', lead: '100,210 100,178' },
+  { n: 15, x1: 34,  y1: 213, x2: 52,  y2: 210, lx: 22,  ly: 232, anc: 'end',    lead: '38,216 28,229' },
+  { n: 16, x1: 68,  y1: 292, x2: 132, y2: 292, lx: 178, ly: 296, anc: 'start',  lead: '132,292 172,295' },
+  { n: 17, x1: 72,  y1: 299, x2: 82,  y2: 310, lx: 40,  ly: 316, anc: 'end',    lead: '76,305 46,313' }
+];
+
+function schemaAxSVG() {
+  var s = '<svg viewBox="14 4 202 328" role="img" ' +
+          'aria-label="Schemi di quattro sezioni assiali: mesencefalo ai collicoli superiori, istmo ai ' +
+          'collicoli inferiori con i peduncoli cerebellari superiori, ponte al livello del trigemino con i ' +
+          'peduncoli cerebellari medi, bulbo alle olive con i peduncoli cerebellari inferiori">';
+
+  s += '<path class="svg-tronco" d="' + AX_MESENCEFALO + '"></path>';
+  s += '<path class="svg-tronco" d="' + AX_ISTMO + '"></path>';
+  AX_SCP.forEach(function (p) { s += '<path class="svg-ped" d="' + p + '"></path>'; });
+  AX_MCP.forEach(function (p) { s += '<path class="svg-ped" d="' + p + '"></path>'; });
+  s += '<path class="svg-tronco" d="' + AX_PONTE + '"></path>';
+  s += '<path class="svg-v4" d="' + AX_V4 + '"></path>';
+  s += '<path class="svg-tronco" d="' + AX_BULBO + '"></path>';
+  AX_ICP.forEach(function (p) { s += '<path class="svg-ped" d="' + p + '"></path>'; });
+
+  s += '<text class="svg-nome" x="158" y="30">coll. sup.</text>';
+  s += '<text class="svg-nome" x="146" y="112">coll. inf.</text>';
+  s += '<text class="svg-nome" x="170" y="190">trigemino</text>';
+  s += '<text class="svg-nome" x="140" y="276">olive</text>';
+
+  MIS_AX.forEach(function (m) {
+    s += '<g class="svg-mis" data-mis="' + m.n + '">' +
+         (m.lead ? '<polyline points="' + m.lead + '" stroke-dasharray="3 2"></polyline>' : '') +
+         freccia(m.x1, m.y1, m.x2, m.y2) +
+         '<text x="' + m.lx + '" y="' + m.ly + '" text-anchor="' + m.anc + '">' + m.n + '</text>' +
+         '</g>';
+  });
+
+  return s + '</svg>';
+}
+
+document.getElementById('schema-sag').innerHTML = schemaSagSVG();
+document.getElementById('schema-guida-sag').innerHTML = schemaSagSVG();
+document.getElementById('schema-ax').innerHTML = schemaAxSVG();
+document.getElementById('schema-guida-ax').innerHTML = schemaAxSVG();
+
+/* Legenda della guida, generata dalle stesse definizioni dei campi. */
+function legendaHtml(piano) {
+  return MISURE.filter(function (m) { return m.piano === piano; }).map(function (m) {
+    return '<div data-mis="' + m.n + '"><b>' + m.n + '</b><span><strong>' + m.nome + '</strong> — ' +
+      m.hint + (m.icc < ICC_BASSO ? ' <em>(ICC interosservatore ' + m.icc.toFixed(2) + ')</em>' : '') +
+      '</span></div>';
+  }).join('');
+}
+document.getElementById('legenda-sag').innerHTML = legendaHtml('sag');
+document.getElementById('legenda-ax').innerHTML = legendaHtml('ax');
+
+/* Evidenziazione: un numero alla volta, in tutte le copie degli schemi. */
+function evidenzia(numero) {
+  document.querySelectorAll('.schema-inline, #schema-guida-sag, #schema-guida-ax').forEach(function (box) {
+    box.classList.toggle('schema-ha-attivo', numero !== null);
+  });
+  document.querySelectorAll('.svg-mis').forEach(function (g) {
+    g.classList.toggle('is-active', numero !== null && g.dataset.mis === String(numero));
+  });
+}
+
+document.querySelectorAll('.svg-mis').forEach(function (g) {
+  g.addEventListener('click', function () {
+    evidenzia(g.classList.contains('is-active') ? null : g.dataset.mis);
+  });
+});
+
+document.querySelectorAll('#legenda-sag div, #legenda-ax div').forEach(function (riga) {
+  riga.addEventListener('mouseenter', function () { evidenzia(riga.dataset.mis); });
+  riga.addEventListener('mouseleave', function () { evidenzia(null); });
+  riga.addEventListener('click', function () { evidenzia(riga.dataset.mis); });
+});
+
+MISURE.forEach(function (m) {
+  var campo = document.getElementById(m.id);
+  campo.addEventListener('focus', function () { evidenzia(m.n); });
+  campo.addEventListener('blur', function () { evidenzia(null); });
+});
+
+/* ── guida alle misure ─────────────────────────────────────────────────── */
+
+function openGuide() {
+  document.getElementById('guideOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGuide() {
+  document.getElementById('guideOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleGuideOverlayClick(e) {
+  if (e.target === document.getElementById('guideOverlay')) closeGuide();
+}
+
+/* ── TUTORIAL ── */
+const TUTORIAL_STEPS = [
+  {
+    title: 'Biometria della fossa posteriore',
+    body: '<p>Diciassette misure lineari e cinque rapporti di tronco encefalico, verme e peduncoli ' +
+    'cerebellari, confrontati con i valori medi per fascia d\'età ricavati da ' +
+    '<strong>565 esami RM normali</strong>, da 23 giorni a 69 anni.</p>' +
+    '<p>Serve a rispondere alla domanda che di solito si risolve a occhio: <em>questo ponte è piccolo per ' +
+    'l\'età?</em> È il riferimento anatomico che sta dietro all\'atrofia del tronco nelle malattie ' +
+    'neurodegenerative, ai gliomi del tronco e alle malformazioni della fossa posteriore.</p>' +
+    '<div class="tut-tip">Si compila solo quello che serve: una misura sola basta per avere il confronto.</div>'
+  },
+  {
+    title: 'I piani e le linee di Oba',
+    body: '<p>Le misure sagittali si eseguono su una <strong>T1 mediana</strong>, quelle trasverse su ' +
+    '<strong>T2 assiali</strong> al livello indicato da un repere anatomico.</p>' +
+    '<p>La segmentazione del tronco segue il metodo di Oba, con quattro linee:</p>' +
+    '<ul>' +
+      '<li><strong>I</strong> — margine superiore del mesencefalo: dal corpo mammillare al margine superiore ' +
+      'della lamina quadrigemina</li>' +
+      '<li><strong>II</strong> — mesencefalo/ponte: dall\'incisura pontina superiore al margine inferiore ' +
+      'della lamina quadrigemina</li>' +
+      '<li><strong>III</strong> — ponte/bulbo: parallela a II, per l\'incisura pontina inferiore</li>' +
+      '<li><strong>IV</strong> — parallela a III, al livello del forame magno</li>' +
+    '</ul>' +
+    '<div class="tut-tip">Negli schemi a sinistra, toccando un numero o entrando in un campo si accende la ' +
+    'misura corrispondente.</div>'
+  },
+  {
+    title: 'Attenzione a cinque misure',
+    body: '<p>Nel lavoro di riferimento l\'accordo fra due osservatori era da buono a eccellente per quasi ' +
+    'tutte le misure, ma <strong>crollava sotto 0.5</strong> per cinque:</p>' +
+    '<ul>' +
+      '<li>diametro trasverso del mesencefalo (ICC 0.39)</li>' +
+      '<li>diametro AP del verme (0.35)</li>' +
+      '<li>diametro AP del bulbo alla giunzione ponto-bulbare (0.42) e al forame magno (0.43)</li>' +
+      '<li>spessore del peduncolo cerebellare superiore (0.46)</li>' +
+    '</ul>' +
+    '<div class="tut-warn">Sono marcate con la sigla <strong>ICC</strong> accanto al campo e nel referto. ' +
+    'Su queste misure due radiologi possono ottenere valori molto diversi sullo stesso esame: un risultato ' +
+    'fuori norma va rimisurato prima di essere refertato.</div>'
+  },
+  {
+    title: 'Leggi il risultato',
+    body: '<p>Per ogni voce il referto mostra il valore, la media ± DS della fascia d\'età, l\'intervallo ' +
+    'osservato e lo scostamento in deviazioni standard:</p>' +
+    '<ul>' +
+      '<li><strong>entro ±2 DS</strong> – nella dispersione dei soggetti normali</li>' +
+      '<li><strong>2–3 DS</strong> – ai margini</li>' +
+      '<li><strong>&gt; 3 DS</strong> – scostamento marcato</li>' +
+    '</ul>' +
+    '<p>I <strong>rapporti</strong> si calcolano da soli quando ci sono entrambe le misure che li compongono.</p>' +
+    '<div class="tut-tip">Usa <em>Copia Testo per PACS</em> per esportare misure, rapporti ed esito in plain-text.</div>'
+  }
+];
+
+initTutorial(TUTORIAL_STEPS);
+
+function resetAll() {
+  document.getElementById('eta').value = '';
+  MISURE.forEach(function (m) { document.getElementById(m.id).value = ''; });
+  document.getElementById('live-index').style.display = 'none';
+  evidenzia(null);
+  aggiornaLive();
+  document.getElementById('output-panel').innerHTML =
+    '<div class="placeholder" id="placeholder-msg">Indica l\'età, inserisci almeno una misura e premi <strong>Calcola</strong>.</div>';
+}
+</script>
+</body>
+</html>

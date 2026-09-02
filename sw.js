@@ -33,6 +33,7 @@ const PRECACHE = [
   './tools/biometria-fetale-rm.html',
   './tools/boston-caa-v2.html',
   './tools/doppler-cerebrale-neonatale.html',
+  './tools/fossa-posteriore-adulto.html',
   './tools/ipofisi-rm-pediatrica.html',
   './tools/mrpi.html',
   './tools/phvd.html',

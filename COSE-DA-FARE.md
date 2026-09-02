@@ -32,13 +32,20 @@ contorno ricopiato dentro ogni file.
 - [x] copia negli appunti → `assets/report-actions.js`
 - [x] macchinario del tutorial → `assets/tutorial.js` (−370 righe)
 - [ ] **scheletro del referto**: `.report-card`, `.report-actions`, stato
-      vuoto. Presente in 8 tool su 10.
-- [ ] **tabella dei centili**: 4 tool su 10 disegnano la stessa tabella.
+      vuoto. Presente in 10 tool su 12.
+- [ ] **tabella dei riferimenti**: 4 tool disegnano `.centile-table` e altri 6
+      disegnano `.metrics-table`, che è la stessa tabella con un altro nome e
+      mezzo millimetro di padding di differenza. Sono 10 tool su 12: prima di
+      estrarla va deciso un nome solo, altrimenti se ne estraggono due.
 - [ ] **`diagnosis-box`**: 4 tool su 10, stessa struttura e stesse classi.
 - [ ] **modale della guida**: `.guide-overlay` con le stesse tre funzioni sta
-      ormai in **4 tool** (biometria fetale, MRPI, stenosi carotidea, ASPECTS)
-      e cambia solo cosa c'è dentro. È il candidato più maturo, e il più
-      trascurato: era già duplicato prima che ne aggiungessi altri due.
+      ormai in **6 tool** (biometria fetale, MRPI, stenosi carotidea, ASPECTS,
+      verme e tronco, fossa posteriore) e cambia solo cosa c'è dentro. È il
+      candidato più maturo, e il più trascurato: era già duplicato a quattro
+      prima dei due sul cervelletto, che l'hanno ricopiato tale e quale
+      insieme a `openGuide`/`closeGuide`/`handleGuideOverlayClick` e alla
+      funzione `freccia()` che disegna le frecce quotate — quella è alla terza
+      copia identica (stenosi carotidea, verme e tronco, fossa posteriore).
 - [ ] Arrivare a un **template per un nuovo strumento**: un tool nuovo
       dovrebbe essere i suoi dati normativi e la sua logica, non 800 righe di
       contorno. L'MRPI ne è la prova al costo pieno: 250 righe di CSS del
@@ -144,6 +151,17 @@ a uno `<script>` classico creano un binding lessicale che *non* compare su
 
 **Il maiuscolo spaziato solo sulle etichette di sezione di primo livello.** A
 11–12px in mono spaziato diventa texture e si legge più lentamente.
+
+**Le figure degli articoli si ricopiano solo se la licenza lo dice.** In
+`mrpi.html` la Figura 1 di Ugga 2020 è un JPEG incorporato, perché quel lavoro
+è Open Access CC BY 4.0 e la licenza sta scritta nel credito sotto l'immagine.
+I due strumenti sul cervelletto hanno invece uno schema SVG disegnato da zero:
+l'AJNR riserva esplicitamente ogni diritto sui propri contenuti, e il BJR di
+quel numero esce sotto i termini standard di Oxford University Press, che non
+sono una licenza Creative Commons. Dell'articolo si riprendono la definizione e
+la posizione delle misure — che sono il contenuto scientifico — non
+l'illustrazione. Nel dubbio si ridisegna: costa un pomeriggio e il risultato
+segue il tema scuro, cosa che una figura non fa.
 
 **Misure in `rem`, mai in `px`.** La voce "Dimensioni carattere" di Android
 scala i `rem`. L'unica eccezione è `max(16px, 1rem)` sugli input, che tiene

@@ -95,6 +95,14 @@ window.SITE_TOOLS = [
   }
 
   ,{
+    id: "fossa-posteriore-adulto",
+    title: "Biometria fossa posteriore",
+    description: "Valori normali RM di tronco encefalico, verme e peduncoli cerebellari per fascia d'età, con i rapporti del tronco",
+    url: "tools/fossa-posteriore-adulto.html",
+    category: "Neurodegenerativo"
+  }
+
+  ,{
     id: "boston-caa-v2",
     title: "Boston CAA v2.0",
     description: "Classificazione dell'angiopatia amiloide cerebrale (CAA) secondo i Boston Criteria 2.0",
