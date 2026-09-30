@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MRPI and MRPI 2.0 calculator</title>
+<meta name="description" content="Magnetic resonance parkinsonism index (MRPI) and MRPI 2.0 from midbrain and pons areas, cerebellar peduncle widths and ventricular widths, with a report-ready result.">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="calculator.css?v=3">
+</head>
+<body>
+
+<div class="calc-top">
+  <div class="calc-top-inner">
+    <a href="../index.html">Neuro-tools</a>
+    <span>Calculators · English drafts for Radiopaedia</span>
+  </div>
+</div>
+
+<div class="calc-page">
+<main>
+
+<!-- ============================================================================
+     Da qui fino alla fine di .rp-pf il markup segue le convenzioni dei
+     calcolatori di Radiopaedia (classi .rp-*, passi .rp-pf-step, pannello
+     .rp-calc-src con i testi del referto). Lo script in fondo lavora solo
+     dentro .rp-pf.
+     ============================================================================ -->
+<div class="rp-pf rp-calc-wrap">
+  <h4>MRPI and MRPI 2.0 calculator</h4>
+  <p>This calculator computes the <a href="https://radiopaedia.org/articles/magnetic-resonance-parkinsonism-index">magnetic resonance parkinsonism index</a> (MRPI) and MRPI 2.0 from midsagittal brainstem areas, cerebellar peduncle widths and, for MRPI 2.0, ventricular widths.</p>
+
+  <div class="rp-calc-note rp-calc-callout">
+    <p><strong>Scope.</strong> For adults with a parkinsonian syndrome in whom <a href="https://radiopaedia.org/articles/progressive-supranuclear-palsy">progressive supranuclear palsy</a> (PSP) is suspected. All measurements are made on a volumetric T1-weighted acquisition. The result should be interpreted together with the clinical findings.</p>
+  </div>
+
+  <!-- mode toggle -->
+  <div class="rp-calc-modebar">
+    <span class="rp-calc-mode-opt is-active" data-mode="step">One step at a time</span>
+    <svg aria-checked="false" aria-label="Show all steps at once" class="rp-calc-switch" id="rp-calc-showall" role="switch" tabindex="0" viewBox="0 0 42 24"><rect class="rp-calc-switch-track" height="24" rx="12" width="42" x="0" y="0"></rect><circle class="rp-calc-switch-knob" cx="12" cy="12" r="9"></circle></svg>
+    <span class="rp-calc-mode-opt" data-mode="all">Show all steps</span>
+  </div>
+
+  <!-- SECTION 1: brainstem areas -->
+  <div class="rp-pf-step" data-step="1">
+    <h4>Midbrain and pons</h4>
+    <div class="rp-meas-row">
+      <div class="rp-meas-main">
+        <div class="rp-calc-note">
+          <strong>How to measure.</strong> On the midsagittal image, outline the midbrain (<span class="rp-chip rp-chip-M">M</span>) and the pons (<span class="rp-chip rp-chip-P">P</span>). The two are separated by a line through the superior pontine notch and the inferior edge of the quadrigeminal plate; the pons is bounded inferiorly by a parallel line through the inferior pontine notch.
+        </div>
+        <div class="rp-calc-fields">
+          <div class="rp-num-field">
+            <label for="rp-in-M"><span class="rp-chip rp-chip-M">M</span> Midbrain area</label>
+            <div class="rp-num-input"><input id="rp-in-M" inputmode="decimal" min="0" step="0.1" type="number"><span class="rp-num-unit">mm²</span></div>
+          </div>
+          <div class="rp-num-field">
+            <label for="rp-in-P"><span class="rp-chip rp-chip-P">P</span> Pons area</label>
+            <div class="rp-num-input"><input id="rp-in-P" inputmode="decimal" min="0" step="0.1" type="number"><span class="rp-num-unit">mm²</span></div>
+          </div>
+        </div>
+      </div>
+      <figure class="rp-meas-fig">
+        <img src="img/mrpi-midbrain-pons.jpg" alt="Midsagittal T1-weighted image with the midbrain and pons areas outlined">
+        <figcaption>Midsagittal plane: midbrain (M) and pons (P) areas. <span class="rp-meas-credit">Case courtesy of Bruno Di Muzio, Radiopaedia.org, <a href="https://doi.org/10.53347/rID-36925">rID 36925</a></span></figcaption>
+      </figure>
+    </div>
+    <div class="rp-calc-formula" hidden id="rp-live-pm">&nbsp;</div>
+    <div class="rp-calc-warnnote" hidden id="rp-warn-1">&nbsp;</div>
+  </div>
+
+  <!-- SECTION 2: cerebellar peduncles -->
+  <div class="rp-pf-step" data-step="2">
+    <h4>Cerebellar peduncles</h4>
+    <div class="rp-calc-note">
+      <strong>How to measure.</strong> Measure both sides: MCP and SCP are each the mean of the right and left peduncle.
+    </div>
+    <div class="rp-meas-row">
+      <div class="rp-meas-main">
+        <p class="rp-calc-fieldlabel">Middle cerebellar peduncle (MCP)</p>
+        <p class="rp-meas-how">Parasagittal image, maximal width of the peduncle.</p>
+        <div class="rp-calc-fields">
+          <div class="rp-num-field">
+            <label for="rp-in-mcp-r">Right</label>
+            <div class="rp-num-input"><input id="rp-in-mcp-r" inputmode="decimal" min="0" step="0.1" type="number"><span class="rp-num-unit">mm</span></div>
+          </div>
+          <div class="rp-num-field">
+            <label for="rp-in-mcp-l">Left</label>
+            <div class="rp-num-input"><input id="rp-in-mcp-l" inputmode="decimal" min="0" step="0.1" type="number"><span class="rp-num-unit">mm</span></div>
+          </div>
+        </div>
+      </div>
+      <figure class="rp-meas-fig">
+        <img src="img/mrpi-mcp.jpg" alt="Parasagittal T1-weighted image with the middle cerebellar peduncle width">
+        <figcaption>Parasagittal plane: MCP width. <span class="rp-meas-credit">Case courtesy of Bruno Di Muzio, Radiopaedia.org, <a href="https://doi.org/10.53347/rID-36925">rID 36925</a></span></figcaption>
+      </figure>
+    </div>
+    <div class="rp-meas-row">
+      <div class="rp-meas-main">
+        <p class="rp-calc-fieldlabel">Superior cerebellar peduncle (SCP)</p>
+        <p class="rp-meas-how">Oblique coronal image tangent to the floor of the fourth ventricle.</p>
+        <div class="rp-calc-fields">
+          <div class="rp-num-field">
+            <label for="rp-in-scp-r">Right</label>
+            <div class="rp-num-input"><input id="rp-in-scp-r" inputmode="decimal" min="0" step="0.1" type="number"><span class="rp-num-unit">mm</span></div>
+          </div>
+          <div class="rp-num-field">
+            <label for="rp-in-scp-l">Left</label>
+            <div class="rp-num-input"><input id="rp-in-scp-l" inputmode="decimal" min="0" step="0.1" type="number"><span class="rp-num-unit">mm</span></div>
+          </div>
+        </div>
+      </div>
+      <figure class="rp-meas-fig">
+        <img src="img/mrpi-scp.jpg" alt="Oblique coronal T1-weighted image with the superior cerebellar peduncle width">
+        <figcaption>Oblique coronal plane: SCP width. <span class="rp-meas-credit">Case courtesy of Bruno Di Muzio, Radiopaedia.org, <a href="https://doi.org/10.53347/rID-36925">rID 36925</a></span></figcaption>
+      </figure>
+    </div>
+    <div class="rp-calc-formula" hidden id="rp-live-mcp">&nbsp;</div>
+    <div class="rp-calc-formula" hidden id="rp-live-scp">&nbsp;</div>
+    <div class="rp-calc-formula" hidden id="rp-live-mcpscp">&nbsp;</div>
+    <div class="rp-calc-warnnote" hidden id="rp-warn-2">&nbsp;</div>
+  </div>
+
+  <!-- SECTION 3: ventricles (MRPI 2.0, optional) -->
+  <div class="rp-pf-step" data-step="3">
+    <h4>Ventricles <span class="rp-calc-qual">(for MRPI 2.0, optional)</span></h4>
+    <div class="rp-calc-note">
+      <strong>How to measure.</strong> Both widths are measured on an axial image in the AC–PC plane. Leave these fields empty to compute MRPI only.
+    </div>
+    <div class="rp-meas-row">
+      <div class="rp-meas-main">
+        <p class="rp-calc-fieldlabel">Third ventricle width (V3)</p>
+        <p class="rp-meas-how">Three measurements of the maximal distance between the lateral borders; the calculator takes the mean.</p>
+        <div class="rp-calc-fields rp-calc-fields-3">
+          <div class="rp-num-field">
+            <label for="rp-in-v3a">1st</label>
+            <div class="rp-num-input"><input id="rp-in-v3a" inputmode="decimal" min="0" step="0.1" type="number"><span class="rp-num-unit">mm</span></div>
+          </div>
+          <div class="rp-num-field">
+            <label for="rp-in-v3b">2nd</label>
+            <div class="rp-num-input"><input id="rp-in-v3b" inputmode="decimal" min="0" step="0.1" type="number"><span class="rp-num-unit">mm</span></div>
+          </div>
+          <div class="rp-num-field">
+            <label for="rp-in-v3c">3rd</label>
+            <div class="rp-num-input"><input id="rp-in-v3c" inputmode="decimal" min="0" step="0.1" type="number"><span class="rp-num-unit">mm</span></div>
+          </div>
+        </div>
+      </div>
+      <figure class="rp-meas-fig">
+        <img src="img/mrpi-third-ventricle.jpg" alt="Axial T1-weighted image with three measurements of the third ventricle width">
+        <figcaption>Axial AC–PC plane: third ventricle width. <span class="rp-meas-credit">Case courtesy of Giorgio Maria Agazzi, Radiopaedia.org, <a href="https://radiopaedia.org/cases/216483">rID: 216483</a></span></figcaption>
+      </figure>
+    </div>
+    <div class="rp-meas-row">
+      <div class="rp-meas-main">
+        <p class="rp-calc-fieldlabel">Frontal horn width (FH)</p>
+        <p class="rp-meas-how">Maximal left-to-right distance across the frontal horns.</p>
+        <div class="rp-calc-fields">
+          <div class="rp-num-field">
+            <label for="rp-in-fh">Frontal horns</label>
+            <div class="rp-num-input"><input id="rp-in-fh" inputmode="decimal" min="0" step="0.1" type="number"><span class="rp-num-unit">mm</span></div>
+          </div>
+        </div>
+      </div>
+      <figure class="rp-meas-fig">
+        <img src="img/mrpi-frontal-horns.jpeg" alt="Axial T1-weighted image with the maximal frontal horn width">
+        <figcaption>Axial AC–PC plane: frontal horn width. <span class="rp-meas-credit">Case courtesy of Giorgio Maria Agazzi, Radiopaedia.org, <a href="https://radiopaedia.org/cases/216483">rID: 216483</a></span></figcaption>
+      </figure>
+    </div>
+    <div class="rp-calc-formula" hidden id="rp-live-v3mean">&nbsp;</div>
+    <div class="rp-calc-formula" hidden id="rp-live-v3fh">&nbsp;</div>
+    <div class="rp-calc-warnnote" hidden id="rp-warn-3">&nbsp;</div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="rp-pf-step" data-step="4">
+    <h4>Result</h4>
+    <div class="rp-calc-result is-neutral" id="rp-calc-result">
+      <div class="rp-calc-result-class" id="rp-calc-result-class">—</div>
+      <div id="rp-calc-result-text">Enter the measurements above to compute the index.</div>
+      <div class="rp-calc-result-driver" id="rp-calc-result-driver"></div>
+    </div>
+    <div class="rp-calc-resultnote" hidden>Published cut-offs vary between cohorts, with disease stage and with PSP phenotype. Later studies have generally reported lower accuracy than the original series.</div>
+    <div class="rp-calc-report" hidden id="rp-calc-report">
+      <div class="rp-calc-report-head">Report-ready text<button class="rp-calc-copy" id="rp-calc-copy" type="button">Copy</button></div>
+      <div class="rp-calc-report-body" id="rp-calc-report-body">&nbsp;</div>
+    </div>
+    <details class="rp-calc-more" hidden><summary>Formulas, cut-offs and references</summary>
+      <div class="rp-calc-more-body">
+        <p><strong>MRPI</strong> = (<span class="rp-chip rp-chip-P">P</span> / <span class="rp-chip rp-chip-M">M</span>) × (MCP / SCP), where P and M are the midsagittal areas of pons and midbrain, and MCP and SCP the mean widths of the middle and superior cerebellar peduncles <sup>1</sup>.</p>
+        <p><strong>MRPI 2.0</strong> = MRPI × (V3 / FH), where V3 is the third ventricle width and FH the frontal horn width <sup>2</sup>.</p>
+        <p>PSP atrophies the midbrain and the superior cerebellar peduncles and relatively spares the pons and the middle cerebellar peduncles, so both indices increase. In MSA-P the pons and the middle cerebellar peduncles are affected instead, and MRPI is usually low. MRPI 2.0 also includes the third ventricle width, which increases early in PSP; it was introduced to improve the detection of the PSP-parkinsonism (PSP-P) phenotype.</p>
+        <table>
+          <thead><tr><th>Index</th><th>Cut-off</th><th>Context</th></tr></thead>
+          <tbody>
+            <tr><td>MRPI</td><td>&gt;13.55</td><td>PSP vs Parkinson disease and MSA-P <sup>1</sup></td></tr>
+            <tr><td>MRPI 2.0</td><td>≥2.50</td><td>PSP-Richardson syndrome vs Parkinson disease or controls <sup>2</sup></td></tr>
+            <tr><td>MRPI 2.0</td><td>≥2.18</td><td>PSP-parkinsonism vs Parkinson disease or controls <sup>2</sup></td></tr>
+          </tbody>
+        </table>
+        <p>MRPI increases with disease duration. A normal value does not exclude PSP, particularly in early disease and in phenotypes other than Richardson syndrome. The sensitivity and specificity reported in the original series have not been reproduced in most later cohorts.</p>
+        <hr>
+        <ol>
+          <li>Quattrone A, Nicoletti G, Messina D et al. MR imaging index for differentiation of progressive supranuclear palsy from Parkinson disease and the Parkinson variant of multiple system atrophy. Radiology. 2008;246(1):214-21. <a href="https://doi.org/10.1148/radiol.2453061703">doi:10.1148/radiol.2453061703</a></li>
+          <li>Quattrone A, Morelli M, Nigro S et al. A new MR imaging index for differentiation of progressive supranuclear palsy-parkinsonism from Parkinson's disease. Parkinsonism Relat Disord. 2018;54:3-8. <a href="https://doi.org/10.1016/j.parkreldis.2018.07.016">doi:10.1016/j.parkreldis.2018.07.016</a></li>
+          <li>Di Muzio B. Magnetic resonance parkinsonism index. Case study, Radiopaedia.org (Accessed on 30 Sep 2026). <a href="https://doi.org/10.53347/rID-36925">doi:10.53347/rID-36925</a> (source of the midbrain and pons, MCP and SCP images)</li>
+          <li>Case courtesy of Giorgio Maria Agazzi, Radiopaedia.org, rID: 216483. <a href="https://radiopaedia.org/cases/216483">radiopaedia.org/cases/216483</a> (source of the third ventricle and frontal horn images)</li>
+        </ol>
+        <p class="rp-calc-defs-source">See also: <a href="https://radiopaedia.org/articles/magnetic-resonance-parkinsonism-index">magnetic resonance parkinsonism index</a> and <a href="https://radiopaedia.org/articles/midbrain-to-pons-ratio">midbrain to pons ratio</a> on Radiopaedia.org.</p>
+      </div>
+    </details>
+    <div class="rp-calc-reset-wrap"><button class="rp-calc-reset" id="rp-calc-reset" type="button"><svg aria-hidden="true" viewBox="0 0 512 512"><path d="M256.1 32.11c-52.22 0-103.2 18.27-143.2 51.58C111.600 84.730 110.800 86.030 109.900 87.320L59.31 36.690c-4.562-4.562-11.500-5.875-17.440-3.469C35.910 35.690 32 41.530 32 48v128C32 184.800 39.160 192 48 192h128c6.469 0 12.310-3.906 14.780-9.875s1.094-12.880-3.469-17.440L131.800 109.100c.4961-.3281 1.076-.4453 1.541-.8359C167.700 79.720 211.300 64 256 64c105.900 0 192 86.130 192 192s-86.130 192-192 192c-59.470 0-114.700-26.910-151.400-73.880c-5.469-6.969-15.500-8.219-22.470-2.719c-6.938 5.438-8.157 15.500-2.719 22.470c42.810 54.720 107.300 86.020 176.700 86.020C379.600 479.900 480 379.500 480 256S379.600 32.110 256.100 32.110z"></path></svg>Start over</button></div>
+  </div>
+
+  <!-- ================= EDITABLE COPY PANEL (hidden on the live page) ================= -->
+  <div class="rp-calc-src">
+    <h5>Calculator output text (hidden on the live page)</h5>
+    <p>Wording the calculator produces. Placeholders in braces are filled in by the calculator.</p>
+    <p class="rp-src-k">Measurements line (uses {m}, {p}, {mcp}, {mcpr}, {mcpl}, {scp}, {scpr}, {scpl})</p>
+    <div class="rp-src rp-src-meas">Midbrain area {m} mm², pons area {p} mm²; middle cerebellar peduncle {mcp} mm (right {mcpr}, left {mcpl} mm), superior cerebellar peduncle {scp} mm (right {scpr}, left {scpl} mm).</div>
+    <p class="rp-src-k">Ventricles line (uses {v3}, {v3list}, {fh})</p>
+    <div class="rp-src rp-src-measvent">Third ventricle width {v3} mm (mean of {v3list} mm), frontal horn width {fh} mm.</div>
+    <p class="rp-src-k">MRPI above the cut-off (uses {mrpi})</p>
+    <div class="rp-src rp-src-mrpihigh">MRPI {mrpi}, above the 13.55 cut-off proposed for progressive supranuclear palsy (PSP).</div>
+    <p class="rp-src-k">MRPI below the cut-off (uses {mrpi})</p>
+    <div class="rp-src rp-src-mrpilow">MRPI {mrpi}, below the 13.55 cut-off proposed for progressive supranuclear palsy (PSP).</div>
+    <p class="rp-src-k">MRPI 2.0 at or above 2.50 (uses {mrpi2})</p>
+    <div class="rp-src rp-src-mrpi2high">MRPI 2.0 {mrpi2}, at or above the 2.50 cut-off proposed for PSP-Richardson syndrome.</div>
+    <p class="rp-src-k">MRPI 2.0 between 2.18 and 2.50 (uses {mrpi2})</p>
+    <div class="rp-src rp-src-mrpi2mid">MRPI 2.0 {mrpi2}, at or above the 2.18 cut-off proposed for PSP-parkinsonism but below the 2.50 cut-off for PSP-Richardson syndrome.</div>
+    <p class="rp-src-k">MRPI 2.0 below 2.18 (uses {mrpi2})</p>
+    <div class="rp-src rp-src-mrpi2low">MRPI 2.0 {mrpi2}, below the cut-offs proposed for PSP (2.18 for PSP-parkinsonism, 2.50 for PSP-Richardson syndrome).</div>
+  </div>
+</div>
+<!-- ======================== fine del blocco .rp-pf ======================== -->
+
+</main>
+
+<div class="calc-side-wrap"><aside class="calc-side">
+  <h5>Calculators</h5>
+  <ul>
+    <li><a href="mrpi.html" aria-current="page">Parkinsonism (MRPI and MRPI 2.0)</a></li>
+  </ul>
+</aside></div>
+</div>
+
+
+<script>
+(function () {
+  var root = document.querySelector('.rp-pf');
+  if (!root) return;
+  root.classList.add('rp-pf-js');
+
+  var showAll = false;
+
+  /* Cut-off dell'articolo Radiopaedia sull'MRPI (Quattrone 2008 e 2018). */
+  var CUT_MRPI = 13.55;       // MRPI > 13.55: PSP vs PD e MSA-P
+  var CUT_MRPI2_RS = 2.50;    // MRPI 2.0 >= 2.50: PSP-RS
+  var CUT_MRPI2_P = 2.18;     // MRPI 2.0 >= 2.18: PSP-P
+
+  function $(s) { return root.querySelector(s); }
+  function $all(s) { return Array.prototype.slice.call(root.querySelectorAll(s)); }
+  function num(id) {
+    var el = document.getElementById(id);
+    if (!el || el.value === '') return NaN;
+    var v = parseFloat(el.value);
+    return (isFinite(v) && v > 0) ? v : NaN;
+  }
+  // MCP e SCP sono per definizione la media di destra e sinistra: servono tutti e due
+  function mean2(idR, idL) {
+    var r = num(idR), l = num(idL);
+    var n = (isFinite(r) ? 1 : 0) + (isFinite(l) ? 1 : 0);
+    return { v: n === 2 ? (r + l) / 2 : NaN, r: r, l: l, sides: n };
+  }
+  // media delle misure del III ventricolo compilate (il protocollo ne vuole tre)
+  function meanV3() {
+    var vals = ['rp-in-v3a', 'rp-in-v3b', 'rp-in-v3c'].map(num).filter(isFinite);
+    if (!vals.length) return { v: NaN, vals: vals };
+    return { v: vals.reduce(function (a, b) { return a + b; }, 0) / vals.length, vals: vals };
+  }
+  function f1(x) { return x.toFixed(1); }
+  function f2(x) { return x.toFixed(2); }
+
+  // ---- editable-copy-panel readers ----
+  function srcText(k, fb) {
+    var el = root.querySelector('.rp-src-' + k);
+    return el ? (el.textContent || '').replace(/\s+/g, ' ').trim() : (fb || '');
+  }
+  function fill(tpl, map) {
+    return tpl.replace(/\{(\w+)\}/g, function (m, k) { return map.hasOwnProperty(k) ? map[k] : m; });
+  }
+
+  function compute() {
+    var M = num('rp-in-M'), P = num('rp-in-P');
+    var mcp = mean2('rp-in-mcp-r', 'rp-in-mcp-l'), scp = mean2('rp-in-scp-r', 'rp-in-scp-l');
+    var v3m = meanV3(), v3 = v3m.v, fh = num('rp-in-fh');
+    var pm = (isFinite(M) && isFinite(P)) ? P / M : NaN;
+    var ms = (isFinite(mcp.v) && isFinite(scp.v)) ? mcp.v / scp.v : NaN;
+    var mrpi = (isFinite(pm) && isFinite(ms)) ? pm * ms : NaN;
+    var vf = (isFinite(v3) && isFinite(fh)) ? v3 / fh : NaN;
+    var mrpi2 = (isFinite(mrpi) && isFinite(vf)) ? mrpi * vf : NaN;
+    return { M: M, P: P, mcp: mcp, scp: scp, v3: v3, v3vals: v3m.vals, fh: fh, pm: pm, ms: ms, mrpi: mrpi, vf: vf, mrpi2: mrpi2 };
+  }
+
+  function isComplete(n, d) {
+    if (n === 1) return isFinite(d.pm);
+    if (n === 2) return isFinite(d.ms);
+    return true;   // i ventricoli sono facoltativi: il risultato compare comunque
+  }
+
+  // ---- formule parziali e avvisi di plausibilità ----
+  function setBox(id, text) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.hidden = !text;
+    if (text) el.textContent = text;
+  }
+
+  function paintLive(d) {
+    setBox('rp-live-pm', isFinite(d.pm) ? 'P / M = ' + f1(d.P) + ' / ' + f1(d.M) + ' = ' + f2(d.pm) : '');
+    setBox('rp-live-mcp', isFinite(d.mcp.v) ? 'MCP = (' + f1(d.mcp.r) + ' + ' + f1(d.mcp.l) + ') / 2 = ' + f2(d.mcp.v) + ' mm' : '');
+    setBox('rp-live-scp', isFinite(d.scp.v) ? 'SCP = (' + f1(d.scp.r) + ' + ' + f1(d.scp.l) + ') / 2 = ' + f2(d.scp.v) + ' mm' : '');
+    setBox('rp-live-mcpscp', isFinite(d.ms) ? 'MCP / SCP = ' + f1(d.mcp.v) + ' / ' + f1(d.scp.v) + ' = ' + f2(d.ms) : '');
+    setBox('rp-live-v3mean', d.v3vals.length > 1
+      ? 'V3 = (' + d.v3vals.map(f1).join(' + ') + ') / ' + d.v3vals.length + ' = ' + d.v3.toFixed(2) + ' mm' : '');
+    setBox('rp-live-v3fh', isFinite(d.vf) ? 'V3 / FH = ' + f1(d.v3) + ' / ' + f1(d.fh) + ' = ' + d.vf.toFixed(3) : '');
+
+    var w1 = [];
+    if (isFinite(d.pm) && d.pm < 1) w1.push('the pons area is usually several times larger than the midbrain area: are the two values swapped?');
+    setBox('rp-warn-1', w1.length ? 'Check the measurements: ' + w1.join('; ') : '');
+
+    var w2 = [];
+    if (d.mcp.sides === 1) w2.push('enter both the right and left MCP (the index uses their mean)');
+    if (d.scp.sides === 1) w2.push('enter both the right and left SCP (the index uses their mean)');
+    if (isFinite(d.ms) && d.ms < 1) w2.push('the MCP is normally wider than the SCP: are the two values swapped?');
+    setBox('rp-warn-2', w2.length ? 'Check the measurements: ' + w2.join('; ') + (/\?$/.test(w2[w2.length - 1]) ? '' : '.') : '');
+
+    var w3 = [];
+    var oneOnly = (isFinite(d.v3) ? 1 : 0) + (isFinite(d.fh) ? 1 : 0) === 1;
+    if (oneOnly) w3.push('enter both the third ventricle and the frontal horn widths to compute MRPI 2.0, or leave them all empty');
+    if (d.v3vals.length && d.v3vals.length < 3) w3.push('the third ventricle width is defined as the mean of three measurements (' + d.v3vals.length + ' entered)');
+    if (isFinite(d.vf) && d.vf >= 1) w3.push('the third ventricle cannot be wider than the frontal horns');
+    setBox('rp-warn-3', w3.length ? 'Check the measurements: ' + w3.join('; ') + '.' : '');
+  }
+
+  // ---- risultato ----
+  function mrpiBand(v) { return v > CUT_MRPI ? 'high' : 'low'; }
+  function mrpi2Band(v) {
+    if (v >= CUT_MRPI2_RS) return 'high';
+    if (v >= CUT_MRPI2_P) return 'mid';
+    return 'low';
+  }
+  var TONE = { high: 'is-danger', mid: 'is-warning', low: 'is-success' };
+
+  function setPlaceholder() {
+    $('#rp-calc-result').className = 'rp-calc-result is-neutral';
+    $('#rp-calc-result-class').textContent = '—';
+    $('#rp-calc-result-text').textContent = 'Enter the measurements above to compute the index.';
+    $('#rp-calc-result-driver').textContent = '';
+    toggleResultDetail(false);
+  }
+
+  function toggleResultDetail(on) {
+    $all('.rp-calc-resultnote, #rp-calc-report, .rp-calc-more').forEach(function (el) { el.hidden = !on; });
+  }
+
+  function setResult(d) {
+    var has2 = isFinite(d.mrpi2);
+    // il colore segue l'indice più completo disponibile
+    var band = has2 ? mrpi2Band(d.mrpi2) : mrpiBand(d.mrpi);
+    $('#rp-calc-result').className = 'rp-calc-result ' + TONE[band];
+    $('#rp-calc-result-class').textContent = 'MRPI ' + f2(d.mrpi) + (has2 ? '   ·   MRPI 2.0 ' + f2(d.mrpi2) : '');
+
+    var text;
+    if (has2) {
+      text = band === 'high' ? 'MRPI 2.0 at or above the cut-off for PSP-Richardson syndrome (≥2.50).'
+           : band === 'mid'  ? 'MRPI 2.0 at or above the cut-off for PSP-parkinsonism (≥2.18), below the one for PSP-Richardson syndrome (2.50).'
+           :                   'MRPI 2.0 below the cut-offs proposed for PSP (2.18 and 2.50).';
+      text += ' MRPI is ' + (mrpiBand(d.mrpi) === 'high' ? 'above' : 'below') + ' its 13.55 cut-off.';
+    } else {
+      text = mrpiBand(d.mrpi) === 'high'
+        ? 'MRPI above the 13.55 cut-off proposed for PSP.'
+        : 'MRPI below the 13.55 cut-off proposed for PSP. A normal value does not exclude PSP, particularly in early disease and in phenotypes other than Richardson syndrome.';
+      text += ' Add the ventricular widths to compute MRPI 2.0.';
+    }
+    $('#rp-calc-result-text').textContent = text;
+
+    var drv = 'P/M ' + f2(d.pm) + ' × MCP/SCP ' + f2(d.ms);
+    if (has2) drv += ' × V3/FH ' + d.vf.toFixed(3);
+    $('#rp-calc-result-driver').textContent = drv + '.';
+
+    // testo per il referto
+    var lines = [];
+    var meas = fill(srcText('meas', ''), {
+      m: f1(d.M), p: f1(d.P),
+      mcp: f1(d.mcp.v), mcpr: f1(d.mcp.r), mcpl: f1(d.mcp.l),
+      scp: f1(d.scp.v), scpr: f1(d.scp.r), scpl: f1(d.scp.l)
+    });
+    lines.push(meas);
+    if (has2) {
+      var vent = fill(srcText('measvent', ''), { v3: f1(d.v3), v3list: d.v3vals.map(f1).join(', '), fh: f1(d.fh) });
+      if (d.v3vals.length < 2) vent = vent.replace(/ \(mean of [^)]*\)/, '');
+      lines.push(vent);
+    }
+    lines.push(fill(srcText(mrpiBand(d.mrpi) === 'high' ? 'mrpihigh' : 'mrpilow', ''), { mrpi: f2(d.mrpi) }));
+    if (has2) {
+      var k = { high: 'mrpi2high', mid: 'mrpi2mid', low: 'mrpi2low' }[mrpi2Band(d.mrpi2)];
+      lines.push(fill(srcText(k, ''), { mrpi2: f2(d.mrpi2) }));
+    }
+    $('#rp-calc-report-body').textContent = lines.join('\n');
+
+    toggleResultDetail(true);
+  }
+
+  function refresh(doScroll) {
+    var d = compute();
+    paintLive(d);
+
+    var steps = $all('.rp-pf-step');
+    var wasHidden = steps.map(function (s) { return s.classList.contains('is-hidden'); });
+    var reveal = true;
+    steps.forEach(function (s, i) {
+      s.classList.toggle('is-hidden', !reveal);
+      if (!showAll && reveal && !isComplete(i + 1, d)) reveal = false;
+    });
+
+    if (isFinite(d.mrpi)) setResult(d); else setPlaceholder();
+
+    if (doScroll) {
+      for (var i = 0; i < steps.length; i++) {
+        if (wasHidden[i] && !steps[i].classList.contains('is-hidden')) {
+          steps[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+          break;
+        }
+      }
+    }
+  }
+
+  function resetForm() {
+    $all('input[type="number"]').forEach(function (r) { r.value = ''; });
+    refresh(false);
+    var top = root.querySelector('h4');
+    if (top && top.scrollIntoView) top.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function setMode(all) {
+    showAll = all;
+    var sw = $('.rp-calc-switch');
+    if (sw) sw.setAttribute('aria-checked', all ? 'true' : 'false');
+    $('.rp-calc-mode-opt[data-mode="step"]').classList.toggle('is-active', !all);
+    $('.rp-calc-mode-opt[data-mode="all"]').classList.toggle('is-active', all);
+    refresh(false);
+  }
+
+  // ---- figure delle misure: se il file manca resta un riquadro col nome atteso ----
+  $all('.rp-meas-fig img').forEach(function (img) {
+    function missing() {
+      var box = document.createElement('div');
+      box.className = 'rp-img-missing';
+      box.textContent = 'Image not available yet (' + img.getAttribute('src') + ')';
+      img.replaceWith(box);
+    }
+    if (img.complete && !img.naturalWidth) missing();
+    else img.addEventListener('error', missing);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    var sw = e.target.closest && e.target.closest('.rp-calc-switch');
+    if (sw && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); setMode(sw.getAttribute('aria-checked') !== 'true'); }
+  });
+
+  document.addEventListener('input', function (e) {
+    if (e.target.closest && e.target.closest('.rp-pf') && e.target.type === 'number') refresh(false);
+  });
+  // quando si esce da un campo e il passo si completa, scorre al passo nuovo
+  document.addEventListener('change', function (e) {
+    if (e.target.closest && e.target.closest('.rp-pf') && e.target.type === 'number') refresh(true);
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    var sw = e.target.closest('.rp-calc-switch');
+    if (sw && root.contains(sw)) { setMode(sw.getAttribute('aria-checked') !== 'true'); return; }
+    var opt = e.target.closest('.rp-calc-mode-opt');
+    if (opt && root.contains(opt)) { setMode(opt.getAttribute('data-mode') === 'all'); return; }
+    var t = e.target.closest('.rp-calc-copy, .rp-calc-reset');
+    if (!t || !root.contains(t)) return;
+    if (t.classList.contains('rp-calc-reset')) { resetForm(); return; }
+    var txt = $('#rp-calc-report-body').textContent;
+    var done = function () { t.textContent = 'Copied'; setTimeout(function () { t.textContent = 'Copy'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, done);
+    else done();
+  });
+
+  refresh(false);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+/* ==========================================================================
+   CALCULATORS (EN) — stile delle pagine pensate per Radiopaedia
+   --------------------------------------------------------------------------
+   Due parti:
+   1. la cornice della pagina (barra in alto, colonna principale, elenco dei
+      calcolatori a lato), che esiste solo qui su Neuro-tools;
+   2. i componenti .rp-*, che ricalcano il foglio condiviso "calculator-css"
+      dei calcolatori di Radiopaedia: stessi nomi di classe, stessi colori,
+      stesse misure. Il markup dentro .rp-pf si può così incollare nel loro
+      editor senza riscriverlo.
+   Radiopaedia non ha ancora il tema scuro per i calcolatori: qui nemmeno.
+   ========================================================================== */
+
+/* ---------- cornice della pagina ---------- */
+/* Riproduce le dimensioni di Radiopaedia (misurate il 30/09/2026 sulla pagina
+   del calcolatore della stenosi carotidea), così l'anteprima è fedele.
+   Il loro layout è a larghezza FISSA per fasce, non a percentuale:
+   - da 992 px in su: contenitore 972 px, colonna principale 2/3 (648 px,
+     con 20 px di padding per lato → 608 px utili), elenco a lato 324 px;
+     resta 972 px anche su schermi larghi 1600 px;
+   - da 768 a 991 px: contenitore 760 px, una sola colonna → 720 px utili,
+     l'elenco dei calcolatori scende sotto;
+   - sotto 768 px: fluido, larghezza dello schermo meno 40 px.
+   Testo del calcolatore 13 px da 992 px in su, 16 px sotto. */
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: #2a292a; color: #3d3d3d;
+  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
+  font-size: 12px; line-height: 1.5;
+}
+a { color: #41699b; }
+.calc-top {
+  background: linear-gradient(90deg, #2d2552, #4a3f7a 60%, #5a5a8a);
+  color: #fff; padding: 18px 20px;
+}
+.calc-top-inner {
+  width: 972px; max-width: 100%; margin: 0 auto;
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+}
+.calc-top a { color: #fff; text-decoration: none; font-weight: 700; font-size: 18px; letter-spacing: .02em; }
+.calc-top span { color: rgba(255,255,255,.75); font-size: 12px; }
+.calc-page {
+  width: 972px; margin: 0 auto; background: #fff;
+  display: grid; grid-template-columns: 648px 324px;
+}
+.calc-page > main, .calc-page > .calc-side-wrap { padding: 20px; min-width: 0; }
+.calc-side {
+  background: #eef4fb; border-radius: 4px; overflow: hidden;
+}
+.calc-side h5 {
+  margin: 0; padding: 8px 12px; background: #cfe0f3; color: #3d4f66;
+  font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+}
+.calc-side ul { list-style: none; margin: 0; padding: 6px; }
+.calc-side li a {
+  display: block; padding: 5px 8px; border-radius: 4px;
+  color: #2f5d95; text-decoration: none; font-size: 13px;
+}
+.calc-side li a:hover { background: #e0eaf6; }
+.calc-side li a[aria-current="page"] { background: #cfe0f3; color: #1f3350; font-weight: 700; }
+.calc-foot {
+  width: 972px; max-width: 100%; margin: 0 auto; padding: 14px 20px 28px;
+  font-size: 11px; color: #aaa;
+}
+.rp-pf { font-size: 13px; }
+.rp-pf p { margin: 0 0 1em; }
+@media (max-width: 991px) {
+  .calc-page, .calc-top-inner, .calc-foot { width: 760px; }
+  .calc-page { grid-template-columns: 1fr; }
+  .rp-pf { font-size: 16px; }
+}
+@media (max-width: 767px) {
+  .calc-page, .calc-top-inner, .calc-foot { width: auto; }
+  .calc-page > main, .calc-page > .calc-side-wrap { padding: 20px; }
+}
+
+/* ---------- componenti .rp-* (come il "calculator-css" di Radiopaedia) ---------- */
+.rp-calc-wrap { max-width: 760px; margin: 0 auto; }
+.rp-calc-wrap h4 {
+  margin-top: 0; margin-bottom: 0.5em;
+  color: #65419b; font-size: 1.728em; font-weight: 600; line-height: 1.25;
+}
+.rp-calc-wrap [hidden] { display: none !important; }
+
+/* progressive sections */
+.rp-pf-step { border-top: 1px solid #ddd; padding-top: 1.5em; margin-top: 1.5em; scroll-margin-top: 20px; }
+.rp-pf-step:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+.rp-pf-js .rp-pf-step.is-hidden { display: none; }
+
+/* mode toggle */
+.rp-calc-modebar { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 20px 0 25px; }
+.rp-calc-mode-opt { font-size: 0.95em; color: #595959; cursor: pointer; }
+.rp-calc-mode-opt.is-active { color: #333; font-weight: 600; }
+.rp-calc-switch { width: 42px; height: 24px; flex: 0 0 auto; cursor: pointer; vertical-align: middle; }
+.rp-calc-switch-track { fill: rgba(127, 127, 127, 0.45); transition: fill 0.2s ease; }
+.rp-calc-switch-knob { fill: #fff; transition: transform 0.2s ease; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)); }
+.rp-calc-switch[aria-checked="true"] .rp-calc-switch-track { fill: #65419b; }
+.rp-calc-switch[aria-checked="true"] .rp-calc-switch-knob { transform: translateX(18px); }
+.rp-calc-switch:focus-visible { outline: 2px solid #65419b; outline-offset: 2px; border-radius: 12px; }
+
+/* option radio cards */
+.rp-calc-opts { margin: 0 0 0.5em; padding: 0; list-style: none; }
+.rp-calc-opts li { margin: 0 0 8px; }
+.rp-calc-opt {
+  display: block; position: relative; cursor: pointer; font-weight: 400;
+  border: 1px solid #ddd; border-radius: 6px; padding: 12px 14px 12px 42px; background: #fff;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.rp-calc-opt:hover { border-color: #bbb; background: #f4f8fd; }
+.rp-calc-opt input { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); margin: 0; }
+.rp-calc-opt-title { font-weight: 600; }
+.rp-calc-opt-sub { display: block; font-size: 0.88em; color: #595959; margin-top: 2px; }
+.rp-calc-opt:has(input:checked) { border-color: #65419b; background: #f2ebfe; }
+
+/* numeric input fields */
+.rp-calc-fields { display: flex; flex-wrap: wrap; gap: 14px; margin: 0.5em 0; }
+.rp-calc-qual { font-weight: 400; color: #595959; }
+.rp-num-field { flex: 1 1 150px; min-width: 150px; }
+.rp-num-field > label { display: block; font-weight: 600; font-size: 0.92em; margin-bottom: 5px; }
+.rp-num-sub { display: block; font-weight: 400; font-size: 0.82em; color: #595959; margin-top: 2px; }
+.rp-num-input { position: relative; }
+.rp-num-input input {
+  width: 100%; box-sizing: border-box; padding: 10px 46px 10px 12px;
+  border: 1px solid #ddd; border-radius: 6px; font: inherit; font-size: 1em; background: #fff; color: #333;
+}
+.rp-num-input input:focus { border-color: #65419b; outline: none; }
+.rp-num-unit {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 0.82em; color: #595959; pointer-events: none;
+}
+
+/* display formula */
+.rp-calc-formula {
+  margin: 0.6em 0; padding: 10px 14px; border: 1px solid #ddd; border-radius: 6px;
+  background: #fff; text-align: center; font-weight: 600;
+}
+.rp-calc-fieldlabel { font-weight: 600; margin: 1.2em 0 0.5em; }
+.rp-fl-opt { font-weight: 400; color: #595959; font-size: 0.9em; }
+.rp-chip {
+  display: inline-block; min-width: 1.5em; text-align: center; font-weight: 700;
+  border-radius: 4px; padding: 0 4px; margin-right: 4px;
+}
+.rp-chip-M { color: #45933e; border: 1px solid #45933e; }   /* mesencefalo verde, come nell'immagine */
+.rp-chip-P { color: #0a64ae; border: 1px solid #0a64ae; }   /* ponte blu */
+.rp-chip-S { color: #333; border: 1px solid #999; }
+.rp-chip-C { color: #e30b5d; border: 1px solid #e30b5d; }
+
+/* diagram link + image modal */
+.rp-diagram-btn {
+  display: inline-flex; align-items: center; gap: 7px; background: none; border: 0; padding: 0;
+  color: #65419b; cursor: pointer; font: inherit; font-weight: 600; font-size: 0.95em;
+}
+.rp-diagram-btn svg { width: 1.05em; height: 1.05em; fill: currentColor; }
+.rp-diagram-btn:hover { text-decoration: underline; }
+.rp-meas-head { display: flex; align-items: center; gap: 8px; }
+.rp-diagram-icon { font-size: 0.8em; }
+.rp-diagram-icon svg { width: 1.2em; height: 1.2em; }
+.rp-diagram-icon:hover { text-decoration: none; opacity: 0.8; }
+.rp-meas-head .rp-diagram-icon { margin-left: auto; }
+.rp-diagram-icon .fa-secondary { opacity: 0.4; }
+.rp-calc-note .rp-diagram-btn { display: flex; margin-top: 6px; }
+
+#rp-img-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.15); z-index: 99999; display: none; }
+#rp-img-modal.is-open { display: flex; align-items: center; justify-content: center; padding: 20px; }
+.rp-img-popup {
+  position: relative; box-sizing: border-box; max-width: min(94vw, 560px); max-height: 92vh;
+  overflow-x: hidden; overflow-y: auto; box-shadow: 0 12px 44px rgba(0,0,0,0.4);
+  background: #fff; border-radius: 6px; padding: 16px 20px 18px;
+}
+.rp-img-popup h5 { margin: 0 36px 12px 0; font-size: 1.05em; color: #333; }
+#rp-img-modal img { display: block; max-width: 100%; max-height: 60vh; margin: 0 auto; border-radius: 4px; background: #000; }
+.rp-img-missing {
+  border: 2px dashed #bbb; border-radius: 6px; padding: 28px 16px; text-align: center;
+  color: #595959; font-size: 0.92em; background: #f4f8fd;
+}
+.rp-img-modal-cap { font-size: 0.9em; margin: 12px 0 0; line-height: 1.45; }
+.rp-img-modal-credit { font-size: 0.8em; color: #757575; margin: 8px 0 0; line-height: 1.45; }
+#rp-img-modal .mfp-close {
+  position: absolute; top: 2px; right: 6px; width: 40px; height: 40px; line-height: 38px;
+  text-align: center; font-size: 28px; font-weight: 400; color: #333; opacity: 0.75;
+  background: transparent; border: 0; padding: 0; cursor: pointer; z-index: 2;
+}
+#rp-img-modal .mfp-close:hover { opacity: 1; }
+
+/* note / callout */
+.rp-calc-note {
+  border: 1px solid #ddd; background: #f4f8fd; border-radius: 6px;
+  padding: 10px 14px; margin: 1em 0; font-size: 0.92em;
+}
+.rp-calc-note strong { color: #4309af; }
+.rp-calc-callout { margin: 0 0 1.5em; }
+.rp-calc-callout p { margin: 0.5em 0 0; }
+.rp-calc-callout p:first-child { margin-top: 0; }
+
+/* validation note */
+.rp-calc-warnnote {
+  border: 1px solid #5f09af; background: #f2ebfe; color: #4309af; border-radius: 6px;
+  padding: 8px 12px; margin: 0.5em 0 0; font-size: 0.88em;
+}
+
+/* "more" disclosure (definitions) */
+.rp-calc-more { margin: 1em 0; border: 1px solid #ddd; border-radius: 6px; background: #f4f8fd; }
+.rp-calc-more > summary { cursor: pointer; padding: 10px 14px; font-weight: bold; color: #65419b; list-style: none; }
+.rp-calc-more > summary::-webkit-details-marker { display: none; }
+.rp-calc-more > summary::before { content: "\25B8\00A0"; color: #65419b; }
+.rp-calc-more[open] > summary::before { content: "\25BE\00A0"; }
+.rp-calc-more-body { padding: 0 14px 12px; }
+.rp-calc-more-body p:first-child { margin-top: 0; }
+.rp-calc-more-body table { font-size: 0.9em; border-collapse: collapse; margin: 0.5em 0 1em; }
+.rp-calc-more-body th, .rp-calc-more-body td { padding: 8px 10px; border: 1px solid #ddd; text-align: left; }
+.rp-calc-more-body hr { border: 0; border-top: 1px solid #ddd; margin: 1em 20px; }
+.rp-calc-more-body ol { padding-left: 1.3em; }
+.rp-calc-more-body li { margin-bottom: 0.35em; }
+.rp-calc-defs-source { margin: 0.75em 0 0; }
+
+/* semantic result box */
+.rp-calc-result { border-radius: 8px; padding: 18px 20px; margin: 0.5em 0 1em; border: 1px solid; }
+.rp-calc-result.is-success { background: #daf8d8; border-color: #188521; color: #218518; }
+.rp-calc-result.is-info    { background: #edf6fe; border-color: #0a49ae; color: #0a64ae; }
+.rp-calc-result.is-warning { background: #f2ebfe; border-color: #5f09af; color: #4309af; }
+.rp-calc-result.is-danger  { background: #feebeb; border-color: #af0924; color: #af0909; }
+.rp-calc-result.is-neutral { background: #eee;    border-color: #bbb;    color: #333; }
+.rp-calc-result-class { font-size: 1.6em; font-weight: bold; }
+.rp-calc-result-driver { font-size: 0.92em; margin-top: 0.4em; opacity: 0.95; }
+
+/* report-ready copy box */
+.rp-calc-report { border: 1px solid #ddd; border-radius: 6px; background: #f4f8fd; margin: 1em 0; }
+.rp-calc-report-head {
+  font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.04em;
+  color: #595959; padding: 8px 12px; border-bottom: 1px solid #ddd;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.rp-calc-copy {
+  font: inherit; font-size: 0.85em; text-transform: none; letter-spacing: 0;
+  background: #ddd; border: 1px solid #bbb; border-radius: 4px; padding: 2px 10px; cursor: pointer; color: #333;
+}
+.rp-calc-copy:hover { background: #ccc; }
+.rp-calc-report-body { padding: 12px 14px; color: #333; white-space: pre-line; }
+
+/* caveat + reset */
+.rp-calc-resultnote { font-size: 0.85em; color: #757575; margin: 0.5em 0 1.25em; }
+.rp-calc-reset-wrap { text-align: center; margin-top: 1.5em; }
+.rp-calc-reset {
+  font: inherit; background: #fff; border: 1px solid #ccc; border-radius: 4px;
+  padding: 6px 14px; cursor: pointer; color: #333;
+}
+.rp-calc-reset:hover { background: #f4f4f4; }
+.rp-calc-reset svg { width: 1em; height: 1em; margin-right: 6px; vertical-align: -0.125em; fill: currentColor; }
+
+/* editable copy panel (visible only without JS, as in the Radiopaedia editor) */
+.rp-pf-js .rp-calc-src { display: none; }
+.rp-calc-src {
+  border: 2px dashed #bbb; border-radius: 6px; padding: 4px 16px 16px; margin-top: 2.5em; background: #f4f8fd;
+}
+.rp-calc-src h5 { color: #af0909; margin: 1em 0 0.3em; }
+.rp-calc-src .rp-src-k { font-size: 0.82em; font-weight: 600; color: #595959; margin: 0.9em 0 0.15em; }
+.rp-calc-src .rp-src { border: 1px solid #ddd; background: #fff; border-radius: 4px; padding: 6px 10px; margin: 0; }
+
+/* ---------- misura con figura accanto (aggiunta di Neuro-tools) ---------- */
+/* i campi a sinistra, l'immagine fissa a destra; sotto i 600px l'immagine
+   va sopra i campi, così si guarda prima di misurare */
+.rp-meas-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 18px;
+  align-items: start; margin: 0 0 1.2em;
+}
+.rp-meas-main > .rp-calc-note:first-child { margin-top: 0; }
+.rp-meas-main > .rp-calc-fieldlabel:first-child { margin-top: 0.3em; }
+.rp-meas-how { font-size: 0.88em; color: #595959; margin: -0.3em 0 0.6em; }
+.rp-meas-fig { margin: 0; }
+.rp-meas-fig img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid #ddd; border-radius: 6px; background: #000;
+}
+.rp-meas-fig figcaption { font-size: 0.8em; color: #595959; margin-top: 5px; line-height: 1.4; }
+.rp-meas-fig .rp-img-missing { padding: 36px 10px; font-size: 0.8em; word-break: break-all; }
+.rp-calc-fields-3 .rp-num-field { flex: 1 1 90px; min-width: 90px; }
+@media (max-width: 600px) {
+  .rp-meas-row { grid-template-columns: 1fr; }
+  .rp-meas-fig { order: -1; max-width: 320px; }
+}
+.rp-meas-credit { display: block; margin-top: 2px; color: #757575; font-style: italic; }
+.rp-meas-credit a { color: inherit; }
